@@ -1,6 +1,5 @@
 package net.taunova.usability;
 
-import java.awt.AWTEvent;
 import java.awt.AWTException;
 import java.awt.BorderLayout;
 import java.awt.Color;
@@ -16,9 +15,10 @@ import java.awt.PointerInfo;
 import java.awt.Rectangle;
 import java.awt.Robot;
 import java.awt.Toolkit;
-import java.awt.event.AWTEventListener;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.awt.event.WindowEvent;
+import java.awt.event.WindowFocusListener;
 import java.awt.image.BufferedImage;
 import java.io.File;
 import java.io.IOException;
@@ -77,16 +77,22 @@ interface TrackerCallback {
 class ControlPanel extends JPanel implements ActionListener {
     private MouseTracker tracker;
     private TrackerFrame frame;
+    public JButton button5;
+    public boolean start = false;
+    
     public ControlPanel(MouseTracker tracker, TrackerFrame frame) {
         super(true);
         setLayout(new BoxLayout(this, BoxLayout.Y_AXIS));
         this.tracker = tracker;
         this.frame = frame;
+        
         JButton button1 = new JButton("Clear");
         JButton button2 = new JButton("Mark area");
         JButton button3 = new JButton("New slide");
         JButton button4 = new JButton("Take snapshot");
+        button5 = new JButton("Start");
         
+        add(button5);
         add(button1);
         add(button2);
         add(button3);
@@ -94,6 +100,7 @@ class ControlPanel extends JPanel implements ActionListener {
         
         button1.addActionListener(new CleanTracker(tracker));
         button4.addActionListener(this);
+        button5.addActionListener(new StartButtonListener(frame));
         
     }     
 
@@ -101,11 +108,6 @@ class ControlPanel extends JPanel implements ActionListener {
     public void actionPerformed(ActionEvent ae) {
 //        this.frame.setVisible(false);
         this.frame.setState(JFrame.ICONIFIED);
-        if(frame.getState() != JFrame.ICONIFIED) {
-            System.out.println("1");
-        } else {
-            System.out.println("2");
-        }
         try {
             Thread.sleep(1000);
         } catch (InterruptedException ex) {
@@ -163,7 +165,6 @@ class ControlPanel extends JPanel implements ActionListener {
     private void saveScreen(BufferedImage image, String name) throws IOException {
         String format = "jpg";
         ImageIO.write(image, format, new File(name + "." + format));
-        System.out.println("saved");
     }
 }
 
@@ -178,6 +179,28 @@ class CleanTracker implements ActionListener {
     @Override
     public void actionPerformed(ActionEvent ae) {
        tracker.getPosition().clear();
+    }
+    
+}
+
+class StartButtonListener implements ActionListener {
+    private TrackerFrame frame;
+    
+    public StartButtonListener(TrackerFrame frame) {
+        this.frame = frame;
+    }
+    
+    @Override
+    public void actionPerformed(ActionEvent ae) {
+        new Thread(this.frame.tracker).start();
+        Object source = ae.getSource();
+        if (source instanceof JButton) {
+           
+            if (frame.isActive() && ((JButton) source).getText() == "Start") {
+                this.frame.setState(JFrame.ICONIFIED);
+                ((JButton) source).setText("Pause");
+            }
+        }
     }
     
 }
@@ -292,8 +315,8 @@ class MouseTracker implements Runnable  {
         positionList.add(current);
         
         while(true) {
-            if(this.frame.getState() == JFrame.ICONIFIED) {
-            
+            if(!this.frame.isActive()) {
+                
                 long time1 = System.currentTimeMillis();
                 PointerInfo info = MouseInfo.getPointerInfo();            
                 Point p = info.getLocation();
@@ -319,18 +342,11 @@ class MouseTracker implements Runnable  {
 }
 
 
-class Listener implements AWTEventListener {
-        public void eventDispatched(AWTEvent event) {
-            System.out.print(MouseInfo.getPointerInfo().getLocation());
-            System.out.println(event.paramString());
-            
-        }  
-    }
-
-class TrackerFrame extends JFrame {
+class TrackerFrame extends JFrame implements WindowFocusListener {
     ControlPanel buttonPanel;
     TrackerPanel trackerPanel;
     MouseTracker tracker;
+    public boolean startTracking = false;
     
     public TrackerFrame() {
         super("Tracker frame");
@@ -341,13 +357,27 @@ class TrackerFrame extends JFrame {
         trackerPanel = new TrackerPanel(tracker);
         
         
-        new Thread(tracker).start();
+        
         getContentPane().add(BorderLayout.EAST, buttonPanel);
         getContentPane().add(BorderLayout.CENTER, trackerPanel);
         
         setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
         setSize(400, 400);
-        setVisible(true);        
+        setVisible(true); 
+        addWindowFocusListener(this);
+    }
+
+
+    @Override
+    public void windowGainedFocus(WindowEvent we) {
+       this.buttonPanel.button5.setText("Start");
+       this.startTracking = true;
+    }
+
+    @Override
+    public void windowLostFocus(WindowEvent we) {
+        this.buttonPanel.button5.setText("Pause");
+        this.startTracking = false;
     }
 }
 
