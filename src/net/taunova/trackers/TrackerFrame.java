@@ -7,6 +7,8 @@ package net.taunova.trackers;
 
 import net.taunova.trackers.TrackerPanel;
 import java.awt.BorderLayout;
+import java.awt.GraphicsEnvironment;
+import java.awt.Rectangle;
 import java.awt.event.WindowEvent;
 import java.awt.event.WindowFocusListener;
 import javax.swing.JFrame;
@@ -23,7 +25,7 @@ public class TrackerFrame extends JFrame implements WindowFocusListener {
     TrackerPanel trackerPanel;
     public MouseTracker tracker;
     public boolean startTracking = false;
-    
+    private static final int DIVIDER = 3;
     public TrackerFrame() {
         super("Tracker frame");
         getContentPane().setLayout(new BorderLayout());
@@ -38,7 +40,8 @@ public class TrackerFrame extends JFrame implements WindowFocusListener {
         getContentPane().add(BorderLayout.CENTER, trackerPanel);
         
         setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-        setSize(400, 400);
+        Rectangle dim = GraphicsEnvironment.getLocalGraphicsEnvironment().getMaximumWindowBounds();
+        setSize(dim.width/DIVIDER, dim.height/DIVIDER);
         setVisible(true); 
         addWindowFocusListener(this);
     }

@@ -91,9 +91,6 @@ public class ControlPanel extends JPanel implements ActionListener {
         } catch (IOException ex) {
             System.out.println("Error: " + ex);
         }
-        
-        JOptionPane.showMessageDialog(this,
-            "Image saved");
     }
     
     private BufferedImage takeSnapShot() {
@@ -132,18 +129,19 @@ public class ControlPanel extends JPanel implements ActionListener {
     
     private void saveScreen(BufferedImage image, String name) throws IOException {
         
-          int returnVal = fc.showSaveDialog(ControlPanel.this);
-          
-            
-            if (returnVal == JFileChooser.APPROVE_OPTION) {
+        int returnVal = fc.showSaveDialog(ControlPanel.this);
+        
+        if (returnVal == JFileChooser.APPROVE_OPTION) {
 
-                String format = "png";
-                File file = fc.getSelectedFile();
-                if (!file.getName().endsWith(".png")) {
-                    file = new File(fc.getSelectedFile() + ".png");
-                }
-                ImageIO.write(image, format, file);
+            String format = "png";
+            File file = fc.getSelectedFile();
+            if (!file.getName().endsWith(".png")) {
+                file = new File(fc.getSelectedFile() + ".png");
             }
+            ImageIO.write(image, format, file);
+            JOptionPane.showMessageDialog(this,
+        "Image saved");
+        }
     }
 }
 

@@ -49,9 +49,11 @@ public class TrackerPanel extends JPanel {
 
         g.drawImage(takeSnapShot(), 0, 0, null);
         
-        Dimension size = getSize();
+        
+        
         Rectangle dim = GraphicsEnvironment.getLocalGraphicsEnvironment().getMaximumWindowBounds();
-       
+        
+        Dimension size = getSize();
         final double kX = (double)size.width/dim.width;
         final double kY = (double)size.height/dim.height;
         g.setColor(Color.red);
