@@ -8,12 +8,16 @@ package net.taunova.control;
 import net.taunova.util.Position;
 import java.awt.AWTException;
 import java.awt.Color;
+import java.awt.Dimension;
 import java.awt.Graphics2D;
+import java.awt.Point;
 import java.awt.Rectangle;
 import java.awt.Robot;
 import java.awt.Toolkit;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.awt.event.MouseEvent;
+import java.awt.event.MouseMotionAdapter;
 import java.awt.image.BufferedImage;
 import java.io.File;
 import java.io.IOException;
@@ -65,7 +69,7 @@ public class ControlPanel extends JPanel implements ActionListener {
         button1.addActionListener(new CleanTrackerListener(tracker));
         button4.addActionListener(this);
         button5.addActionListener(new StartButtonListener(frame));
-        
+      
         fc = new JFileChooser();
         fc.addChoosableFileFilter(new FileNameExtensionFilter("Images", "jpg", "png"));
 

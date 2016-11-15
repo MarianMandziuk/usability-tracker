@@ -12,11 +12,14 @@ import java.awt.Graphics;
 import java.awt.Graphics2D;
 import java.awt.GraphicsEnvironment;
 import java.awt.Image;
+import java.awt.Point;
 import java.awt.Rectangle;
 import java.awt.Robot;
 import java.awt.Toolkit;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.awt.event.MouseAdapter;
+import java.awt.event.MouseEvent;
 import java.awt.image.BufferedImage;
 import javax.swing.JPanel;
 import javax.swing.Timer;
@@ -29,7 +32,10 @@ import net.taunova.util.Position;
  */
 public class TrackerPanel extends JPanel {
     private MouseTracker tracker;
-    
+    private Rectangle selection;
+    private boolean selectedSelection = false;
+    private int privX;
+    private int privY;
     public TrackerPanel(MouseTracker tracker) {
         super(true);
         this.tracker = tracker;  
@@ -43,13 +49,70 @@ public class TrackerPanel extends JPanel {
             }
         }).start();
         
+        
+        MouseAdapter handler = new MouseAdapter() {
+                @Override
+                public void mousePressed(MouseEvent e) {
+                    System.out.println("Mouse pressed");
+                    if (selection != null && selection.contains(e.getPoint())) {
+                        selectedSelection = true;
+                        privX = e.getPoint().x;
+                        privY = e.getPoint().y;
+                    } else {
+                        selection = new Rectangle(e.getPoint());
+                        selectedSelection = false;
+                    }
+                    repaint();
+                }
+
+                @Override
+                public void mouseDragged(MouseEvent e) {
+                    System.out.println("mouseDragged");
+                    Point p = e.getPoint();
+                    int width;
+                    int height;
+                    
+                    
+                    if (selectedSelection) {
+                        System.out.println(e.getPoint() + "  " + selection.x  + " " + selection.y);
+                        selection.x += e.getPoint().x - privX;
+                        selection.y += e.getPoint().y - privY;
+
+
+                        privX = e.getPoint().x;
+                        privY = e.getPoint().y;
+                    } else {
+                        System.out.println("else");
+                        width = Math.max(selection.x - e.getX(), e.getX() - selection.x);
+                        height = Math.max(selection.y - e.getY(), e.getY() - selection.y);
+
+                        selection.setSize(width, height);
+                    }
+                    
+                    repaint();
+                }
+            };
+            
+            this.addMouseListener(handler);
+            this.addMouseMotionListener(handler);
     }
-    
+
+        
     public void paint(final Graphics g) {
 
         g.drawImage(takeSnapShot(), 0, 0, null);
-        
-        
+        if (true) {
+            Graphics2D g2d = (Graphics2D) g.create();
+
+            if (selection != null) {
+//                g.drawRect(selection.x, selection.y, selection.x + 10, selection.y + 10);
+                g2d.setColor(new Color(225, 225, 255, 128));
+                g2d.fill(selection);
+                g2d.setColor(Color.GRAY);
+                g2d.draw(selection);
+            }
+            g2d.dispose();
+        }
         
         Rectangle dim = GraphicsEnvironment.getLocalGraphicsEnvironment().getMaximumWindowBounds();
         
@@ -74,6 +137,8 @@ public class TrackerPanel extends JPanel {
                     g.drawOval((int)(kX*begin.position.x)-radius/2, 
                            (int)(kY*begin.position.y)-radius/2, radius, radius);
                 }
+                
+                 
             }
         });
     }

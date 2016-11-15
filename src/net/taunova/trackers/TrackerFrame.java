@@ -25,7 +25,7 @@ public class TrackerFrame extends JFrame implements WindowFocusListener {
     TrackerPanel trackerPanel;
     public MouseTracker tracker;
     public boolean startTracking = false;
-    private static final int DIVIDER = 3;
+    private static final int DIVIDER = 2;
     public TrackerFrame() {
         super("Tracker frame");
         getContentPane().setLayout(new BorderLayout());
