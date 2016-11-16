@@ -36,13 +36,16 @@ public class TrackerPanel extends JPanel {
     private boolean selectedSelection = false;
     private int privX;
     private int privY;
+    private int opposideX;
+    private int opposideY;
+    private Dimension windowSize;
     public TrackerPanel(MouseTracker tracker) {
         super(true);
         this.tracker = tracker;  
         tracker.setParent(this);
-                   
+        
         new Timer(100, new ActionListener() {
-
+            
             @Override
             public void actionPerformed(ActionEvent e) {
                 repaint();
@@ -51,67 +54,114 @@ public class TrackerPanel extends JPanel {
         
         
         MouseAdapter handler = new MouseAdapter() {
-                @Override
-                public void mousePressed(MouseEvent e) {
-                    System.out.println("Mouse pressed");
-                    if (selection != null && selection.contains(e.getPoint())) {
-                        selectedSelection = true;
-                        privX = e.getPoint().x;
-                        privY = e.getPoint().y;
-                    } else {
-                        selection = new Rectangle(e.getPoint());
-                        selectedSelection = false;
-                    }
-                    repaint();
+            @Override
+            public void mousePressed(MouseEvent e) {
+//                System.out.println("Mouse pressed");
+                if (selection != null && selection.contains(e.getPoint())) {
+                    selectedSelection = true;
+                    privX = e.getPoint().x;
+                    privY = e.getPoint().y;
+                } else {
+                    selection = new Rectangle(e.getPoint());
+                    selectedSelection = false;
+                    opposideX = e.getX();
+                    opposideY = e.getY();
                 }
+//                repaint();
+            }
 
-                @Override
-                public void mouseDragged(MouseEvent e) {
-                    System.out.println("mouseDragged");
-                    Point p = e.getPoint();
-                    int width;
-                    int height;
-                    
-                    
-                    if (selectedSelection) {
-                        System.out.println(e.getPoint() + "  " + selection.x  + " " + selection.y);
+            @Override
+            public void mouseDragged(MouseEvent e) {
+//                System.out.println("mouseDragged");
+                Point p = e.getPoint();
+                int width;
+                int height;
+                int valX;
+                int valY;
+                if (e.getX() > windowSize.width) {
+                    valX = windowSize.width;
+                } else if(e.getX() < 0){
+                    valX = 0;
+                } else {
+                    valX = e.getX();
+                }
+                if (e.getY() > windowSize.height) {
+                    valY = windowSize.height;
+                } else if(e.getY() < 0) {
+                    valY = 0;
+                } else {
+                    valY = e.getY();
+                }
+                
+                if (selectedSelection) {
+                    if(selection.x +e.getPoint().x - privX + selection.width > windowSize.width) {
+                        selection.x = windowSize.width - selection.width;
+                    } else if (selection.x + e.getPoint().x - privX < 0) {
+                        selection.x = 0;
+                    } else if (selection.y + e.getPoint().y - privY + selection.height > windowSize.height) {
+                        selection.y = windowSize.height - selection.height;
+                    } else if (selection.y + e.getPoint().y - privY < 0) {
+                        selection.y = 0;
+                    } else {
                         selection.x += e.getPoint().x - privX;
                         selection.y += e.getPoint().y - privY;
-
-
                         privX = e.getPoint().x;
                         privY = e.getPoint().y;
-                    } else {
-                        System.out.println("else");
-                        width = Math.max(selection.x - e.getX(), e.getX() - selection.x);
-                        height = Math.max(selection.y - e.getY(), e.getY() - selection.y);
-
-                        selection.setSize(width, height);
                     }
                     
-                    repaint();
+                } else if (e.getX() > selection.x && e.getY() > selection.y){
+                    
+                    
+                    width = Math.max(selection.x - valX, valX - selection.x);
+                    height = Math.max(selection.y - valY, valY - selection.y);
+                    selection.setSize(width, height);
+                } else if (e.getX() < selection.x && e.getY()  > selection.y) {
+                    width = opposideX - valX;
+                    height = valY - opposideY;
+                    selection.x = valX;
+                    selection.setSize(width, height);
+                } else if (e.getX() < selection.x && e.getY() < selection.y) {
+                    width = opposideX - valX;
+                    height = opposideY - valY;
+                    selection.x = valX;
+                    selection.y = valY;
+                    selection.setSize(width, height);
+                } else if (e.getX() > selection.x && e.getY() < selection.y) {
+                    width = valX - opposideX;
+                    height = opposideY - valY;
+                    selection.y = valY;
+                    selection.setSize(width, height);
                 }
-            };
-            
-            this.addMouseListener(handler);
-            this.addMouseMotionListener(handler);
+//                }
+//                repaint();
+            }
+        };
+
+        this.addMouseListener(handler);
+        this.addMouseMotionListener(handler);
     }
 
         
     public void paint(final Graphics g) {
-
+        this.windowSize = getSize();
         g.drawImage(takeSnapShot(), 0, 0, null);
+        
+        
         if (true) {
-            Graphics2D g2d = (Graphics2D) g.create();
+//            Graphics2D g2d = (Graphics2D) g.create();
 
             if (selection != null) {
-//                g.drawRect(selection.x, selection.y, selection.x + 10, selection.y + 10);
-                g2d.setColor(new Color(225, 225, 255, 128));
-                g2d.fill(selection);
-                g2d.setColor(Color.GRAY);
-                g2d.draw(selection);
+                g.setColor(new Color(225, 225, 255, 128));
+                g.fillRect(selection.x, selection.y, selection.width, selection.height);
+                g.setColor(Color.GRAY);
+                g.drawRect(selection.x, selection.y, selection.width, selection.height);
+//                g2d.setColor(new Color(225, 225, 255, 128));
+//                g2d.fill(selection);
+//                g2d.setColor(Color.GRAY);
+//                g2d.draw(selection);
+                tracker.setSelection(new Rectangle(selection.x*2, selection.y*2, selection.height*2, selection.width*2));
             }
-            g2d.dispose();
+//            g2d.dispose();
         }
         
         Rectangle dim = GraphicsEnvironment.getLocalGraphicsEnvironment().getMaximumWindowBounds();
@@ -161,6 +211,6 @@ public class TrackerPanel extends JPanel {
         
         return tmpIm;
     }
-   
+    
 }
 
