@@ -145,16 +145,55 @@ public class TrackerPanel extends JPanel {
     public void paint(final Graphics g) {
         this.windowSize = getSize();
         g.drawImage(takeSnapShot(), 0, 0, null);
+        g.setColor(Color.GRAY);
+        int x1 = this.getLocationOnScreen().x;
+        int y1 = this.getLocationOnScreen().y;
+        
+        g.fillRect(((int)(this.getLocationOnScreen().x/2.0) ),
+                   ((int)(this.getLocationOnScreen().y/2.0) ), 
+                   this.getSize().width/2, this.getSize().height/2);
+//        g.fillRect(10, 10, 100, 100);
+        System.out.println("x: "  + this.getLocationOnScreen().x);
+        System.out.println("y: " + this.getLocationOnScreen().y);
+        
+        
         
         
         if (true) {
 //            Graphics2D g2d = (Graphics2D) g.create();
-
+            
             if (selection != null) {
-                g.setColor(new Color(225, 225, 255, 128));
+                int sizeConerRect = 5;
+                g.setColor(new Color(225, 225, 255, 1));
                 g.fillRect(selection.x, selection.y, selection.width, selection.height);
-                g.setColor(Color.GRAY);
+                g.setColor(Color.RED);
                 g.drawRect(selection.x, selection.y, selection.width, selection.height);
+                
+                g.drawRect(selection.x - 2,
+                           selection.y - 2,
+                           sizeConerRect,
+                           sizeConerRect);
+                g.drawRect((selection.x + selection.width / 2) - 2,
+                           selection.y - 2,
+                           sizeConerRect, sizeConerRect);
+                g.drawRect((selection.x + selection.width) - 2,
+                           selection.y - 2,
+                           sizeConerRect, sizeConerRect);
+                g.drawRect(selection.x - 2,
+                          (selection.y + selection.height / 2) - 2,
+                           sizeConerRect, sizeConerRect);
+                g.drawRect(selection.x - 2,
+                          (selection.y + selection.height) - 2,
+                           sizeConerRect, sizeConerRect);
+                g.drawRect((selection.x + selection.width) - 2,
+                          (selection.y + selection.height / 2) - 2,
+                           sizeConerRect, sizeConerRect);
+                g.drawRect((selection.x + selection.width / 2)- 2,
+                          (selection.y + selection.height) - 2,
+                           sizeConerRect, sizeConerRect);
+                g.drawRect((selection.x + selection.width)- 2,
+                          (selection.y + selection.height) - 2,
+                           sizeConerRect, sizeConerRect);
 //                g2d.setColor(new Color(225, 225, 255, 128));
 //                g2d.fill(selection);
 //                g2d.setColor(Color.GRAY);
@@ -207,6 +246,7 @@ public class TrackerPanel extends JPanel {
         BufferedImage tmpIm = new BufferedImage(size.width, size.height, BufferedImage.TYPE_INT_ARGB);
         Graphics2D g2 = tmpIm.createGraphics();
         g2.drawImage(im.getScaledInstance(size.width, size.height, Image.SCALE_SMOOTH), 0, 0, size.width, size.height, null);
+       
         g2.dispose();
         
         return tmpIm;
