@@ -29,13 +29,15 @@ public class MouseTracker implements Runnable  {
     private Component parent;
     private JFrame frame;
     private Rectangle selection;
+    private boolean selectionTraking;
     MouseTracker(TrackerFrame it) {
        this.frame = it;
        
     }
     
-    public void setSelection(Rectangle r) {
+    public void setSelection(Rectangle r, boolean sT) {
         this.selection = r;
+        this.selectionTraking = sT;
     }
     
     public void setParent(Component parent) {
@@ -65,9 +67,8 @@ public class MouseTracker implements Runnable  {
                 long time1 = System.currentTimeMillis();
                 PointerInfo info = MouseInfo.getPointerInfo();            
                 Point p = info.getLocation();
-                if(this.selection != null) {
-                   
-                    if(selection.contains(p)) {
+                if(this.selectionTraking == true) {
+                    if(  selection.contains(p)) {
                         if(current.position.x != p.x ||
                            current.position.y != p.y) {
                             current = new Position(p);
@@ -77,6 +78,15 @@ public class MouseTracker implements Runnable  {
                             ThreadUtil.sleep(DELAY);
                         }                    
                     }
+                } else {
+                    if(current.position.x != p.x ||
+                       current.position.y != p.y) {
+                        current = new Position(p);
+                        positionList.add(current);                               
+                    } else {
+                        current.incDelay();
+                        ThreadUtil.sleep(DELAY);
+                    }   
                 }
                 long time2 = System.currentTimeMillis();
     //            System.out.println("it took: " + (time2 - time1));

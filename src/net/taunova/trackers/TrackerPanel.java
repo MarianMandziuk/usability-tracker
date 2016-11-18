@@ -20,10 +20,13 @@ import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
+import java.awt.image.BufferStrategy;
 import java.awt.image.BufferedImage;
 import javax.swing.JPanel;
 import javax.swing.Timer;
 import net.taunova.util.Position;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 
 /**
@@ -39,10 +42,12 @@ public class TrackerPanel extends JPanel {
     private int opposideX;
     private int opposideY;
     private Dimension windowSize;
+    private final Logger logger = LoggerFactory.getLogger(TrackerPanel.class);
     public TrackerPanel(MouseTracker tracker) {
         super(true);
         this.tracker = tracker;  
         tracker.setParent(this);
+        this.setDoubleBuffered(true);
         
         new Timer(100, new ActionListener() {
             
@@ -145,6 +150,8 @@ public class TrackerPanel extends JPanel {
     public void paint(final Graphics g) {
         this.windowSize = getSize();
         g.drawImage(takeSnapShot(), 0, 0, null);
+    
+        
         g.setColor(Color.GRAY);
         int x1 = this.getLocationOnScreen().x;
         int y1 = this.getLocationOnScreen().y;
@@ -152,12 +159,7 @@ public class TrackerPanel extends JPanel {
         g.fillRect(((int)(this.getLocationOnScreen().x/2.0) ),
                    ((int)(this.getLocationOnScreen().y/2.0) ), 
                    this.getSize().width/2, this.getSize().height/2);
-//        g.fillRect(10, 10, 100, 100);
-        System.out.println("x: "  + this.getLocationOnScreen().x);
-        System.out.println("y: " + this.getLocationOnScreen().y);
-        
-        
-        
+                
         
         if (true) {
 //            Graphics2D g2d = (Graphics2D) g.create();
@@ -198,7 +200,7 @@ public class TrackerPanel extends JPanel {
 //                g2d.fill(selection);
 //                g2d.setColor(Color.GRAY);
 //                g2d.draw(selection);
-                tracker.setSelection(new Rectangle(selection.x*2, selection.y*2, selection.height*2, selection.width*2));
+                tracker.setSelection(new Rectangle(selection.x*2, selection.y*2, selection.width*2, selection.height*2), true);
             }
 //            g2d.dispose();
         }
@@ -240,13 +242,13 @@ public class TrackerPanel extends JPanel {
         try {
             im = new Robot().createScreenCapture(screenRect);
         } catch (AWTException ex) {
-           System.out.println("Error");
+           logger.error("Error: " + ex);
         }
         
         BufferedImage tmpIm = new BufferedImage(size.width, size.height, BufferedImage.TYPE_INT_ARGB);
         Graphics2D g2 = tmpIm.createGraphics();
         g2.drawImage(im.getScaledInstance(size.width, size.height, Image.SCALE_SMOOTH), 0, 0, size.width, size.height, null);
-       
+        
         g2.dispose();
         
         return tmpIm;

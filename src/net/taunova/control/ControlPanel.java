@@ -8,20 +8,17 @@ package net.taunova.control;
 import net.taunova.util.Position;
 import java.awt.AWTException;
 import java.awt.Color;
-import java.awt.Dimension;
 import java.awt.Graphics2D;
-import java.awt.Point;
 import java.awt.Rectangle;
 import java.awt.Robot;
 import java.awt.Toolkit;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
-import java.awt.event.MouseEvent;
-import java.awt.event.MouseMotionAdapter;
 import java.awt.image.BufferedImage;
 import java.io.File;
 import java.io.IOException;
 import java.util.List;
+import java.util.concurrent.TimeUnit;
 import javax.imageio.ImageIO;
 import javax.swing.BoxLayout;
 import javax.swing.JButton;
@@ -33,6 +30,8 @@ import net.taunova.control.listeners.CleanTrackerListener;
 import net.taunova.control.listeners.StartButtonListener;
 import net.taunova.trackers.MouseTracker;
 import net.taunova.trackers.TrackerFrame;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 
 
@@ -47,6 +46,7 @@ public class ControlPanel extends JPanel implements ActionListener {
     public JButton button5;
     public boolean start = false;
     public JFileChooser fc;
+    private final Logger logger = LoggerFactory.getLogger(ControlPanel.class);
     
     public ControlPanel(MouseTracker tracker, TrackerFrame frame) {
         super(true);
@@ -78,22 +78,21 @@ public class ControlPanel extends JPanel implements ActionListener {
     @Override
     public void actionPerformed(ActionEvent ae) {
         this.frame.setVisible(false);
-//        this.frame.setState(JFrame.ICONIFIED);
-        
         try {
-            Thread.sleep(1000);
+            TimeUnit.MINUTES.sleep(1);
         } catch (InterruptedException ex) {
-            System.out.println("Error: " + ex);
+            logger.error("Error: " + ex);
         }
+
         
         BufferedImage image = takeSnapShot();
-//        this.frame.setState(JFrame.NORMAL);
+
         this.frame.setVisible(true);
         drawTrack(image);
         try {
             saveScreen(image, "imageName");
         } catch (IOException ex) {
-            System.out.println("Error: " + ex);
+            logger.error("Error: " + ex);
         }
     }
     
@@ -103,7 +102,7 @@ public class ControlPanel extends JPanel implements ActionListener {
         try {
             im = new Robot().createScreenCapture(screenRect);
         } catch (AWTException ex) {
-           System.out.println("Error");
+           logger.error("Error: " + ex);
         }
 
         return im;
@@ -144,7 +143,7 @@ public class ControlPanel extends JPanel implements ActionListener {
             }
             ImageIO.write(image, format, file);
             JOptionPane.showMessageDialog(this,
-        "Image saved");
+            "Image saved");
         }
     }
 }

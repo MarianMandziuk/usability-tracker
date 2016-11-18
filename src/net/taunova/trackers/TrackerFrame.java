@@ -30,6 +30,7 @@ public class TrackerFrame extends JFrame implements WindowFocusListener {
         super("Tracker frame");
         getContentPane().setLayout(new BorderLayout());
         Rectangle dim = GraphicsEnvironment.getLocalGraphicsEnvironment().getMaximumWindowBounds();
+        
         tracker = new MouseTracker(this);
         buttonPanel = new ControlPanel(tracker, this);
         trackerPanel = new TrackerPanel(tracker);
