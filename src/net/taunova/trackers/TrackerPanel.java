@@ -9,7 +9,6 @@ import java.awt.AWTException;
 import java.awt.Color;
 import java.awt.Dimension;
 import java.awt.Graphics;
-import java.awt.Graphics2D;
 import java.awt.GraphicsEnvironment;
 import java.awt.Image;
 import java.awt.Point;
@@ -20,7 +19,6 @@ import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
-import java.awt.image.BufferStrategy;
 import java.awt.image.BufferedImage;
 import javax.swing.JPanel;
 import javax.swing.Timer;
@@ -43,20 +41,25 @@ public class TrackerPanel extends JPanel {
     private int opposideY;
     private Dimension windowSize;
     private final Logger logger = LoggerFactory.getLogger(TrackerPanel.class);
+    private Rectangle screenRect;
+    private Graphics dbg;
+    private Image image;
+
+
     public TrackerPanel(MouseTracker tracker) {
         super(true);
         this.tracker = tracker;  
         tracker.setParent(this);
-        this.setDoubleBuffered(true);
+        this.screenRect = new Rectangle(Toolkit.getDefaultToolkit().getScreenSize());
         
         new Timer(100, new ActionListener() {
             
             @Override
             public void actionPerformed(ActionEvent e) {
                 repaint();
+                
             }
         }).start();
-        
         
         MouseAdapter handler = new MouseAdapter() {
             @Override
@@ -144,30 +147,80 @@ public class TrackerPanel extends JPanel {
 
         this.addMouseListener(handler);
         this.addMouseMotionListener(handler);
+        
     }
 
-        
-    public void paint(final Graphics g) {
+    @Override
+    public void paintComponent(Graphics g) {
         this.windowSize = getSize();
-        g.drawImage(takeSnapShot(), 0, 0, null);
-    
+
+        g.drawImage(this.takeSnapShot(), 0, 0, null);
+//        drawScreenShot(g);
+        hideTunnel(g);
+        drawSelection(g);
+
         
-        g.setColor(Color.GRAY);
-        int x1 = this.getLocationOnScreen().x;
-        int y1 = this.getLocationOnScreen().y;
+        Rectangle dim = GraphicsEnvironment.getLocalGraphicsEnvironment().getMaximumWindowBounds();
         
-        g.fillRect(((int)(this.getLocationOnScreen().x/2.0) ),
-                   ((int)(this.getLocationOnScreen().y/2.0) ), 
-                   this.getSize().width/2, this.getSize().height/2);
-                
-        
-        if (true) {
-//            Graphics2D g2d = (Graphics2D) g.create();
+        Dimension size = getSize();
+        final double kX = (double)size.width/dim.width;
+        final double kY = (double)size.height/dim.height;
+        g.setColor(Color.red);
+        tracker.processPath(new TrackerCallback() {
             
+            @Override
+            public void process(Position begin, Position end) {
+                g.drawLine((int)(kX * begin.position.x), 
+                           (int)(kY * begin.position.y), 
+                           (int)(kX * end.position.x), 
+                           (int)(kY * end.position.y));
+                if(begin.getDelay() > 10) {
+                    int radius = begin.getDelay();                    
+                    if(radius > 20) {
+                        radius = 20;
+                    }
+                    
+                    g.drawOval((int)(kX*begin.position.x)-radius/2, 
+                           (int)(kY*begin.position.y)-radius/2, radius, radius);
+                }   
+            }
+        });
+    }
+    
+    private BufferedImage takeSnapShot() {
+       
+        BufferedImage im = null;
+        try {
+            im = new Robot().createScreenCapture(screenRect);
+        } catch (AWTException ex) {
+            logger.error("Error: " + ex);
+        }
+
+        BufferedImage tmpImage = new BufferedImage(windowSize.width,
+                windowSize.height,
+                BufferedImage.TYPE_INT_ARGB);
+        Graphics g2 = tmpImage.createGraphics();
+        g2.drawImage(
+                im.getScaledInstance(windowSize.width,
+                        windowSize.height,
+                        Image.SCALE_SMOOTH),
+                        0, 
+                        0, 
+                        windowSize.width, 
+                        windowSize.height,
+                        null);
+        
+        g2.dispose();
+        
+        return tmpImage;
+    }
+    
+    private void drawSelection(Graphics g) {
+        if (true) {
             if (selection != null) {
                 int sizeConerRect = 5;
-                g.setColor(new Color(225, 225, 255, 1));
-                g.fillRect(selection.x, selection.y, selection.width, selection.height);
+//                g.setColor(new Color(225, 225, 255, 1));
+//                g.fillRect(selection.x, selection.y, selection.width, selection.height);
                 g.setColor(Color.RED);
                 g.drawRect(selection.x, selection.y, selection.width, selection.height);
                 
@@ -196,63 +249,46 @@ public class TrackerPanel extends JPanel {
                 g.drawRect((selection.x + selection.width)- 2,
                           (selection.y + selection.height) - 2,
                            sizeConerRect, sizeConerRect);
-//                g2d.setColor(new Color(225, 225, 255, 128));
-//                g2d.fill(selection);
-//                g2d.setColor(Color.GRAY);
-//                g2d.draw(selection);
-                tracker.setSelection(new Rectangle(selection.x*2, selection.y*2, selection.width*2, selection.height*2), true);
+
+                tracker.setSelection(
+                        new Rectangle(
+                                selection.x*2,
+                                selection.y*2,
+                                selection.width*2,
+                                selection.height*2),
+                        true);
+//                g.dispose();
             }
-//            g2d.dispose();
         }
-        
-        Rectangle dim = GraphicsEnvironment.getLocalGraphicsEnvironment().getMaximumWindowBounds();
-        
-        Dimension size = getSize();
-        final double kX = (double)size.width/dim.width;
-        final double kY = (double)size.height/dim.height;
-        g.setColor(Color.red);
-        tracker.processPath(new TrackerCallback() {
-            
-            @Override
-            public void process(Position begin, Position end) {
-                g.drawLine((int)(kX * begin.position.x), 
-                           (int)(kY * begin.position.y), 
-                           (int)(kX * end.position.x), 
-                           (int)(kY * end.position.y));
-                if(begin.getDelay() > 10) {
-                    int radius = begin.getDelay();                    
-                    if(radius > 20) {
-                        radius = 20;
-                    }
-                    
-                    g.drawOval((int)(kX*begin.position.x)-radius/2, 
-                           (int)(kY*begin.position.y)-radius/2, radius, radius);
-                }
-                
-                 
-            }
-        });
     }
     
-    private BufferedImage takeSnapShot() {
-        Rectangle screenRect = new Rectangle(Toolkit.getDefaultToolkit().getScreenSize());
-        BufferedImage im = null;
-        Dimension size = getSize();
+    private void hideTunnel(Graphics g) {
+        g.setColor(Color.GRAY);
+        int x1 = this.getLocationOnScreen().x;
+        int y1 = this.getLocationOnScreen().y;
         
-        try {
-            im = new Robot().createScreenCapture(screenRect);
-        } catch (AWTException ex) {
-           logger.error("Error: " + ex);
-        }
-        
-        BufferedImage tmpIm = new BufferedImage(size.width, size.height, BufferedImage.TYPE_INT_ARGB);
-        Graphics2D g2 = tmpIm.createGraphics();
-        g2.drawImage(im.getScaledInstance(size.width, size.height, Image.SCALE_SMOOTH), 0, 0, size.width, size.height, null);
-        
-        g2.dispose();
-        
-        return tmpIm;
+        g.fillRect(((int)(this.getLocationOnScreen().x/2.0) ),
+                   ((int)(this.getLocationOnScreen().y/2.0) ), 
+                   this.getSize().width/2, this.getSize().height/2);
     }
     
+    
+    private void drawScreenShot(Graphics g) {
+        Dimension dim = getSize();
+
+        image = createImage (dim.width, dim.height);
+        dbg = image.getGraphics();
+
+        dbg.setColor(getBackground());
+        dbg.fillRect(0, 0, dim.width, dim.height);
+        dbg.setColor(getForeground());
+        
+        
+        dbg.drawImage(takeSnapShot(), 0, 0, null);
+
+        g.drawImage(image, 0, 0, null);
+//        g.dispose();
+        dbg.dispose();
+    }
 }
 
