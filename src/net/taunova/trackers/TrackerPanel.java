@@ -44,14 +44,21 @@ public class TrackerPanel extends JPanel {
     private Rectangle screenRect;
     private Graphics dbg;
     private Image image;
-
-
+    private Robot robot;
     public TrackerPanel(MouseTracker tracker) {
         super(true);
         this.tracker = tracker;  
         tracker.setParent(this);
         this.screenRect = new Rectangle(Toolkit.getDefaultToolkit().getScreenSize());
         
+        
+        try {
+            this.robot = new Robot();
+        } catch (AWTException ex) {
+            logger.error("Robot excepion: " + ex);
+        }
+        
+
         new Timer(100, new ActionListener() {
             
             @Override
@@ -154,8 +161,9 @@ public class TrackerPanel extends JPanel {
     public void paintComponent(Graphics g) {
         this.windowSize = getSize();
 
-        g.drawImage(this.takeSnapShot(), 0, 0, null);
-//        drawScreenShot(g);
+//        g.drawImage(this.takeSnapShot(), 0, 0, null);
+        drawScreenShot(g);
+
         hideTunnel(g);
         drawSelection(g);
 
@@ -189,12 +197,8 @@ public class TrackerPanel extends JPanel {
     
     private BufferedImage takeSnapShot() {
        
-        BufferedImage im = null;
-        try {
-            im = new Robot().createScreenCapture(screenRect);
-        } catch (AWTException ex) {
-            logger.error("Error: " + ex);
-        }
+        BufferedImage im;
+        im = robot.createScreenCapture(screenRect);
 
         BufferedImage tmpImage = new BufferedImage(windowSize.width,
                 windowSize.height,
@@ -211,7 +215,6 @@ public class TrackerPanel extends JPanel {
                         null);
         
         g2.dispose();
-        
         return tmpImage;
     }
     
@@ -264,19 +267,24 @@ public class TrackerPanel extends JPanel {
     
     private void hideTunnel(Graphics g) {
         g.setColor(Color.GRAY);
-        int x1 = this.getLocationOnScreen().x;
-        int y1 = this.getLocationOnScreen().y;
-        
-        g.fillRect(((int)(this.getLocationOnScreen().x/2.0) ),
-                   ((int)(this.getLocationOnScreen().y/2.0) ), 
-                   this.getSize().width/2, this.getSize().height/2);
+        g.fillRect((int)((this.getLocationOnScreen().x * this.getSize().width)
+                        / (double) this.screenRect.width),
+                   (int)((this.getLocationOnScreen().y * this.getSize().height)
+                        / (double) this.screenRect.height), 
+                   (int)(this.getSize().width / (this.screenRect.width
+                           / (double) this.getSize().width)),
+                   (int)(this.getSize().height / ( this.screenRect.height 
+                           / (double) this.getSize().height)));
     }
     
     
     private void drawScreenShot(Graphics g) {
         Dimension dim = getSize();
-
-        image = createImage (dim.width, dim.height);
+//        if (image == null) {
+//            image = createImage (dim.width, dim.height);
+//            image = takeSnapShot();
+//        }
+        image = takeSnapShot();
         dbg = image.getGraphics();
 
         dbg.setColor(getBackground());
@@ -289,6 +297,6 @@ public class TrackerPanel extends JPanel {
         g.drawImage(image, 0, 0, null);
 //        g.dispose();
         dbg.dispose();
-    }
+    } 
 }
 

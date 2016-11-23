@@ -22,7 +22,7 @@ import net.taunova.control.ControlPanel;
  */
 public class TrackerFrame extends JFrame implements WindowFocusListener {
     ControlPanel buttonPanel;
-    TrackerPanel trackerPanel;
+    public TrackerPanel trackerPanel;
     public MouseTracker tracker;
     public boolean startTracking = false;
     private static final int DIVIDER = 2;
@@ -38,9 +38,8 @@ public class TrackerFrame extends JFrame implements WindowFocusListener {
 //        trackerPanel.setSize(dim.width/DIVIDER, dim.height/DIVIDER);
         getContentPane().add(BorderLayout.EAST, buttonPanel);
         getContentPane().add(BorderLayout.CENTER, trackerPanel);
-        
         setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-        
+        add(trackerPanel);
         setSize(dim.width/DIVIDER, dim.height/DIVIDER);
         setVisible(true); 
         addWindowFocusListener(this);
