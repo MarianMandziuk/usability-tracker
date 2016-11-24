@@ -39,8 +39,8 @@ public class TrackerFrame extends JFrame implements WindowFocusListener {
         getContentPane().add(BorderLayout.EAST, buttonPanel);
         getContentPane().add(BorderLayout.CENTER, trackerPanel);
         setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-        add(trackerPanel);
-        setSize(dim.width/DIVIDER, dim.height/DIVIDER);
+
+        setSize((dim.width/DIVIDER), dim.height/DIVIDER);
         setVisible(true); 
         addWindowFocusListener(this);
     }

@@ -71,7 +71,6 @@ public class TrackerPanel extends JPanel {
         MouseAdapter handler = new MouseAdapter() {
             @Override
             public void mousePressed(MouseEvent e) {
-//                System.out.println("Mouse pressed");
                 if (selection != null && selection.contains(e.getPoint())) {
                     selectedSelection = true;
                     privX = e.getPoint().x;
@@ -171,8 +170,12 @@ public class TrackerPanel extends JPanel {
         Rectangle dim = GraphicsEnvironment.getLocalGraphicsEnvironment().getMaximumWindowBounds();
         
         Dimension size = getSize();
-        final double kX = (double)size.width/dim.width;
-        final double kY = (double)size.height/dim.height;
+//        final double kX = (double)size.width/dim.width;
+//        final double kY = (double)size.height/dim.height;
+        
+        final double kX = (double)size.width/this.screenRect.width;
+        final double kY = (double)size.height/this.screenRect.height;
+
         g.setColor(Color.red);
         tracker.processPath(new TrackerCallback() {
             
@@ -222,44 +225,56 @@ public class TrackerPanel extends JPanel {
         if (true) {
             if (selection != null) {
                 int sizeConerRect = 5;
+                int centered = sizeConerRect/2;
+                
 //                g.setColor(new Color(225, 225, 255, 1));
 //                g.fillRect(selection.x, selection.y, selection.width, selection.height);
-                g.setColor(Color.RED);
+                g.setColor(Color.blue);
                 g.drawRect(selection.x, selection.y, selection.width, selection.height);
-                
-                g.drawRect(selection.x - 2,
-                           selection.y - 2,
+
+                g.drawRect(selection.x - centered,
+                           selection.y - centered,
                            sizeConerRect,
                            sizeConerRect);
-                g.drawRect((selection.x + selection.width / 2) - 2,
-                           selection.y - 2,
+                g.drawRect((selection.x + selection.width / 2) - centered,
+                           selection.y - centered,
                            sizeConerRect, sizeConerRect);
-                g.drawRect((selection.x + selection.width) - 2,
-                           selection.y - 2,
+                g.drawRect((selection.x + selection.width) - centered,
+                           selection.y - centered,
                            sizeConerRect, sizeConerRect);
-                g.drawRect(selection.x - 2,
-                          (selection.y + selection.height / 2) - 2,
+                g.drawRect(selection.x - centered,
+                          (selection.y + selection.height / 2) - centered,
                            sizeConerRect, sizeConerRect);
-                g.drawRect(selection.x - 2,
-                          (selection.y + selection.height) - 2,
+                g.drawRect(selection.x - centered,
+                          (selection.y + selection.height) - centered,
                            sizeConerRect, sizeConerRect);
-                g.drawRect((selection.x + selection.width) - 2,
-                          (selection.y + selection.height / 2) - 2,
+                g.drawRect((selection.x + selection.width) - centered,
+                          (selection.y + selection.height / 2) - centered,
                            sizeConerRect, sizeConerRect);
-                g.drawRect((selection.x + selection.width / 2)- 2,
-                          (selection.y + selection.height) - 2,
+                g.drawRect((selection.x + selection.width / 2)- centered,
+                          (selection.y + selection.height) - centered,
                            sizeConerRect, sizeConerRect);
-                g.drawRect((selection.x + selection.width)- 2,
-                          (selection.y + selection.height) - 2,
+                g.drawRect((selection.x + selection.width)- centered,
+                          (selection.y + selection.height) - centered,
                            sizeConerRect, sizeConerRect);
 
+            double x1 = (double)(this.getSize().width)/this.screenRect.width;
+            double y1 = (double)(this.getSize().height)/this.screenRect.height;
+           
                 tracker.setSelection(
                         new Rectangle(
-                                selection.x*2,
-                                selection.y*2,
-                                selection.width*2,
-                                selection.height*2),
+                                (int)((this.screenRect.width * selection.x)
+                                        / (double) this.getSize().width),
+                                (int)((this.screenRect.height * selection.y)
+                                        / (double) this.getSize().height),
+                                (int)((this.screenRect.width * selection.width)
+                                        / (double) this.getSize().width),
+                                (int)((this.screenRect.height * selection.height)
+                                        / (double) this.getSize().height)),
                         true);
+           
+
+
 //                g.dispose();
             }
         }
