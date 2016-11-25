@@ -9,9 +9,6 @@ import java.awt.Color;
 import java.awt.Graphics;
 import java.awt.Point;
 import java.awt.Rectangle;
-import java.awt.event.MouseAdapter;
-import java.awt.event.MouseEvent;
-import java.awt.event.MouseMotionListener;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -22,7 +19,7 @@ import java.util.List;
 public class Selection   {
     
     public Rectangle selection;
-    private List<Rect> listRects = new ArrayList<>();
+    public List<Rect> listRects = new ArrayList<>();
     
     
     public Selection() {
@@ -100,14 +97,4 @@ public class Selection   {
 //        }
 //    }
     
-}
-
-
-class Rect {
-    public Rectangle rect;
-    public boolean selected;
-    
-    public Rect(int x, int y, int w, int h) {
-        this.rect = new Rectangle(x, y, w, h);
-    }
 }

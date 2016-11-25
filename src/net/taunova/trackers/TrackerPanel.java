@@ -23,6 +23,7 @@ import java.awt.image.BufferedImage;
 import javax.swing.JPanel;
 import javax.swing.Timer;
 import net.taunova.util.Position;
+import net.taunova.util.Rect;
 import net.taunova.util.Selection;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -47,6 +48,7 @@ public class TrackerPanel extends JPanel {
     private Image image;
     private Robot robot;
     private Selection selectionLi;
+    private boolean check = false;
     public TrackerPanel(MouseTracker tracker) {
         super(true);
         this.tracker = tracker;  
@@ -84,15 +86,28 @@ public class TrackerPanel extends JPanel {
 //                    opposideX = e.getX();
 //                    opposideY = e.getY();
 //                }
-                if (selectionLi.selection != null && selectionLi.selection.contains(e.getPoint())) {
-                    selectedSelection = true;
-                    privX = e.getPoint().x;
-                    privY = e.getPoint().y;
-                } else {
-                    selectionLi.setPoint(e.getPoint());
-                    selectedSelection = false;
-                    opposideX = e.getX();
-                    opposideY = e.getY();
+                
+                for(Rect r: selectionLi.listRects){
+                    if(r.rect.contains(e.getPoint())) {
+//                r.x = me.getPoint().x;
+//                r.y = me.getPoint().y;
+                        System.out.println("slec");
+                        r.selected = true;
+                        check = true;
+                    }
+                }
+                
+                if (!check) {
+                    if (selectionLi.selection != null && selectionLi.selection.contains(e.getPoint())) {
+                        selectedSelection = true;
+                        privX = e.getPoint().x;
+                        privY = e.getPoint().y;
+                    } else {
+                        selectionLi.setPoint(e.getPoint());
+                        selectedSelection = false;
+                        opposideX = e.getX();
+                        opposideY = e.getY();
+                    }
                 }
 //                repaint();
             }
@@ -162,7 +177,18 @@ public class TrackerPanel extends JPanel {
                 width = Math.max(selectionLi.selection.x - valX, valX - selectionLi.selection.x);
                 height = Math.max(selectionLi.selection.y - valY, valY - selectionLi.selection.y);
                 selectionLi.selection.setSize(width, height);
-                selectionLi.generateRects();
+                if(!check) {
+                    selectionLi.generateRects();
+                }
+            for(Rect r: selectionLi.listRects){
+                System.out.println("here1");
+                if(r.selected) {
+                        System.out.println("here2");
+                        selectionLi.selection.x = e.getPoint().x;
+                        selectionLi.selection.y = e.getPoint().y;
+//                        System.out.println(selectionLi.selection.x);
+                    }
+            }
 //                }
 //                repaint();
             }
