@@ -23,6 +23,7 @@ import java.awt.image.BufferedImage;
 import javax.swing.JPanel;
 import javax.swing.Timer;
 import net.taunova.util.Position;
+import net.taunova.util.Selection;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -45,12 +46,14 @@ public class TrackerPanel extends JPanel {
     private Graphics dbg;
     private Image image;
     private Robot robot;
+    private Selection selectionLi;
     public TrackerPanel(MouseTracker tracker) {
         super(true);
         this.tracker = tracker;  
         tracker.setParent(this);
         this.screenRect = new Rectangle(Toolkit.getDefaultToolkit().getScreenSize());
-        
+        selectionLi = new Selection();
+
         
         try {
             this.robot = new Robot();
@@ -71,12 +74,22 @@ public class TrackerPanel extends JPanel {
         MouseAdapter handler = new MouseAdapter() {
             @Override
             public void mousePressed(MouseEvent e) {
-                if (selection != null && selection.contains(e.getPoint())) {
+//                if (selection != null && selection.contains(e.getPoint())) {
+//                    selectedSelection = true;
+//                    privX = e.getPoint().x;
+//                    privY = e.getPoint().y;
+//                } else {
+//                    selection = new Rectangle(e.getPoint());
+//                    selectedSelection = false;
+//                    opposideX = e.getX();
+//                    opposideY = e.getY();
+//                }
+                if (selectionLi.selection != null && selectionLi.selection.contains(e.getPoint())) {
                     selectedSelection = true;
                     privX = e.getPoint().x;
                     privY = e.getPoint().y;
                 } else {
-                    selection = new Rectangle(e.getPoint());
+                    selectionLi.setPoint(e.getPoint());
                     selectedSelection = false;
                     opposideX = e.getX();
                     opposideY = e.getY();
@@ -107,45 +120,49 @@ public class TrackerPanel extends JPanel {
                     valY = e.getY();
                 }
                 
-                if (selectedSelection) {
-                    if(selection.x +e.getPoint().x - privX + selection.width > windowSize.width) {
-                        selection.x = windowSize.width - selection.width;
-                    } else if (selection.x + e.getPoint().x - privX < 0) {
-                        selection.x = 0;
-                    } else if (selection.y + e.getPoint().y - privY + selection.height > windowSize.height) {
-                        selection.y = windowSize.height - selection.height;
-                    } else if (selection.y + e.getPoint().y - privY < 0) {
-                        selection.y = 0;
-                    } else {
-                        selection.x += e.getPoint().x - privX;
-                        selection.y += e.getPoint().y - privY;
-                        privX = e.getPoint().x;
-                        privY = e.getPoint().y;
-                    }
-                    
-                } else if (e.getX() > selection.x && e.getY() > selection.y){
-                    
-                    
-                    width = Math.max(selection.x - valX, valX - selection.x);
-                    height = Math.max(selection.y - valY, valY - selection.y);
-                    selection.setSize(width, height);
-                } else if (e.getX() < selection.x && e.getY()  > selection.y) {
-                    width = opposideX - valX;
-                    height = valY - opposideY;
-                    selection.x = valX;
-                    selection.setSize(width, height);
-                } else if (e.getX() < selection.x && e.getY() < selection.y) {
-                    width = opposideX - valX;
-                    height = opposideY - valY;
-                    selection.x = valX;
-                    selection.y = valY;
-                    selection.setSize(width, height);
-                } else if (e.getX() > selection.x && e.getY() < selection.y) {
-                    width = valX - opposideX;
-                    height = opposideY - valY;
-                    selection.y = valY;
-                    selection.setSize(width, height);
-                }
+//                if (selectedSelection) {
+//                    if(selection.x +e.getPoint().x - privX + selection.width > windowSize.width) {
+//                        selection.x = windowSize.width - selection.width;
+//                    } else if (selection.x + e.getPoint().x - privX < 0) {
+//                        selection.x = 0;
+//                    } else if (selection.y + e.getPoint().y - privY + selection.height > windowSize.height) {
+//                        selection.y = windowSize.height - selection.height;
+//                    } else if (selection.y + e.getPoint().y - privY < 0) {
+//                        selection.y = 0;
+//                    } else {
+//                        selection.x += e.getPoint().x - privX;
+//                        selection.y += e.getPoint().y - privY;
+//                        privX = e.getPoint().x;
+//                        privY = e.getPoint().y;
+//                    }
+//                    
+//                } else if (e.getX() > selection.x && e.getY() > selection.y){
+//                    width = Math.max(selection.x - valX, valX - selection.x);
+//                    height = Math.max(selection.y - valY, valY - selection.y);
+//                    selection.setSize(width, height);
+//                } else if (e.getX() < selection.x && e.getY()  > selection.y) {
+//                    width = opposideX - valX;
+//                    height = valY - opposideY;
+//                    selection.x = valX;
+//                    selection.setSize(width, height);
+//                } else if (e.getX() < selection.x && e.getY() < selection.y) {
+//                    width = opposideX - valX;
+//                    height = opposideY - valY;
+//                    selection.x = valX;
+//                    selection.y = valY;
+//                    selection.setSize(width, height);
+//                } else if (e.getX() > selection.x && e.getY() < selection.y) {
+//                    width = valX - opposideX;
+//                    height = opposideY - valY;
+//                    selection.y = valY;
+//                    selection.setSize(width, height);
+//                }
+
+                
+                width = Math.max(selectionLi.selection.x - valX, valX - selectionLi.selection.x);
+                height = Math.max(selectionLi.selection.y - valY, valY - selectionLi.selection.y);
+                selectionLi.selection.setSize(width, height);
+                selectionLi.generateRects();
 //                }
 //                repaint();
             }
@@ -162,19 +179,21 @@ public class TrackerPanel extends JPanel {
 
 //        g.drawImage(this.takeSnapShot(), 0, 0, null);
         drawScreenShot(g);
-
+        
         hideTunnel(g);
-        drawSelection(g);
-
+//        drawSelection(g);
+        if(this.selectionLi!=null) {
+//            this.selectionLi.generateRects();
+            this.selectionLi.drawSelection(g);
+        }
+//        Rectangle dim = GraphicsEnvironment.getLocalGraphicsEnvironment().getMaximumWindowBounds();
         
-        Rectangle dim = GraphicsEnvironment.getLocalGraphicsEnvironment().getMaximumWindowBounds();
-        
-        Dimension size = getSize();
+//        Dimension size = getSize();
 //        final double kX = (double)size.width/dim.width;
 //        final double kY = (double)size.height/dim.height;
         
-        final double kX = (double)size.width/this.screenRect.width;
-        final double kY = (double)size.height/this.screenRect.height;
+        final double kX = (double)this.windowSize.width/this.screenRect.width;
+        final double kY = (double)this.windowSize.height/this.screenRect.height;
 
         g.setColor(Color.red);
         tracker.processPath(new TrackerCallback() {
