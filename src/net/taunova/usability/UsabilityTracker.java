@@ -17,7 +17,7 @@ public class UsabilityTracker {
 
             public void run() {
                 TrackerFrame frame = new TrackerFrame();
-                
+
             }
         });        
     }
