@@ -24,7 +24,6 @@ import java.util.List;
 import javax.swing.JPanel;
 import javax.swing.Timer;
 import net.taunova.util.Position;
-import net.taunova.util.Selection;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -58,8 +57,6 @@ public class TrackerPanel extends JPanel {
         tracker.setParent(this);
         this.screenRect = new Rectangle(Toolkit.getDefaultToolkit().getScreenSize());
         
-
-        
         try {
             this.robot = new Robot();
         } catch (AWTException ex) {
@@ -87,6 +84,31 @@ public class TrackerPanel extends JPanel {
                         if(rectangles.get(i).contains(p1)) {
                             selectedRects = true;
                             orderRect = i;
+                            switch (i) {
+                                case 0:                               
+                                    opposideX = selection.x+selection.width;
+                                    opposideY = selection.y+selection.height;
+                                    break;
+                                case 2:
+                                case 1:
+                                
+                                    opposideX = selection.x;
+                                    opposideY = selection.y+selection.height;
+                                    break;
+                                case 7:
+                                case 6:
+                                case 5:
+                                    opposideX = selection.x;
+                                    opposideY = selection.y;
+                                    break;
+                                case 4:
+                                case 3:    
+                                    opposideX = selection.x+selection.width;
+                                    opposideY = selection.y;
+                                    break;
+                                default:
+                                    break;
+                            }
                         }
                     }
                 }
@@ -96,39 +118,13 @@ public class TrackerPanel extends JPanel {
                         selectedSelection = true;
                         privX = p1.x;
                         privY = p1.y;
-//                        System.out.println("1");
                     } else {
                         selection = new Rectangle(p1.x, p1.y, p1.x - p1.x, p1.y - p1.y);
                         selectedSelection = false;
                         opposideX = p1.x;
                         opposideY = p1.y;
-//                        System.out.println("2");
                     }
-//                    System.out.println("3");
                 }
-//                for(Rect r: selectionLi.listRects){
-//                    if(r.rect.contains(e.getPoint())) {
-////                r.x = me.getPoint().x;
-////                r.y = me.getPoint().y;
-//                        System.out.println("slec");
-//                        r.selected = true;
-//                        check = true;
-//                    }
-//                }
-//                
-//                if (!check) {
-//                    if (selectionLi.selection != null && selectionLi.selection.contains(e.getPoint())) {
-//                        selectedSelection = true;
-//                        privX = e.getPoint().x;
-//                        privY = e.getPoint().y;
-//                    } else {
-//                        selectionLi.setPoint(e.getPoint());
-//                        selectedSelection = false;
-//                        opposideX = e.getX();
-//                        opposideY = e.getY();
-//                    }
-//                }
-//                repaint();
             }
 
             @Override
@@ -154,21 +150,53 @@ public class TrackerPanel extends JPanel {
                 }
                 if(selectedRects) {                    
                     switch(orderRect) {
-                        case 0: 
-                            width = ((selection.x + selection.width) - p2.x);
-                            height = ((selection.y + selection.height) - p2.y);
-                            selection.setRect(p2.x, p2.y, width, height);                           
+                        case 0:
+                        case 2:
+                        case 4:
+                        case 7:
+                        
+                                if (p2.x < opposideX && p2.y  > opposideY) {
+                                    width = opposideX - valX;
+                                    height = valY - opposideY;
+                                    selection.setRect(valX, opposideY, width, height);
+                                } else if (p2.x < opposideX && p2.y < opposideY) {
+                                    width = opposideX - valX;
+                                    height = opposideY - valY;
+                                    selection.setRect(valX, valY, width, height);
+                                } else if (p2.x > opposideX && p2.y < opposideY) {
+                                    width = valX - opposideX;
+                                    height = opposideY - valY;
+                                    selection.setRect(opposideX, valY, width, height);
+                                }  else {
+                                    width = valX - opposideX;
+                                    height = valY - opposideY;
+                                    selection.setRect(opposideX, opposideY, width, height);
+                                } 
                             break;
                         case 1:
-                            height = (selection.y + selection.height) - p2.y;
-                            selection.setRect(selection.x, p2.y, selection.width, height);
+                        case 6:
+                                if (p2.x > opposideX && p2.y < opposideY) {
+                                  height = opposideY - valY;
+                                  selection.setRect(opposideX, valY, selection.width, height);
+                                  System.out.println("3");
+                                }  else {
+                                    height = valY - opposideY;
+                                    selection.setRect(opposideX, opposideY, selection.width, height);
+                                } 
                             break;
-                        case 2:
-                            width = (p2.x - selection.x);
-                            height = (selection.y + selection.height) - p2.y;
-                            selection.setRect(selection.x, p2.y, width, height);
+                            
+                        case 3:
+                        case 5:
+                                if (p2.x < opposideX && p2.y  > opposideY) {
+                                    width = opposideX - valX;
+                                    selection.setRect(valX, opposideY, width, selection.height);
+                                } else  {
+                                    width = valX - opposideX;
+                                    selection.setRect(opposideX, opposideY, width, selection.height);
+                                } 
                             break;
                     }
+                    
                     
                 } else if (selectedSelection) {
                     if(selection.x +p2.x - privX + selection.width > windowSize.width) {
@@ -200,11 +228,10 @@ public class TrackerPanel extends JPanel {
                     height = opposideY - valY;
                     selection.setRect(p1.x, valY, width, height);
                 }  else {
-                    width = Math.max(p1.x - valX, valX - p1.x);
-                    height = Math.max(p1.y - valY, valY - p1.y);
+                    width = valX - p1.x;
+                    height = valY - p1.y;
                     selection.setRect(p1.x, p1.y, width, height);
-                }
-                
+                }  
             }
         };
 
@@ -225,16 +252,7 @@ public class TrackerPanel extends JPanel {
 //        g.fillRect(0, 0, windowSize.width, windowSize.height);
 //        g.setColor(getForeground());
         drawSelection(g);
-//        if(this.selectionLi!=null) {
-////            this.selectionLi.generateRects();
-//            this.selectionLi.drawSelection(g);
-//        }
-//        Rectangle dim = GraphicsEnvironment.getLocalGraphicsEnvironment().getMaximumWindowBounds();
-        
-//        Dimension size = getSize();
-//        final double kX = (double)size.width/dim.width;
-//        final double kY = (double)size.height/dim.height;
-        
+    
         final double kX = (double)this.windowSize.width/this.screenRect.width;
         final double kY = (double)this.windowSize.height/this.screenRect.height;
 
@@ -285,43 +303,15 @@ public class TrackerPanel extends JPanel {
     
     private void drawSelection(Graphics g) {
         if (true) {
+            System.out.println("Draw");
             if (selection != null) {
-                int sizeConerRect = 9;
-                int centered = sizeConerRect/2;
-                
-//                g.setColor(new Color(225, 225, 255, 1));
-//                g.fillRect(selection.x, selection.y, selection.width, selection.height);
                 g.setColor(Color.red);
-                g.drawRect(selection.x, selection.y, selection.width, selection.height);
+                g.drawRect(selection.x, selection.y, selection.width, Math.abs(selection.height));
+
                 this.rectangles = this.generateRects();
                 for(Rectangle r: this.rectangles) {
                     g.drawRect(r.x, r.y, r.width, r.height);
                 }
-//                g.drawRect(selection.x - centered,
-//                           selection.y - centered,
-//                           sizeConerRect,
-//                           sizeConerRect);
-//                g.drawRect((selection.x + selection.width / 2) - centered,
-//                           selection.y - centered,
-//                           sizeConerRect, sizeConerRect);
-//                g.drawRect((selection.x + selection.width) - centered,
-//                           selection.y - centered,
-//                           sizeConerRect, sizeConerRect);
-//                g.drawRect(selection.x - centered,
-//                          (selection.y + selection.height / 2) - centered,
-//                           sizeConerRect, sizeConerRect);
-//                g.drawRect(selection.x - centered,
-//                          (selection.y + selection.height) - centered,
-//                           sizeConerRect, sizeConerRect);
-//                g.drawRect((selection.x + selection.width) - centered,
-//                          (selection.y + selection.height / 2) - centered,
-//                           sizeConerRect, sizeConerRect);
-//                g.drawRect((selection.x + selection.width / 2)- centered,
-//                          (selection.y + selection.height) - centered,
-//                           sizeConerRect, sizeConerRect);
-//                g.drawRect((selection.x + selection.width)- centered,
-//                          (selection.y + selection.height) - centered,
-//                           sizeConerRect, sizeConerRect);
 
            
                 tracker.setSelection(
@@ -336,9 +326,6 @@ public class TrackerPanel extends JPanel {
                                         / (double) this.getSize().height)),
                         true);
            
-
-
-//                g.dispose();
             }
         }
     }
@@ -375,16 +362,6 @@ public class TrackerPanel extends JPanel {
         return rects;
     }
     
-    private Rectangle getSelectedRect() {
-        Rectangle rect = null;
-        for(Rectangle r: this.rectangles){
-            if(r.contains(p1)) {
-                rect = r;
-                break;
-            }
-        }
-        return rect;
-    }
     
     private void hideTunnel(Graphics g) {
         g.setColor(Color.GRAY);
