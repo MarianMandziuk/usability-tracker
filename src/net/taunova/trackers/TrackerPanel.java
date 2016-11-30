@@ -51,11 +51,15 @@ public class TrackerPanel extends JPanel {
     private Point p2;
     private List<Rectangle> rectangles;
     boolean selectedRects;
+    private int baseWidth;
+    private int baseHeight;
+    
     public TrackerPanel(MouseTracker tracker) {
         super(true);
         this.tracker = tracker;  
         tracker.setParent(this);
         this.screenRect = new Rectangle(Toolkit.getDefaultToolkit().getScreenSize());
+        
         
         try {
             this.robot = new Robot();
@@ -183,8 +187,7 @@ public class TrackerPanel extends JPanel {
                                     height = valY - opposideY;
                                     selection.setRect(opposideX, opposideY, selection.width, height);
                                 } 
-                            break;
-                            
+                            break;                           
                         case 3:
                         case 5:
                                 if (p2.x < opposideX && p2.y  > opposideY) {
@@ -303,10 +306,22 @@ public class TrackerPanel extends JPanel {
     
     private void drawSelection(Graphics g) {
         if (true) {
-            System.out.println("Draw");
             if (selection != null) {
                 g.setColor(Color.red);
-                g.drawRect(selection.x, selection.y, selection.width, Math.abs(selection.height));
+                
+//                if(this.windowSize.width != baseWidth 
+//                        || this.windowSize.height != baseHeight) {
+//                    
+//                    
+//                    int scW = this.windowSize.width / baseWidth;
+//                    int scH = this.windowSize.height / baseHeight;
+//                    g.drawRect(selection.x*scW,
+//                            selection.y*scH,
+//                            selection.width*scW,
+//                            selection.height*scH);
+//                } else {
+                    g.drawRect(selection.x, selection.y, selection.width, selection.height);
+//                }
 
                 this.rectangles = this.generateRects();
                 for(Rectangle r: this.rectangles) {

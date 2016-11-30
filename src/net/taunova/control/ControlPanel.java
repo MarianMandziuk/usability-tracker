@@ -47,7 +47,6 @@ public class ControlPanel extends JPanel {
     public JButton button5;
     public boolean start = false;
     public JFileChooser fc;
-//    private final Logger logger = LoggerFactory.getLogger(ControlPanel.class);
     
     public ControlPanel(MouseTracker tracker, TrackerFrame frame) {
         super(true);
@@ -80,77 +79,6 @@ public class ControlPanel extends JPanel {
         return this.frame;
     }
 
-//    @Override
-//    public void actionPerformed(ActionEvent ae) {
-//        this.frame.setVisible(false);
-//        try {
-//            TimeUnit.MINUTES.sleep(1);
-//        } catch (InterruptedException ex) {
-//            logger.error("Error: " + ex);
-//        }
-//
-//        
-//        BufferedImage image = takeSnapShot();
-//
-//        this.frame.setVisible(true);
-//        drawTrack(image);
-//        try {
-//            saveScreen(image, "imageName");
-//        } catch (IOException ex) {
-//            logger.error("Error: " + ex);
-//        }
-//    }
-//    
-//    private BufferedImage takeSnapShot() {
-//        Rectangle screenRect = new Rectangle(Toolkit.getDefaultToolkit().getScreenSize());
-//        BufferedImage im = null;
-//        try {
-//            im = new Robot().createScreenCapture(screenRect);
-//        } catch (AWTException ex) {
-//           logger.error("Error: " + ex);
-//        }
-//
-//        return im;
-//    }
-//    
-//    private void drawTrack(BufferedImage image) {
-//        List<Position> positionList = this.tracker.getPosition();
-//        Graphics2D g2 = image.createGraphics();
-//        g2.setColor(Color.red);
-//        for(int i = 0; i < positionList.size() - 1; i++) {
-//            g2.drawLine((int)(positionList.get(i).position.x), 
-//                           (int)(positionList.get(i).position.y), 
-//                           (int)(positionList.get(i + 1).position.x), 
-//                           (int)(positionList.get(i + 1).position.y));
-//            if(positionList.get(i).getDelay() > 10) {
-//                int radius = positionList.get(i).getDelay();                    
-//                if(radius > 50) {
-//                    radius = 50;
-//                }
-//
-//                g2.drawOval((int)(positionList.get(i).position.x)-radius/2, 
-//                       (int)(positionList.get(i).position.y)-radius/2, radius, radius);
-//            }
-//        }
-//        g2.dispose();
-//    }
-//    
-//    private void saveScreen(BufferedImage image, String name) throws IOException {
-//        
-//        int returnVal = fc.showSaveDialog(ControlPanel.this);
-//        
-//        if (returnVal == JFileChooser.APPROVE_OPTION) {
-//
-//            String format = "png";
-//            File file = fc.getSelectedFile();
-//            if (!file.getName().endsWith(".png")) {
-//                file = new File(fc.getSelectedFile() + ".png");
-//            }
-//            ImageIO.write(image, format, file);
-//            JOptionPane.showMessageDialog(this,
-//            "Image saved");
-//        }
-//    }
 }
 
 
