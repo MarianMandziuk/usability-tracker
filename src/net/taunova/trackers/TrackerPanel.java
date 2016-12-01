@@ -16,6 +16,8 @@ import java.awt.Robot;
 import java.awt.Toolkit;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.awt.event.ComponentAdapter;
+import java.awt.event.ComponentEvent;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
 import java.awt.image.BufferedImage;
@@ -51,8 +53,8 @@ public class TrackerPanel extends JPanel {
     private Point p2;
     private List<Rectangle> rectangles;
     boolean selectedRects;
-    private int baseWidth;
-    private int baseHeight;
+    private double proportionWidth;
+    private double proportionHeight;
     
     public TrackerPanel(MouseTracker tracker) {
         super(true);
@@ -235,12 +237,36 @@ public class TrackerPanel extends JPanel {
                     height = valY - p1.y;
                     selection.setRect(p1.x, p1.y, width, height);
                 }  
+            proportionWidth = selection.width /(double) windowSize.width;
+            proportionHeight = selection.height /(double) windowSize.height;
             }
         };
+        
+        ComponentAdapter resizeComponent = new ComponentAdapter() {
+            public void componentResized(ComponentEvent e) {
+                try {
 
+                    double w = windowSize.width * proportionWidth;
+                    double h = windowSize.height * proportionHeight;
+                    double scalerX =proportionWidth-  (selection.width /(double) windowSize.width);
+                    double scalerY =proportionHeight- (selection.height /(double) windowSize.height);
+                    scalerX +=1.0;
+                    scalerY +=1.0;
+                    selection.setRect(selection.x*scalerX,
+                                                      selection.y * scalerY,
+                                                      w,
+                                                      h);
+                    
+                } catch(NullPointerException ex) {
+
+                }
+            }
+        };
+        
+        
         this.addMouseListener(handler);
         this.addMouseMotionListener(handler);
-        
+        this.addComponentListener(resizeComponent);
     }
 
     @Override
@@ -249,16 +275,16 @@ public class TrackerPanel extends JPanel {
 
 //        g.drawImage(this.takeSnapShot(), 0, 0, null);
         drawScreenShot(g);
-       
+
         hideTunnel(g);
 //        g.setColor(getBackground());
 //        g.fillRect(0, 0, windowSize.width, windowSize.height);
 //        g.setColor(getForeground());
-        drawSelection(g);
+
     
         final double kX = (double)this.windowSize.width/this.screenRect.width;
         final double kY = (double)this.windowSize.height/this.screenRect.height;
-
+        drawSelection(g, kX, kY);
         g.setColor(Color.red);
         tracker.processPath(new TrackerCallback() {
             
@@ -304,31 +330,20 @@ public class TrackerPanel extends JPanel {
         return tmpImage;
     }
     
-    private void drawSelection(Graphics g) {
+    private void drawSelection(Graphics g, final double kX, final double kY) {
         if (true) {
             if (selection != null) {
                 g.setColor(Color.red);
+//                System.out.println("x: " + scalerX + " y: " + scalerY);
                 
-//                if(this.windowSize.width != baseWidth 
-//                        || this.windowSize.height != baseHeight) {
-//                    
-//                    
-//                    int scW = this.windowSize.width / baseWidth;
-//                    int scH = this.windowSize.height / baseHeight;
-//                    g.drawRect(selection.x*scW,
-//                            selection.y*scH,
-//                            selection.width*scW,
-//                            selection.height*scH);
-//                } else {
-                    g.drawRect(selection.x, selection.y, selection.width, selection.height);
-//                }
+                g.drawRect(selection.x, selection.y, selection.width, selection.height);
+
 
                 this.rectangles = this.generateRects();
                 for(Rectangle r: this.rectangles) {
                     g.drawRect(r.x, r.y, r.width, r.height);
                 }
 
-           
                 tracker.setSelection(
                         new Rectangle(
                                 (int)((this.screenRect.width * selection.x)
@@ -412,4 +427,3 @@ public class TrackerPanel extends JPanel {
         dbg.dispose();
     } 
 }
-
