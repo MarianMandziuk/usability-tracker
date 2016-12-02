@@ -53,9 +53,8 @@ public class TrackerPanel extends JPanel {
     private Point p2;
     private List<Rectangle> rectangles;
     boolean selectedRects;
-    private double proportionWidth;
-    private double proportionHeight;
-    
+    private int privWidth;
+    private int privHeight;
     public TrackerPanel(MouseTracker tracker) {
         super(true);
         this.tracker = tracker;  
@@ -237,8 +236,10 @@ public class TrackerPanel extends JPanel {
                     height = valY - p1.y;
                     selection.setRect(p1.x, p1.y, width, height);
                 }  
-            proportionWidth = selection.width /(double) windowSize.width;
-            proportionHeight = selection.height /(double) windowSize.height;
+//            proportionWidth = selection.width /(double) windowSize.width;
+//            proportionHeight = selection.height /(double) windowSize.height;
+            privWidth = windowSize.width;
+            privHeight = windowSize.height;
             }
         };
         
@@ -246,16 +247,20 @@ public class TrackerPanel extends JPanel {
             public void componentResized(ComponentEvent e) {
                 try {
 
-                    double w = windowSize.width * proportionWidth;
-                    double h = windowSize.height * proportionHeight;
-                    double scalerX =proportionWidth-  (selection.width /(double) windowSize.width);
-                    double scalerY =proportionHeight- (selection.height /(double) windowSize.height);
-                    scalerX +=1.0;
-                    scalerY +=1.0;
-                    selection.setRect(selection.x*scalerX,
-                                                      selection.y * scalerY,
-                                                      w,
-                                                      h);
+                    double w = (windowSize.width /(double) privWidth) * selection.width;
+                    double h = (windowSize.height /(double) privHeight) * selection.height;
+                    double x1 = (windowSize.width /(double) privWidth) * selection.x;
+                    double y1 = (windowSize.height /(double) privHeight) * selection.y;
+                    x1 = boundariesCorrectionX(x1);
+                    y1 = boundariesCorrectionY(y1);
+                    w = boundariesCorrectionW(w, x1);
+                    h = boundariesCorrectionH(h, y1);
+//                    selection.setRect(scalerX, scalerY, w, h);
+
+                    setDoubleToIntRectangle(selection, x1, y1, w, h);
+
+                    privWidth = windowSize.width;
+                    privHeight = windowSize.height;
                     
                 } catch(NullPointerException ex) {
 
@@ -280,11 +285,11 @@ public class TrackerPanel extends JPanel {
 //        g.setColor(getBackground());
 //        g.fillRect(0, 0, windowSize.width, windowSize.height);
 //        g.setColor(getForeground());
-
+        drawSelection(g);
     
         final double kX = (double)this.windowSize.width/this.screenRect.width;
         final double kY = (double)this.windowSize.height/this.screenRect.height;
-        drawSelection(g, kX, kY);
+
         g.setColor(Color.red);
         tracker.processPath(new TrackerCallback() {
             
@@ -330,7 +335,7 @@ public class TrackerPanel extends JPanel {
         return tmpImage;
     }
     
-    private void drawSelection(Graphics g, final double kX, final double kY) {
+    private void drawSelection(Graphics g) {
         if (true) {
             if (selection != null) {
                 g.setColor(Color.red);
@@ -425,5 +430,59 @@ public class TrackerPanel extends JPanel {
         g.drawImage(image, 0, 0, null);
 //        g.dispose();
         dbg.dispose();
-    } 
+    }
+    
+    public void setDoubleToIntRectangle(Rectangle rect,
+                                        final double x,
+                                        final double y, 
+                                        final double w, 
+                                        final double h) {
+
+        rect.x = isRemainderHigher(x) ? (int)x + 1 : (int)x;
+        rect.y = isRemainderHigher(y) ? (int)y + 1 : (int)y;
+        rect.width = isRemainderHigher(w) ? (int)w + 1 : (int)w;
+        rect.height = isRemainderHigher(h) ? (int)h + 1 : (int)h; 
+    }
+    
+    public boolean isRemainderHigher(final double number) {
+        double remainder = number - (int)(number);
+        return remainder > 0.4;
+    }
+    
+    public double boundariesCorrectionX(double x) {
+        if (x < 1.0) {
+            x = 1.0;
+        } else if (x > screenRect.width) {
+            x = screenRect.width;
+        }
+
+        return x;
+    }
+    
+    public double boundariesCorrectionY(double y) {
+        if (y < 1.0) {
+            y = 1.0;
+        } else if (y > screenRect.height) {
+            y = screenRect.height;
+        }
+        return y;
+    }
+    
+    public double boundariesCorrectionW(double w, double x) {
+        if (w < 1.0) {
+            w = 1.0;
+        } else if ((x + w) > windowSize.width) {
+            w = w - ((x+w) - windowSize.width);
+        }
+        return w;
+    }
+    
+    public double boundariesCorrectionH(double h, double y) {
+        if (h < 1.0) {
+            h = 1.0;
+        } else if ((y + h) > windowSize.height) {
+            h = h - ((h + y) - windowSize.height);
+        }
+        return h;
+    }
 }
