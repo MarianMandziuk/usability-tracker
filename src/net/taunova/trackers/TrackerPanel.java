@@ -21,40 +21,34 @@ import java.awt.event.ComponentEvent;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
 import java.awt.image.BufferedImage;
-import java.util.ArrayList;
-import java.util.List;
 import javax.swing.JPanel;
 import javax.swing.Timer;
 import net.taunova.util.Position;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-
+import net.taunova.util.Selection;
+import net.taunova.util.SelectionUtil;
 /**
  *
  * @author maryan
  */
 public class TrackerPanel extends JPanel {
     private MouseTracker tracker;
-    private Rectangle selection;
-    private boolean selectedSelection = false;
-    private int privX;
-    private int privY;
-    private int opposideX;
-    private int opposideY;
     private Dimension windowSize;
     private final Logger logger = LoggerFactory.getLogger(TrackerPanel.class);
     private Rectangle screenRect;
     private Graphics dbg;
     private Image image;
     private Robot robot;
-    private int orderRect;
     private Point p1;
     private Point p2;
-    private List<Rectangle> rectangles;
-    boolean selectedRects;
+    private boolean selectedRects;
     private int privWidth;
     private int privHeight;
+    private static int ovalCount = 0;
+
+    private Selection selectionNew;
     public TrackerPanel(MouseTracker tracker) {
         super(true);
         this.tracker = tracker;  
@@ -82,162 +76,49 @@ public class TrackerPanel extends JPanel {
             @Override
             public void mousePressed(MouseEvent e) {
                 p1 = e.getPoint();
-                selectedRects = false;
-                
-                if(rectangles!=null) {
-                    for(int i = 0; i < rectangles.size(); i++) {
-                        if(rectangles.get(i).contains(p1)) {
-                            selectedRects = true;
-                            orderRect = i;
-                            switch (i) {
-                                case 0:                               
-                                    opposideX = selection.x+selection.width;
-                                    opposideY = selection.y+selection.height;
-                                    break;
-                                case 2:
-                                case 1:
-                                
-                                    opposideX = selection.x;
-                                    opposideY = selection.y+selection.height;
-                                    break;
-                                case 7:
-                                case 6:
-                                case 5:
-                                    opposideX = selection.x;
-                                    opposideY = selection.y;
-                                    break;
-                                case 4:
-                                case 3:    
-                                    opposideX = selection.x+selection.width;
-                                    opposideY = selection.y;
-                                    break;
-                                default:
-                                    break;
-                            }
-                        }
-                    }
+
+                if (selectionNew == null) {
+                    selectionNew = new Selection(e.getX(), e.getY(), 0, 0);
+                } else {
+                    selectedRects = selectionNew.isSelectedSensitiveArea(p1);
                 }
-                
-                if(!selectedRects) {
-                    if (selection != null && selection.contains(p1)) {
-                        selectedSelection = true;
-                        privX = p1.x;
-                        privY = p1.y;
-                    } else {
-                        selection = new Rectangle(p1.x, p1.y, p1.x - p1.x, p1.y - p1.y);
-                        selectedSelection = false;
-                        opposideX = p1.x;
-                        opposideY = p1.y;
-                    }
+
+                if (!selectedRects) {
+                    selectionNew.checkOnSelected(p1);
                 }
             }
 
             @Override
             public void mouseDragged(MouseEvent e) {
                 p2 = e.getPoint();
-                int width;
-                int height;
-                int valX;
-                int valY;
-                if (p2.x > windowSize.width) {
-                    valX = windowSize.width;
-                } else if(p2.x < 0){
-                    valX = 0;
-                } else {
-                    valX = p2.x;
+                if(!SelectionUtil.isPointInWindowBoundary(p1,
+                        windowSize.width,
+                        windowSize.height)) {
+                    SelectionUtil.setCorrectPointBoundary(p1,
+                            windowSize.width,
+                            windowSize.height);
                 }
-                if (p2.y > windowSize.height) {
-                    valY = windowSize.height;
-                } else if(p2.y < 0) {
-                    valY = 0;
-                } else {
-                    valY = p2.y;
+                if(!SelectionUtil.isPointInWindowBoundary(p2,
+                        windowSize.width,
+                        windowSize.height)) {
+                    SelectionUtil.setCorrectPointBoundary(p2,
+                            windowSize.width,
+                            windowSize.height);
                 }
-                if(selectedRects) {                    
-                    switch(orderRect) {
-                        case 0:
-                        case 2:
-                        case 4:
-                        case 7:
-                        
-                                if (p2.x < opposideX && p2.y  > opposideY) {
-                                    width = opposideX - valX;
-                                    height = valY - opposideY;
-                                    selection.setRect(valX, opposideY, width, height);
-                                } else if (p2.x < opposideX && p2.y < opposideY) {
-                                    width = opposideX - valX;
-                                    height = opposideY - valY;
-                                    selection.setRect(valX, valY, width, height);
-                                } else if (p2.x > opposideX && p2.y < opposideY) {
-                                    width = valX - opposideX;
-                                    height = opposideY - valY;
-                                    selection.setRect(opposideX, valY, width, height);
-                                }  else {
-                                    width = valX - opposideX;
-                                    height = valY - opposideY;
-                                    selection.setRect(opposideX, opposideY, width, height);
-                                } 
-                            break;
-                        case 1:
-                        case 6:
-                                if (p2.x > opposideX && p2.y < opposideY) {
-                                  height = opposideY - valY;
-                                  selection.setRect(opposideX, valY, selection.width, height);
-                                  System.out.println("3");
-                                }  else {
-                                    height = valY - opposideY;
-                                    selection.setRect(opposideX, opposideY, selection.width, height);
-                                } 
-                            break;                           
-                        case 3:
-                        case 5:
-                                if (p2.x < opposideX && p2.y  > opposideY) {
-                                    width = opposideX - valX;
-                                    selection.setRect(valX, opposideY, width, selection.height);
-                                } else  {
-                                    width = valX - opposideX;
-                                    selection.setRect(opposideX, opposideY, width, selection.height);
-                                } 
-                            break;
-                    }
-                    
-                    
-                } else if (selectedSelection) {
-                    if(selection.x +p2.x - privX + selection.width > windowSize.width) {
-                        selection.x = windowSize.width - selection.width;
-                    } else if (selection.x + p2.x - privX < 0) {
-                        selection.x = 0;
-                    } else if (selection.y + p2.y - privY + selection.height > windowSize.height) {
-                        selection.y = windowSize.height - selection.height;
-                    } else if (selection.y + p2.y - privY < 0) {
-                        selection.y = 0;
-                    } else {
-                        selection.x += p2.x - privX;
-                        selection.y += p2.y - privY;
-                        privX = p2.x;
-                        privY = p2.y;
-                    }
-                    
-               
-                } else if (p2.x < p1.x && p2.y  > p1.y) {
-                    width = opposideX - valX;
-                    height = valY - opposideY;
-                    selection.setRect(valX, p1.y, width, height);
-                } else if (p2.x < p1.x && p2.y < p1.y) {
-                    width = opposideX - valX;
-                    height = opposideY - valY;
-                    selection.setRect(valX, valY, width, height);
-                } else if (p2.x > p1.x && p2.y < p1.y) {
-                    width = valX - opposideX;
-                    height = opposideY - valY;
-                    selection.setRect(p1.x, valY, width, height);
-                }  else {
-                    width = valX - p1.x;
-                    height = valY - p1.y;
-                    selection.setRect(p1.x, p1.y, width, height);
-                }  
-//            proportionWidth = selection.width /(double) windowSize.width;
-//            proportionHeight = selection.height /(double) windowSize.height;
+
+                if (selectedRects) {
+                    selectionNew.resizeSelection(p2);
+                } else if (!selectionNew.isSelected()) {
+                    selectionNew.setSidesSelection(p1, p2);
+                } else {
+                    selectionNew.setSelectedSelection(
+                            p1,
+                            p2,
+                            windowSize.width,
+                            windowSize.height
+                    );
+                }
+
             privWidth = windowSize.width;
             privHeight = windowSize.height;
             }
@@ -247,17 +128,18 @@ public class TrackerPanel extends JPanel {
             public void componentResized(ComponentEvent e) {
                 try {
 
-                    double w = (windowSize.width /(double) privWidth) * selection.width;
-                    double h = (windowSize.height /(double) privHeight) * selection.height;
-                    double x1 = (windowSize.width /(double) privWidth) * selection.x;
-                    double y1 = (windowSize.height /(double) privHeight) * selection.y;
-                    x1 = boundariesCorrectionX(x1);
-                    y1 = boundariesCorrectionY(y1);
+                    double w = (windowSize.width /(double) privWidth) * selectionNew.getWidth();
+                    double h = (windowSize.height /(double) privHeight) * selectionNew.getHeight();
+                    double x1 = (windowSize.width /(double) privWidth) * selectionNew.getX();
+                    double y1 = (windowSize.height /(double) privHeight) * selectionNew.getY();
+                    x1 = boundariesCorrectionX(x1, screenRect.width);
+                    y1 = boundariesCorrectionY(y1, screenRect.height);
                     w = boundariesCorrectionW(w, x1);
                     h = boundariesCorrectionH(h, y1);
 //                    selection.setRect(scalerX, scalerY, w, h);
 
-                    setDoubleToIntRectangle(selection, x1, y1, w, h);
+                    selectionNew.setDoubleToIntRectangle(x1, y1, w, h);
+//                    setDoubleToIntRectangle(selection, x1, y1, w, h);
 
                     privWidth = windowSize.width;
                     privHeight = windowSize.height;
@@ -278,15 +160,14 @@ public class TrackerPanel extends JPanel {
     public void paintComponent(Graphics g) {
         this.windowSize = getSize();
 
-//        g.drawImage(this.takeSnapShot(), 0, 0, null);
         drawScreenShot(g);
-
+        
         hideTunnel(g);
-//        g.setColor(getBackground());
-//        g.fillRect(0, 0, windowSize.width, windowSize.height);
-//        g.setColor(getForeground());
-        drawSelection(g);
-    
+
+        if (selectionNew != null) {
+            selectionNew.drawSelection(g);
+        }
+        g.setColor(Color.BLUE);
         final double kX = (double)this.windowSize.width/this.screenRect.width;
         final double kY = (double)this.windowSize.height/this.screenRect.height;
 
@@ -300,6 +181,7 @@ public class TrackerPanel extends JPanel {
                            (int)(kX * end.position.x), 
                            (int)(kY * end.position.y));
                 if(begin.getDelay() > 10) {
+
                     int radius = begin.getDelay();                    
                     if(radius > 20) {
                         radius = 20;
@@ -307,6 +189,9 @@ public class TrackerPanel extends JPanel {
                     
                     g.drawOval((int)(kX*begin.position.x)-radius/2, 
                            (int)(kY*begin.position.y)-radius/2, radius, radius);
+                    int x = (int)(kX*begin.position.x)-radius/2;
+                    int y = (int)(kY*begin.position.y)-radius/2;
+                    g.drawString("1", x, y);
                 }   
             }
         });
@@ -334,68 +219,8 @@ public class TrackerPanel extends JPanel {
         g2.dispose();
         return tmpImage;
     }
-    
-    private void drawSelection(Graphics g) {
-        if (true) {
-            if (selection != null) {
-                g.setColor(Color.red);
-//                System.out.println("x: " + scalerX + " y: " + scalerY);
-                
-                g.drawRect(selection.x, selection.y, selection.width, selection.height);
 
 
-                this.rectangles = this.generateRects();
-                for(Rectangle r: this.rectangles) {
-                    g.drawRect(r.x, r.y, r.width, r.height);
-                }
-
-                tracker.setSelection(
-                        new Rectangle(
-                                (int)((this.screenRect.width * selection.x)
-                                        / (double) this.getSize().width),
-                                (int)((this.screenRect.height * selection.y)
-                                        / (double) this.getSize().height),
-                                (int)((this.screenRect.width * selection.width)
-                                        / (double) this.getSize().width),
-                                (int)((this.screenRect.height * selection.height)
-                                        / (double) this.getSize().height)),
-                        true);
-           
-            }
-        }
-    }
-    
-    private List generateRects() {
-        List<Rectangle> rects = new ArrayList<>();
-        int sizeConerRect = 9;
-        int centered = sizeConerRect/2;
-        rects.add(new Rectangle(selection.x - centered,
-                   selection.y - centered,
-                   sizeConerRect,
-                   sizeConerRect));
-        rects.add(new Rectangle((selection.x + selection.width / 2) - centered,
-                   selection.y - centered,
-                   sizeConerRect, sizeConerRect));
-        rects.add(new Rectangle((selection.x + selection.width) - centered,
-                   selection.y - centered,
-                   sizeConerRect, sizeConerRect));
-        rects.add(new Rectangle(selection.x - centered,
-                  (selection.y + selection.height / 2) - centered,
-                   sizeConerRect, sizeConerRect));
-        rects.add(new Rectangle(selection.x - centered,
-                  (selection.y + selection.height) - centered,
-                   sizeConerRect, sizeConerRect));
-        rects.add(new Rectangle((selection.x + selection.width) - centered,
-                  (selection.y + selection.height / 2) - centered,
-                   sizeConerRect, sizeConerRect));
-        rects.add(new Rectangle((selection.x + selection.width / 2)- centered,
-                  (selection.y + selection.height) - centered,
-                   sizeConerRect, sizeConerRect));
-        rects.add(new Rectangle((selection.x + selection.width)- centered,
-                  (selection.y + selection.height) - centered,
-                   sizeConerRect, sizeConerRect));        
-        return rects;
-    }
     
     
     private void hideTunnel(Graphics g) {
@@ -432,38 +257,21 @@ public class TrackerPanel extends JPanel {
         dbg.dispose();
     }
     
-    public void setDoubleToIntRectangle(Rectangle rect,
-                                        final double x,
-                                        final double y, 
-                                        final double w, 
-                                        final double h) {
-
-        rect.x = isRemainderHigher(x) ? (int)x + 1 : (int)x;
-        rect.y = isRemainderHigher(y) ? (int)y + 1 : (int)y;
-        rect.width = isRemainderHigher(w) ? (int)w + 1 : (int)w;
-        rect.height = isRemainderHigher(h) ? (int)h + 1 : (int)h; 
-    }
-    
-    public boolean isRemainderHigher(final double number) {
-        double remainder = number - (int)(number);
-        return remainder > 0.4;
-    }
-    
-    public double boundariesCorrectionX(double x) {
+    public double boundariesCorrectionX(double x, int width) {
         if (x < 1.0) {
             x = 1.0;
-        } else if (x > screenRect.width) {
-            x = screenRect.width;
+        } else if (x > width) {
+            x = width;
         }
 
         return x;
     }
     
-    public double boundariesCorrectionY(double y) {
+    public double boundariesCorrectionY(double y, int height) {
         if (y < 1.0) {
             y = 1.0;
-        } else if (y > screenRect.height) {
-            y = screenRect.height;
+        } else if (y > height) {
+            y = height;
         }
         return y;
     }
