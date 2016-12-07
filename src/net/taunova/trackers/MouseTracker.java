@@ -5,7 +5,6 @@
  */
 package net.taunova.trackers;
 
-import net.taunova.trackers.TrackerFrame;
 import java.awt.Component;
 import java.awt.MouseInfo;
 import java.awt.Point;
@@ -16,6 +15,7 @@ import java.util.List;
 import javax.swing.JFrame;
 import net.taunova.util.Position;
 import net.taunova.util.ThreadUtil;
+
 
 /**
  *
@@ -30,9 +30,11 @@ public class MouseTracker implements Runnable  {
     private JFrame frame;
     private Rectangle selection;
     private boolean selectionTraking;
-    MouseTracker(TrackerFrame it) {
-       this.frame = it;
-       
+    private ColorTracker colorTracker;
+
+    MouseTracker(TrackerFrame it, ColorTracker t) {
+        this.frame = it;
+        this.colorTracker = t;
     }
     
     public void setSelection(Rectangle r, boolean sT) {
@@ -58,39 +60,40 @@ public class MouseTracker implements Runnable  {
      
     @Override
     public void run() {
-        current.position = MouseInfo.getPointerInfo().getLocation(); 
+        current.position = MouseInfo.getPointerInfo().getLocation();
+        current.setColor(colorTracker.getColor());
         positionList.add(current);
-        
+
         while(true) {
             if(!this.frame.isActive()) {
-                
                 long time1 = System.currentTimeMillis();
                 PointerInfo info = MouseInfo.getPointerInfo();            
                 Point p = info.getLocation();
-                if(this.selectionTraking == true) {
-                    if(  selection.contains(p)) {
+                if(this.selectionTraking) {
+                    if(selection.contains(p)) {
                         if(current.position.x != p.x ||
-                           current.position.y != p.y) {
+                            current.position.y != p.y) {
                             current = new Position(p);
+                            current.setColor(colorTracker.getColor());
                             positionList.add(current);                               
-                        }else{
-                            current.incDelay();
+                        } else {
+                            current.incDelay();                            
                             ThreadUtil.sleep(DELAY);
                         }                    
                     }
                 } else {
                     if(current.position.x != p.x ||
-                       current.position.y != p.y) {
+                        current.position.y != p.y) {
                         current = new Position(p);
+                        current.setColor(colorTracker.getColor());
                         positionList.add(current);                               
-                    } else {
-                        current.incDelay();
-                        ThreadUtil.sleep(DELAY);
-                    }   
+                        } else {
+                            current.incDelay();
+                            ThreadUtil.sleep(DELAY);
+                        }   
                 }
                 long time2 = System.currentTimeMillis();
     //            System.out.println("it took: " + (time2 - time1));
-
             }
         }
     }

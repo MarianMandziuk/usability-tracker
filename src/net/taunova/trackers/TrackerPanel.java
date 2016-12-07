@@ -21,6 +21,7 @@ import java.awt.event.ComponentEvent;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
 import java.awt.image.BufferedImage;
+import java.util.List;
 import javax.swing.JPanel;
 import javax.swing.Timer;
 import net.taunova.util.Position;
@@ -46,15 +47,15 @@ public class TrackerPanel extends JPanel {
     private boolean selectedRects;
     private int privWidth;
     private int privHeight;
-    private static int ovalCount = 0;
-
     private Selection selectionNew;
+    private static int ovalCount = 0;
+    
+    public static final int DELAY = 10;
     public TrackerPanel(MouseTracker tracker) {
         super(true);
         this.tracker = tracker;  
         tracker.setParent(this);
         this.screenRect = new Rectangle(Toolkit.getDefaultToolkit().getScreenSize());
-        
         
         try {
             this.robot = new Robot();
@@ -118,7 +119,17 @@ public class TrackerPanel extends JPanel {
                             windowSize.height
                     );
                 }
-
+            tracker.setSelection(
+                    new Rectangle(
+                            (int)((screenRect.width * selectionNew.getX())
+                                    / (double) windowSize.width),
+                            (int)((screenRect.height * selectionNew.getY())
+                                    / (double) windowSize.height),
+                            (int)((screenRect.width * selectionNew.getWidth())
+                                    / (double) windowSize.width),
+                            (int)((screenRect.height * selectionNew.getHeight())
+                                    / (double) windowSize.height)),
+                    true);
             privWidth = windowSize.width;
             privHeight = windowSize.height;
             }
@@ -126,27 +137,27 @@ public class TrackerPanel extends JPanel {
         
         ComponentAdapter resizeComponent = new ComponentAdapter() {
             public void componentResized(ComponentEvent e) {
-                try {
+            try {
 
-                    double w = (windowSize.width /(double) privWidth) * selectionNew.getWidth();
-                    double h = (windowSize.height /(double) privHeight) * selectionNew.getHeight();
-                    double x1 = (windowSize.width /(double) privWidth) * selectionNew.getX();
-                    double y1 = (windowSize.height /(double) privHeight) * selectionNew.getY();
-                    x1 = boundariesCorrectionX(x1, screenRect.width);
-                    y1 = boundariesCorrectionY(y1, screenRect.height);
-                    w = boundariesCorrectionW(w, x1);
-                    h = boundariesCorrectionH(h, y1);
+                double w = (windowSize.width /(double) privWidth) * selectionNew.getWidth();
+                double h = (windowSize.height /(double) privHeight) * selectionNew.getHeight();
+                double x1 = (windowSize.width /(double) privWidth) * selectionNew.getX();
+                double y1 = (windowSize.height /(double) privHeight) * selectionNew.getY();
+                x1 = boundariesCorrectionX(x1, screenRect.width);
+                y1 = boundariesCorrectionY(y1, screenRect.height);
+                w = boundariesCorrectionW(w, x1);
+                h = boundariesCorrectionH(h, y1);
 //                    selection.setRect(scalerX, scalerY, w, h);
 
-                    selectionNew.setDoubleToIntRectangle(x1, y1, w, h);
+                selectionNew.setDoubleToIntRectangle(x1, y1, w, h);
 //                    setDoubleToIntRectangle(selection, x1, y1, w, h);
 
-                    privWidth = windowSize.width;
-                    privHeight = windowSize.height;
-                    
-                } catch(NullPointerException ex) {
+                privWidth = windowSize.width;
+                privHeight = windowSize.height;
 
-                }
+            } catch(NullPointerException ex) {
+
+            }
             }
         };
         
@@ -159,28 +170,29 @@ public class TrackerPanel extends JPanel {
     @Override
     public void paintComponent(Graphics g) {
         this.windowSize = getSize();
-
+        setUpNumbers();
         drawScreenShot(g);
-        
+
         hideTunnel(g);
 
         if (selectionNew != null) {
             selectionNew.drawSelection(g);
         }
-        g.setColor(Color.BLUE);
+
         final double kX = (double)this.windowSize.width/this.screenRect.width;
         final double kY = (double)this.windowSize.height/this.screenRect.height;
 
-        g.setColor(Color.red);
+
         tracker.processPath(new TrackerCallback() {
             
             @Override
             public void process(Position begin, Position end) {
+                g.setColor(begin.getColor());
                 g.drawLine((int)(kX * begin.position.x), 
                            (int)(kY * begin.position.y), 
                            (int)(kX * end.position.x), 
                            (int)(kY * end.position.y));
-                if(begin.getDelay() > 10) {
+                if(begin.getDelay() > DELAY) {
 
                     int radius = begin.getDelay();                    
                     if(radius > 20) {
@@ -191,7 +203,9 @@ public class TrackerPanel extends JPanel {
                            (int)(kY*begin.position.y)-radius/2, radius, radius);
                     int x = (int)(kX*begin.position.x)-radius/2;
                     int y = (int)(kY*begin.position.y)-radius/2;
-                    g.drawString("1", x, y);
+                    if(begin.getNumber() != 0) {
+                        g.drawString(Integer.toString(begin.getNumber()), x, y);
+                    }
                 }   
             }
         });
@@ -292,5 +306,18 @@ public class TrackerPanel extends JPanel {
             h = h - ((h + y) - windowSize.height);
         }
         return h;
+    }
+    
+    private void setUpNumbers() {
+        List<Position> positions = this.tracker.getPosition();
+        if (positions.isEmpty()) {
+            ovalCount = 0;
+        }
+        for (Position p : positions) {
+            if(p.isDelay() && p.getNumber() == 0) {
+                ovalCount++;
+                p.setNumber(ovalCount);
+            }
+        }
     }
 }

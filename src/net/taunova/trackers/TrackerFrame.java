@@ -13,8 +13,8 @@ import java.awt.event.WindowEvent;
 import java.awt.event.WindowFocusListener;
 import javax.swing.JFrame;
 import net.taunova.control.ControlPanel;
-
-
+import java.awt.event.WindowAdapter;
+import java.awt.Color;
 
 /**
  *
@@ -24,15 +24,16 @@ public class TrackerFrame extends JFrame implements WindowFocusListener {
     ControlPanel buttonPanel;
     public TrackerPanel trackerPanel;
     public MouseTracker tracker;
-    public boolean startTracking = false;
     private static final int DIVIDER = 2;
+    public ColorTracker colorTracker = new ColorTracker();
+
     public TrackerFrame() {
         super("Tracker frame");
         getContentPane().setLayout(new BorderLayout());
         Rectangle dim = GraphicsEnvironment.getLocalGraphicsEnvironment().getMaximumWindowBounds();
         int baseWidth = dim.width/DIVIDER;
         int baseHeight = dim.height/DIVIDER;
-        tracker = new MouseTracker(this);
+        tracker = new MouseTracker(this, colorTracker);
         buttonPanel = new ControlPanel(tracker, this);
         trackerPanel = new TrackerPanel(tracker);
         
@@ -47,18 +48,31 @@ public class TrackerFrame extends JFrame implements WindowFocusListener {
         setSize(baseWidth+150, baseHeight);
         setVisible(true); 
         addWindowFocusListener(this);
+
+        this.addWindowListener(new WindowAdapter() {
+            public void windowActivated(WindowEvent arg0) {
+                if (colorTracker.isSwitchColor()) {
+                    colorTracker.setColor(Color.RED);
+                    colorTracker.setSwitchColor(false);
+                } else {
+                    colorTracker.setColor(Color.BLUE);
+                    colorTracker.setSwitchColor(true);
+                }
+            }
+
+        });
     }
 
 
     @Override
     public void windowGainedFocus(WindowEvent we) {
        this.buttonPanel.button5.setText("Start");
-       this.startTracking = true;
     }
 
     @Override
     public void windowLostFocus(WindowEvent we) {
         this.buttonPanel.button5.setText("Pause");
-        this.startTracking = false;
     }
+
 }
+
