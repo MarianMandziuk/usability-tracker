@@ -70,7 +70,7 @@ public class SnapShotListener implements ActionListener {
         try {
             im = new Robot().createScreenCapture(screenRect);
         } catch (AWTException ex) {
-           logger.error("Error: " + ex);
+            logger.error("Error: " + ex);
         }
 
         return im;

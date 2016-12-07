@@ -6,6 +6,7 @@
 package net.taunova.control.listeners;
 
 import net.taunova.trackers.TrackerFrame;
+
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import javax.swing.JButton;
@@ -17,7 +18,6 @@ import javax.swing.JFrame;
  */
 public class StartButtonListener implements ActionListener {
     private TrackerFrame frame;
-    
     public StartButtonListener(TrackerFrame frame) {
         this.frame = frame;
     }
