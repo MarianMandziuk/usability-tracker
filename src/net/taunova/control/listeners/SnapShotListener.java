@@ -5,28 +5,22 @@
  */
 package net.taunova.control.listeners;
 
-import java.awt.AWTException;
-import java.awt.Color;
-import java.awt.Graphics2D;
-import java.awt.Rectangle;
-import java.awt.Robot;
-import java.awt.Toolkit;
+import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.image.BufferedImage;
-import java.io.File;
 import java.io.IOException;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.concurrent.TimeUnit;
-import javax.imageio.ImageIO;
-import javax.swing.JFileChooser;
-import javax.swing.JOptionPane;
 import net.taunova.control.ControlPanel;
 import net.taunova.trackers.MouseTracker;
 import net.taunova.trackers.TrackerFrame;
 import net.taunova.util.Position;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+
+import giffer.Giffer;
 
 /**
  *
@@ -56,7 +50,7 @@ public class SnapShotListener implements ActionListener {
 
         this.frame.setVisible(true);
         
-        drawTrack(image);
+//        drawTrack(image);
         try {
             saveScreen(image);
         } catch (IOException ex) {
@@ -100,18 +94,75 @@ public class SnapShotListener implements ActionListener {
     
     private void saveScreen(BufferedImage image) throws IOException {
         
-        int returnVal = cp.fc.showSaveDialog(cp);
-        
-        if (returnVal == JFileChooser.APPROVE_OPTION) {
+//        int returnVal = cp.fc.showSaveDialog(cp);
+//
+//        if (returnVal == JFileChooser.APPROVE_OPTION) {
 
-            String format = "png";
-            File file = cp.fc.getSelectedFile();
-            if (!file.getName().endsWith(".png")) {
-                file = new File(cp.fc.getSelectedFile() + ".png");
+//            String format = "png";
+//            File file = cp.fc.getSelectedFile();
+//            if (!file.getName().endsWith(".png")) {
+//                file = new File(cp.fc.getSelectedFile() + ".png");
+//            }
+//            ImageIO.write(image, format, file);
+//            JOptionPane.showMessageDialog(cp,
+//            "Image saved");
+
+            List<BufferedImage> bufferedTracks = createBufferTrackImages();
+
+            bufferedTracks.add(0, image);
+            BufferedImage ar[] = new BufferedImage[bufferedTracks.size()];
+            for(int i = 0; i < ar.length; i++) {
+                ar[i] = bufferedTracks.get(i);
             }
-            ImageIO.write(image, format, file);
-            JOptionPane.showMessageDialog(cp,
-            "Image saved");
+            try
+            {
+                Giffer.generateFromBI(ar, "output.gif", 40, true);
+            } catch (Exception ex)
+            {
+                ex.printStackTrace();
+            }
+//        }
+    }
+
+    private List createBufferTrackImages() {
+        List<BufferedImage> bufferedTracks = new ArrayList<>();
+        List<Position> positionList = this.tracker.getPosition();
+        final int framePointRate = 50;
+        Rectangle screenRect = new Rectangle(Toolkit.getDefaultToolkit().getScreenSize());
+        BufferedImage bufferedImage = null;
+        Graphics g = null;
+        for(int i = 0; i < positionList.size() - 1; i++) {
+
+            if (i % framePointRate == 0) {
+                 bufferedImage = new BufferedImage(screenRect.width, screenRect.height,
+                        BufferedImage.TYPE_INT_ARGB);
+                g = bufferedImage.createGraphics();
+
+            }
+            g.setColor(positionList.get(i).getColor());
+            g.drawLine((int)(positionList.get(i).position.x),
+                    (int)(positionList.get(i).position.y),
+                    (int)(positionList.get(i + 1).position.x),
+                    (int)(positionList.get(i + 1).position.y));
+            if(positionList.get(i).getDelay() > 10) {
+                int radius = positionList.get(i).getDelay();
+                if(radius > 50) {
+                    radius = 50;
+                }
+
+                g.drawOval((int)(positionList.get(i).position.x)-radius/2,
+                        (int)(positionList.get(i).position.y)-radius/2, radius, radius);
+            }
+
+            if (i % framePointRate == 0 && i != 0) {
+                bufferedTracks.add(bufferedImage);
+//                g.dispose();
+            }
+
         }
+
+        // Graphics context no longer needed so dispose it
+
+        return bufferedTracks;
     }
 }

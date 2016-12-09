@@ -41,7 +41,7 @@ public class ControlPanel extends JPanel {
         JButton button3 = new JButton("New slide");
         JButton button4 = new JButton("Take snapshot");
         button5 = new JButton("Start");
-        fc.addChoosableFileFilter(new FileNameExtensionFilter("Images", "jpg", "png"));
+        fc.addChoosableFileFilter(new FileNameExtensionFilter("Images", "jpg", "png", "gif"));
         add(button5);
         add(button1);
         add(button2);
