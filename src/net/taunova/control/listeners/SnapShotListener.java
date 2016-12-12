@@ -9,6 +9,7 @@ import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.image.BufferedImage;
+import java.io.File;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
@@ -21,6 +22,9 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import giffer.Giffer;
+
+import javax.imageio.ImageIO;
+import javax.swing.*;
 
 /**
  *
@@ -47,15 +51,10 @@ public class SnapShotListener implements ActionListener {
         }
 
         BufferedImage image = takeSnapShot();
-
         this.frame.setVisible(true);
-        
-//        drawTrack(image);
-        try {
-            saveScreen(image);
-        } catch (IOException ex) {
-            logger.error("Error: " + ex);
-        }
+
+        saveScreen(image);
+
     }
     
     private BufferedImage takeSnapShot() {
@@ -87,47 +86,79 @@ public class SnapShotListener implements ActionListener {
 
                 g2.drawOval((int)(positionList.get(i).position.x)-radius/2, 
                        (int)(positionList.get(i).position.y)-radius/2, radius, radius);
+                int x = (int)(positionList.get(i).position.x)-radius/2;
+                int y = (int)(positionList.get(i).position.y)-radius/2;
+                if(positionList.get(i).getNumber() != 0) {
+                    g2.drawString(Integer.toString(positionList.get(i).getNumber()), x, y);
+                }
             }
         }
         g2.dispose();
     }
     
-    private void saveScreen(BufferedImage image) throws IOException {
-        
-//        int returnVal = cp.fc.showSaveDialog(cp);
-//
-//        if (returnVal == JFileChooser.APPROVE_OPTION) {
+    private void saveScreen(BufferedImage image)  {
 
-//            String format = "png";
-//            File file = cp.fc.getSelectedFile();
-//            if (!file.getName().endsWith(".png")) {
-//                file = new File(cp.fc.getSelectedFile() + ".png");
-//            }
-//            ImageIO.write(image, format, file);
-//            JOptionPane.showMessageDialog(cp,
-//            "Image saved");
+        int returnVal = cp.fc.showSaveDialog(cp);
+        if (returnVal == JFileChooser.APPROVE_OPTION) {
 
-            List<BufferedImage> bufferedTracks = createBufferTrackImages();
-
-            bufferedTracks.add(0, image);
-            BufferedImage ar[] = new BufferedImage[bufferedTracks.size()];
-            for(int i = 0; i < ar.length; i++) {
-                ar[i] = bufferedTracks.get(i);
+            if(cp.fc.getFileFilter().getDescription().equals("image png")) {
+                savePNG(image);
+            } else if(cp.fc.getFileFilter().getDescription().equals("animation gif")) {
+                saveGIF(image);
+            } else {
+                savePNG(image);
             }
-            try
-            {
-                Giffer.generateFromBI(ar, "output.gif", 40, true);
-            } catch (Exception ex)
-            {
-                ex.printStackTrace();
-            }
-//        }
+            JOptionPane.showMessageDialog(cp,
+            "Image saved");
+        }
+    }
+
+    private void savePNG(BufferedImage image) {
+        drawTrack(image);
+        String format = "png";
+        File file = cp.fc.getSelectedFile();
+        if (!file.getName().endsWith("." + format)) {
+            file = new File(cp.fc.getSelectedFile() + "." + format);
+        }
+        try {
+            ImageIO.write(image, format, file);
+        } catch (IOException e) {
+            logger.error("Error: " + e);
+        }
+    }
+
+    private void saveGIF(BufferedImage image) {
+        List<BufferedImage> bufferedTracks = createBufferTrackImages();
+        bufferedTracks.add(0, image);
+        BufferedImage ar[] = new BufferedImage[bufferedTracks.size()];
+
+        for(int i = 0; i < ar.length; i++) {
+            ar[i] = bufferedTracks.get(i);
+        }
+
+        String format = "gif";
+        File file = cp.fc.getSelectedFile();
+        String fileName = cp.fc.getSelectedFile().getPath();
+        if (!file.getName().endsWith("." + format)) {
+            fileName += ("." + format);
+        }
+
+        try
+        {
+            Giffer.generateFromBI(ar, fileName, 40, true);
+        } catch (Exception ex)
+        {
+            logger.error("Error: " + ex);
+        }
     }
 
     private List createBufferTrackImages() {
         List<BufferedImage> bufferedTracks = new ArrayList<>();
         List<Position> positionList = this.tracker.getPosition();
-        final int framePointRate = 50;
+        int framePointRate = positionList.size() / 50;
+        if (framePointRate == 0) {
+            framePointRate = positionList.size() - 2;
+        }
         Rectangle screenRect = new Rectangle(Toolkit.getDefaultToolkit().getScreenSize());
         BufferedImage bufferedImage = null;
         Graphics g = null;
@@ -152,6 +183,11 @@ public class SnapShotListener implements ActionListener {
 
                 g.drawOval((int)(positionList.get(i).position.x)-radius/2,
                         (int)(positionList.get(i).position.y)-radius/2, radius, radius);
+                int x = (int)(positionList.get(i).position.x)-radius/2;
+                int y = (int)(positionList.get(i).position.y)-radius/2;
+                if(positionList.get(i).getNumber() != 0) {
+                    g.drawString(Integer.toString(positionList.get(i).getNumber()), x, y);
+                }
             }
 
             if (i % framePointRate == 0 && i != 0) {
@@ -160,8 +196,6 @@ public class SnapShotListener implements ActionListener {
             }
 
         }
-
-        // Graphics context no longer needed so dispose it
 
         return bufferedTracks;
     }
