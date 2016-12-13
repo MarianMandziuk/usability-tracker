@@ -31,6 +31,7 @@ public class MouseTracker implements Runnable  {
     private Rectangle selection;
     private boolean selectionTraking;
     private ColorTracker colorTracker;
+    private boolean startTrack = false;
 
     MouseTracker(TrackerFrame it, ColorTracker t) {
         this.frame = it;
@@ -47,9 +48,16 @@ public class MouseTracker implements Runnable  {
     }
     
     public void processPath(TrackerCallback callback) {
+
+        int ovalCount = 0;
         if(positionList.size() > 2) {
             Position current = positionList.get(0);
             for(int i=1; i< positionList.size(); i++) {
+                if(current.isDelay()) {
+                    ovalCount++;
+                    current.setNumber(ovalCount);
+                }
+
                 Position next = positionList.get(i);
                 callback.process(current, next);
                 current = next;                
@@ -63,34 +71,17 @@ public class MouseTracker implements Runnable  {
         current.position = MouseInfo.getPointerInfo().getLocation();
         current.setColor(colorTracker.getColor());
         positionList.add(current);
-
         while(true) {
             if(!this.frame.isActive()) {
                 long time1 = System.currentTimeMillis();
-                PointerInfo info = MouseInfo.getPointerInfo();            
+                PointerInfo info = MouseInfo.getPointerInfo();
                 Point p = info.getLocation();
                 if(this.selectionTraking) {
                     if(selection.contains(p)) {
-                        if(current.position.x != p.x ||
-                            current.position.y != p.y) {
-                            current = new Position(p);
-                            current.setColor(colorTracker.getColor());
-                            positionList.add(current);                               
-                        } else {
-                            current.incDelay();                            
-                            ThreadUtil.sleep(DELAY);
-                        }                    
+                        addPosition(p);
                     }
                 } else {
-                    if(current.position.x != p.x ||
-                        current.position.y != p.y) {
-                        current = new Position(p);
-                        current.setColor(colorTracker.getColor());
-                        positionList.add(current);                               
-                        } else {
-                            current.incDelay();
-                            ThreadUtil.sleep(DELAY);
-                        }   
+                    addPosition(p);
                 }
                 long time2 = System.currentTimeMillis();
     //            System.out.println("it took: " + (time2 - time1));
@@ -98,7 +89,23 @@ public class MouseTracker implements Runnable  {
         }
     }
 
+    private void addPosition(Point p) {
+        if(current.position.x != p.x ||
+                current.position.y != p.y) {
+            current = new Position(p);
+            current.setColor(colorTracker.getColor());
+            positionList.add(current);
+        } else {
+            current.incDelay();
+            ThreadUtil.sleep(DELAY);
+        }
+    }
+
     public List<Position> getPosition() {
         return this.positionList;
+    }
+
+    public void setTrack(boolean startTrack) {
+        this.startTrack = startTrack;
     }
 }

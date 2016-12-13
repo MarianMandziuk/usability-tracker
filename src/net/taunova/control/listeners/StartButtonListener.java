@@ -24,7 +24,7 @@ public class StartButtonListener implements ActionListener {
     
     @Override
     public void actionPerformed(ActionEvent ae) {
-        new Thread(this.frame.tracker).start();
+
         Object source = ae.getSource();
         if (source instanceof JButton) {
            
@@ -32,6 +32,7 @@ public class StartButtonListener implements ActionListener {
                 this.frame.setState(JFrame.ICONIFIED);
 //                this.frame.setFocusable(false);
                 ((JButton) source).setText("Pause");
+                new Thread(this.frame.tracker).start();
             }
         }
     }

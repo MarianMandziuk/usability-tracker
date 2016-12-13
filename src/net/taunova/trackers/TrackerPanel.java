@@ -48,7 +48,7 @@ public class TrackerPanel extends JPanel {
     private int privWidth;
     private int privHeight;
     private Selection selectionNew;
-    private static int ovalCount = 0;
+    private int ovalCount = 0;
     
     public static final int DELAY = 10;
     public TrackerPanel(MouseTracker tracker) {
@@ -147,10 +147,8 @@ public class TrackerPanel extends JPanel {
                 y1 = boundariesCorrectionY(y1, screenRect.height);
                 w = boundariesCorrectionW(w, x1);
                 h = boundariesCorrectionH(h, y1);
-//                    selection.setRect(scalerX, scalerY, w, h);
 
                 selectionNew.setDoubleToIntRectangle(x1, y1, w, h);
-//                    setDoubleToIntRectangle(selection, x1, y1, w, h);
 
                 privWidth = windowSize.width;
                 privHeight = windowSize.height;
@@ -170,7 +168,7 @@ public class TrackerPanel extends JPanel {
     @Override
     public void paintComponent(Graphics g) {
         this.windowSize = getSize();
-        setUpNumbers();
+
         drawScreenShot(g);
 
         hideTunnel(g);
@@ -306,18 +304,5 @@ public class TrackerPanel extends JPanel {
             h = h - ((h + y) - windowSize.height);
         }
         return h;
-    }
-    
-    private void setUpNumbers() {
-        List<Position> positions = this.tracker.getPosition();
-        if (positions.isEmpty()) {
-            ovalCount = 0;
-        }
-        for (Position p : positions) {
-            if(p.isDelay() && p.getNumber() == 0) {
-                ovalCount++;
-                p.setNumber(ovalCount);
-            }
-        }
     }
 }
