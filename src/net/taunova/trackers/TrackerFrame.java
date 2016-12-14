@@ -52,11 +52,13 @@ public class TrackerFrame extends JFrame implements WindowFocusListener {
         this.addWindowListener(new WindowAdapter() {
             public void windowActivated(WindowEvent arg0) {
                 if (colorTracker.isSwitchColor()) {
-                    colorTracker.setColor(Color.RED);
+                    colorTracker.nextColor();
                     colorTracker.setSwitchColor(false);
+//                    System.out.println("1");
                 } else {
-                    colorTracker.setColor(Color.BLUE);
+                    colorTracker.nextColor();
                     colorTracker.setSwitchColor(true);
+//                    System.out.println("2");
                 }
             }
 

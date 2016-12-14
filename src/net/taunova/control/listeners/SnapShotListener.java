@@ -43,6 +43,7 @@ public class SnapShotListener implements ActionListener {
     
     @Override
     public void actionPerformed(ActionEvent ae) {
+        tracker.setTrack(false);
         this.frame.setVisible(false);
         try {
             TimeUnit.SECONDS.sleep(1);
@@ -54,7 +55,7 @@ public class SnapShotListener implements ActionListener {
         this.frame.setVisible(true);
 
         saveScreen(image);
-
+        tracker.setTrack(true);
     }
     
     private BufferedImage takeSnapShot() {
@@ -196,7 +197,6 @@ public class SnapShotListener implements ActionListener {
             }
 
         }
-
         return bufferedTracks;
     }
 }

@@ -21,9 +21,8 @@ import java.awt.event.ComponentEvent;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
 import java.awt.image.BufferedImage;
-import java.util.List;
-import javax.swing.JPanel;
-import javax.swing.Timer;
+import javax.swing.*;
+
 import net.taunova.util.Position;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -48,8 +47,8 @@ public class TrackerPanel extends JPanel {
     private int privWidth;
     private int privHeight;
     private Selection selectionNew;
-    private int ovalCount = 0;
-    
+    private Timer t;
+
     public static final int DELAY = 10;
     public TrackerPanel(MouseTracker tracker) {
         super(true);
@@ -64,15 +63,17 @@ public class TrackerPanel extends JPanel {
         }
         
 
-        new Timer(100, new ActionListener() {
+        t = new Timer(100, new ActionListener() {
             
             @Override
             public void actionPerformed(ActionEvent e) {
                 repaint();
                 
             }
-        }).start();
-        
+        });
+
+        t.start();
+
         MouseAdapter handler = new MouseAdapter() {
             @Override
             public void mousePressed(MouseEvent e) {
@@ -168,7 +169,6 @@ public class TrackerPanel extends JPanel {
     @Override
     public void paintComponent(Graphics g) {
         this.windowSize = getSize();
-
         drawScreenShot(g);
 
         hideTunnel(g);
@@ -182,29 +182,31 @@ public class TrackerPanel extends JPanel {
 
 
         tracker.processPath(new TrackerCallback() {
-            
+
             @Override
             public void process(Position begin, Position end) {
                 g.setColor(begin.getColor());
-                g.drawLine((int)(kX * begin.position.x), 
-                           (int)(kY * begin.position.y), 
-                           (int)(kX * end.position.x), 
+                g.drawLine((int)(kX * begin.position.x),
+                           (int)(kY * begin.position.y),
+                           (int)(kX * end.position.x),
                            (int)(kY * end.position.y));
                 if(begin.getDelay() > DELAY) {
-
-                    int radius = begin.getDelay();                    
+                    if (begin.getColor() == Color.YELLOW) {
+//                        System.out.println(begin.getDelay());
+                    }
+                    int radius = begin.getDelay();
                     if(radius > 20) {
                         radius = 20;
                     }
-                    
-                    g.drawOval((int)(kX*begin.position.x)-radius/2, 
+
+                    g.drawOval((int)(kX*begin.position.x)-radius/2,
                            (int)(kY*begin.position.y)-radius/2, radius, radius);
                     int x = (int)(kX*begin.position.x)-radius/2;
                     int y = (int)(kY*begin.position.y)-radius/2;
                     if(begin.getNumber() != 0) {
                         g.drawString(Integer.toString(begin.getNumber()), x, y);
                     }
-                }   
+                }
             }
         });
     }
@@ -304,5 +306,9 @@ public class TrackerPanel extends JPanel {
             h = h - ((h + y) - windowSize.height);
         }
         return h;
+    }
+
+    public void stopExcution() {
+        t.stop();
     }
 }

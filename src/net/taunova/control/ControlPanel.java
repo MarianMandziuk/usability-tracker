@@ -14,6 +14,7 @@ import javax.swing.filechooser.FileNameExtensionFilter;
 import net.taunova.control.listeners.CleanTrackerListener;
 import net.taunova.control.listeners.SnapShotListener;
 import net.taunova.control.listeners.StartButtonListener;
+import net.taunova.control.listeners.StopListener;
 import net.taunova.trackers.MouseTracker;
 import net.taunova.trackers.TrackerFrame;
 
@@ -40,6 +41,7 @@ public class ControlPanel extends JPanel {
         JButton button2 = new JButton("Mark area");
         JButton button3 = new JButton("New slide");
         JButton button4 = new JButton("Take snapshot");
+        JButton button6 = new JButton("STOP");
         button5 = new JButton("Start");
         fc.addChoosableFileFilter(new FileNameExtensionFilter("image png","png"));
         fc.addChoosableFileFilter(new FileNameExtensionFilter("animation gif","gif"));
@@ -48,10 +50,11 @@ public class ControlPanel extends JPanel {
         add(button2);
         add(button3);
         add(button4);
-        
+        add(button6);
         button1.addActionListener(new CleanTrackerListener(tracker));
         button4.addActionListener(new SnapShotListener(this));
-        button5.addActionListener(new StartButtonListener(frame));
+        button5.addActionListener(new StartButtonListener(frame, tracker));
+        button6.addActionListener(new StopListener(tracker, frame));
     }     
     
     public MouseTracker getMouseTracker() {
