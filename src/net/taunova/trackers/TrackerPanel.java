@@ -1,8 +1,3 @@
-/*
- * To change this license header, choose License Headers in Project Properties.
- * To change this template file, choose Tools | Templates
- * and open the template in the editor.
- */
 package net.taunova.trackers;
 
 import java.awt.AWTException;
@@ -26,7 +21,7 @@ import javax.swing.*;
 import net.taunova.util.Position;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-
+import javax.swing.SwingUtilities;
 import net.taunova.util.Selection;
 import net.taunova.util.SelectionUtil;
 /**
@@ -50,6 +45,7 @@ public class TrackerPanel extends JPanel {
     private Timer t;
 
     public static final int DELAY = 10;
+
     public TrackerPanel(MouseTracker tracker) {
         super(true);
         this.tracker = tracker;  
@@ -67,8 +63,8 @@ public class TrackerPanel extends JPanel {
             
             @Override
             public void actionPerformed(ActionEvent e) {
-                repaint();
-                
+                    repaint();
+
             }
         });
 
@@ -135,7 +131,7 @@ public class TrackerPanel extends JPanel {
             privHeight = windowSize.height;
             }
         };
-        
+
         ComponentAdapter resizeComponent = new ComponentAdapter() {
             public void componentResized(ComponentEvent e) {
             try {
@@ -155,15 +151,16 @@ public class TrackerPanel extends JPanel {
                 privHeight = windowSize.height;
 
             } catch(NullPointerException ex) {
-
+                // do nothing
             }
             }
         };
-        
-        
+
+
         this.addMouseListener(handler);
         this.addMouseMotionListener(handler);
         this.addComponentListener(resizeComponent);
+
     }
 
     @Override
@@ -209,6 +206,7 @@ public class TrackerPanel extends JPanel {
                 }
             }
         });
+
     }
     
     private BufferedImage takeSnapShot() {
@@ -309,6 +307,11 @@ public class TrackerPanel extends JPanel {
     }
 
     public void stopExcution() {
-        t.stop();
+        this.t.stop();
+    }
+
+    public void setSelectionNull() {
+        this.selectionNew = null;
+        this.tracker.setSelection(null, false);
     }
 }

@@ -1,8 +1,3 @@
-/*
- * To change this license header, choose License Headers in Project Properties.
- * To change this template file, choose Tools | Templates
- * and open the template in the editor.
- */
 package net.taunova.control.listeners;
 
 import java.awt.*;
@@ -31,10 +26,15 @@ import javax.swing.*;
  * @author maryan
  */
 public class SnapShotListener implements ActionListener {
-    private TrackerFrame frame;
-    private MouseTracker tracker;
-    private ControlPanel cp;
-    private final Logger logger = LoggerFactory.getLogger(SnapShotListener.class);
+    protected TrackerFrame frame;
+    protected MouseTracker tracker;
+    protected ControlPanel cp;
+    protected final Logger logger = LoggerFactory.getLogger(SnapShotListener.class);
+
+    public SnapShotListener() {
+
+    }
+
     public SnapShotListener(ControlPanel cp) {
         this.cp = cp;
         this.frame = cp.getTrackerFrame();
@@ -58,7 +58,7 @@ public class SnapShotListener implements ActionListener {
         tracker.setTrack(true);
     }
     
-    private BufferedImage takeSnapShot() {
+    protected BufferedImage takeSnapShot() {
         Rectangle screenRect = new Rectangle(Toolkit.getDefaultToolkit().getScreenSize());
         BufferedImage im = null;
         try {
@@ -69,12 +69,12 @@ public class SnapShotListener implements ActionListener {
 
         return im;
     }
-    
-    private void drawTrack(BufferedImage image) {
+
+    protected void drawTrack(BufferedImage image) {
         List<Position> positionList = this.tracker.getPosition();
-        Graphics2D g2 = image.createGraphics();
-        g2.setColor(Color.red);
+        Graphics2D g2 = image.createGraphics();;
         for(int i = 0; i < positionList.size() - 1; i++) {
+            g2.setColor(positionList.get(i).getColor());
             g2.drawLine((int)(positionList.get(i).position.x), 
                            (int)(positionList.get(i).position.y), 
                            (int)(positionList.get(i + 1).position.x), 
@@ -96,8 +96,8 @@ public class SnapShotListener implements ActionListener {
         }
         g2.dispose();
     }
-    
-    private void saveScreen(BufferedImage image)  {
+
+    protected void saveScreen(BufferedImage image)  {
 
         int returnVal = cp.fc.showSaveDialog(cp);
         if (returnVal == JFileChooser.APPROVE_OPTION) {
@@ -114,7 +114,7 @@ public class SnapShotListener implements ActionListener {
         }
     }
 
-    private void savePNG(BufferedImage image) {
+    protected void savePNG(BufferedImage image) {
         drawTrack(image);
         String format = "png";
         File file = cp.fc.getSelectedFile();
@@ -128,7 +128,7 @@ public class SnapShotListener implements ActionListener {
         }
     }
 
-    private void saveGIF(BufferedImage image) {
+    protected void saveGIF(BufferedImage image) {
         List<BufferedImage> bufferedTracks = createBufferTrackImages();
         bufferedTracks.add(0, image);
         BufferedImage ar[] = new BufferedImage[bufferedTracks.size()];
@@ -153,7 +153,7 @@ public class SnapShotListener implements ActionListener {
         }
     }
 
-    private List createBufferTrackImages() {
+    protected List createBufferTrackImages() {
         List<BufferedImage> bufferedTracks = new ArrayList<>();
         List<Position> positionList = this.tracker.getPosition();
         int framePointRate = positionList.size() / 50;

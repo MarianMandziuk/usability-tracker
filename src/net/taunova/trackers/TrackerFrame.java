@@ -1,8 +1,3 @@
-/*
- * To change this license header, choose License Headers in Project Properties.
- * To change this template file, choose Tools | Templates
- * and open the template in the editor.
- */
 package net.taunova.trackers;
 
 import java.awt.BorderLayout;
@@ -33,10 +28,10 @@ public class TrackerFrame extends JFrame implements WindowFocusListener {
         Rectangle dim = GraphicsEnvironment.getLocalGraphicsEnvironment().getMaximumWindowBounds();
         int baseWidth = dim.width/DIVIDER;
         int baseHeight = dim.height/DIVIDER;
+        int buttonPanelWidth = 150;
         tracker = new MouseTracker(this, colorTracker);
         buttonPanel = new ControlPanel(tracker, this);
         trackerPanel = new TrackerPanel(tracker);
-        
         buttonPanel.setPreferredSize(new Dimension(120,
                                        baseHeight));
         trackerPanel.setPreferredSize(new Dimension(baseWidth, baseHeight));
@@ -45,7 +40,7 @@ public class TrackerFrame extends JFrame implements WindowFocusListener {
         getContentPane().add(BorderLayout.CENTER, trackerPanel);
         setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 
-        setSize(baseWidth+150, baseHeight);
+        setSize(baseWidth + buttonPanelWidth, baseHeight);
         setVisible(true); 
         addWindowFocusListener(this);
 
@@ -54,11 +49,9 @@ public class TrackerFrame extends JFrame implements WindowFocusListener {
                 if (colorTracker.isSwitchColor()) {
                     colorTracker.nextColor();
                     colorTracker.setSwitchColor(false);
-//                    System.out.println("1");
                 } else {
                     colorTracker.nextColor();
                     colorTracker.setSwitchColor(true);
-//                    System.out.println("2");
                 }
             }
 

@@ -1,8 +1,3 @@
-/*
- * To change this license header, choose License Headers in Project Properties.
- * To change this template file, choose Tools | Templates
- * and open the template in the editor.
- */
 package net.taunova.trackers;
 
 import java.awt.Component;
@@ -114,13 +109,6 @@ public class MouseTracker implements Runnable  {
         if(thread.isAlive()) {
             thread.interrupt();
         }
-
-//        try {
-////            thread.join();
-//        } catch (InterruptedException ex) {
-//            ex.printStackTrace();
-//
-//        }
     }
 
     public void createThread(Thread t) {

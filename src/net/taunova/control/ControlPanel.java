@@ -1,8 +1,3 @@
-/*
- * To change this license header, choose License Headers in Project Properties.
- * To change this template file, choose Tools | Templates
- * and open the template in the editor.
- */
 package net.taunova.control;
 
 
@@ -11,10 +6,8 @@ import javax.swing.JButton;
 import javax.swing.JFileChooser;
 import javax.swing.JPanel;
 import javax.swing.filechooser.FileNameExtensionFilter;
-import net.taunova.control.listeners.CleanTrackerListener;
-import net.taunova.control.listeners.SnapShotListener;
-import net.taunova.control.listeners.StartButtonListener;
-import net.taunova.control.listeners.StopListener;
+
+import net.taunova.control.listeners.*;
 import net.taunova.trackers.MouseTracker;
 import net.taunova.trackers.TrackerFrame;
 
@@ -41,7 +34,7 @@ public class ControlPanel extends JPanel {
         JButton button2 = new JButton("Mark area");
         JButton button3 = new JButton("New slide");
         JButton button4 = new JButton("Take snapshot");
-        JButton button6 = new JButton("STOP");
+        JButton button6 = new JButton("Stop");
         button5 = new JButton("Start");
         fc.addChoosableFileFilter(new FileNameExtensionFilter("image png","png"));
         fc.addChoosableFileFilter(new FileNameExtensionFilter("animation gif","gif"));
@@ -52,6 +45,8 @@ public class ControlPanel extends JPanel {
         add(button4);
         add(button6);
         button1.addActionListener(new CleanTrackerListener(tracker));
+        button2.addActionListener(new MarkAreaListener(frame));
+        button3.addActionListener(new SnapShotCleanListener(this));
         button4.addActionListener(new SnapShotListener(this));
         button5.addActionListener(new StartButtonListener(frame, tracker));
         button6.addActionListener(new StopListener(tracker, frame));
