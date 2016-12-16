@@ -21,7 +21,7 @@ import javax.swing.*;
 import net.taunova.util.Position;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import javax.swing.SwingUtilities;
+
 import net.taunova.util.Selection;
 import net.taunova.util.SelectionUtil;
 /**
@@ -42,7 +42,7 @@ public class TrackerPanel extends JPanel {
     private int privWidth;
     private int privHeight;
     private Selection selectionNew;
-    private Timer t;
+    private Timer timer;
 
     public static final int DELAY = 10;
 
@@ -57,9 +57,8 @@ public class TrackerPanel extends JPanel {
         } catch (AWTException ex) {
             logger.error("Robot excepion: " + ex);
         }
-        
 
-        t = new Timer(100, new ActionListener() {
+        timer = new Timer(100, new ActionListener() {
             
             @Override
             public void actionPerformed(ActionEvent e) {
@@ -68,13 +67,12 @@ public class TrackerPanel extends JPanel {
             }
         });
 
-        t.start();
+        timer.start();
 
         MouseAdapter handler = new MouseAdapter() {
             @Override
             public void mousePressed(MouseEvent e) {
                 p1 = e.getPoint();
-
                 if (selectionNew == null) {
                     selectionNew = new Selection(e.getX(), e.getY(), 0, 0);
                 } else {
@@ -134,28 +132,27 @@ public class TrackerPanel extends JPanel {
 
         ComponentAdapter resizeComponent = new ComponentAdapter() {
             public void componentResized(ComponentEvent e) {
-            try {
+                try {
 
-                double w = (windowSize.width /(double) privWidth) * selectionNew.getWidth();
-                double h = (windowSize.height /(double) privHeight) * selectionNew.getHeight();
-                double x1 = (windowSize.width /(double) privWidth) * selectionNew.getX();
-                double y1 = (windowSize.height /(double) privHeight) * selectionNew.getY();
-                x1 = boundariesCorrectionX(x1, screenRect.width);
-                y1 = boundariesCorrectionY(y1, screenRect.height);
-                w = boundariesCorrectionW(w, x1);
-                h = boundariesCorrectionH(h, y1);
+                    double w = (windowSize.width /(double) privWidth) * selectionNew.getWidth();
+                    double h = (windowSize.height /(double) privHeight) * selectionNew.getHeight();
+                    double x1 = (windowSize.width /(double) privWidth) * selectionNew.getX();
+                    double y1 = (windowSize.height /(double) privHeight) * selectionNew.getY();
+                    x1 = boundariesCorrectionX(x1, screenRect.width);
+                    y1 = boundariesCorrectionY(y1, screenRect.height);
+                    w = boundariesCorrectionW(w, x1);
+                    h = boundariesCorrectionH(h, y1);
 
-                selectionNew.setDoubleToIntRectangle(x1, y1, w, h);
+                    selectionNew.setDoubleToIntRectangle(x1, y1, w, h);
 
-                privWidth = windowSize.width;
-                privHeight = windowSize.height;
+                    privWidth = windowSize.width;
+                    privHeight = windowSize.height;
 
-            } catch(NullPointerException ex) {
-                // do nothing
-            }
+                } catch(NullPointerException ex) {
+                    // do nothing
+                }
             }
         };
-
 
         this.addMouseListener(handler);
         this.addMouseMotionListener(handler);
@@ -188,9 +185,6 @@ public class TrackerPanel extends JPanel {
                            (int)(kX * end.position.x),
                            (int)(kY * end.position.y));
                 if(begin.getDelay() > DELAY) {
-                    if (begin.getColor() == Color.YELLOW) {
-//                        System.out.println(begin.getDelay());
-                    }
                     int radius = begin.getDelay();
                     if(radius > 20) {
                         radius = 20;
@@ -232,8 +226,6 @@ public class TrackerPanel extends JPanel {
         return tmpImage;
     }
 
-
-    
     
     private void hideTunnel(Graphics g) {
         g.setColor(Color.GRAY);
@@ -250,10 +242,7 @@ public class TrackerPanel extends JPanel {
     
     private void drawScreenShot(Graphics g) {
         Dimension dim = getSize();
-//        if (image == null) {
-//            image = createImage (dim.width, dim.height);
-//            image = takeSnapShot();
-//        }
+
         image = takeSnapShot();
         dbg = image.getGraphics();
 
@@ -265,7 +254,7 @@ public class TrackerPanel extends JPanel {
         dbg.drawImage(takeSnapShot(), 0, 0, null);
 
         g.drawImage(image, 0, 0, null);
-//        g.dispose();
+
         dbg.dispose();
     }
     
@@ -307,7 +296,7 @@ public class TrackerPanel extends JPanel {
     }
 
     public void stopExcution() {
-        this.t.stop();
+        this.timer.stop();
     }
 
     public void setSelectionNull() {

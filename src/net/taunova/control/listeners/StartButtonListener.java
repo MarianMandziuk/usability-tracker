@@ -29,8 +29,6 @@ public class StartButtonListener implements ActionListener {
             if (frame.isActive() && ((JButton) source).getText() == "Start" &&
                     !this.frame.tracker.startTrack) {
                 this.frame.setState(JFrame.ICONIFIED);
-//                this.frame.setFocusable(false);
-//                ((JButton) source).setText("Pause");
                 this.frame.tracker.setTrack(true);
                 this.tracker.createThread(new Thread(this.frame.tracker));
             } else if(frame.isActive() && ((JButton) source).getText() == "Start")  {

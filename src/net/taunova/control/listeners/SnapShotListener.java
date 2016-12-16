@@ -193,7 +193,6 @@ public class SnapShotListener implements ActionListener {
 
             if (i % framePointRate == 0 && i != 0) {
                 bufferedTracks.add(bufferedImage);
-//                g.dispose();
             }
 
         }
