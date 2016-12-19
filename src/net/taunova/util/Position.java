@@ -10,8 +10,8 @@ import java.awt.Color;
 public class Position {
     public Point position;
     public int delay; 
-    public int number = 0;
-    public Color color;
+    private int number = 0;
+    private Color color;
     
     public static final int DELAY = 10;
 

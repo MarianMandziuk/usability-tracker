@@ -26,8 +26,8 @@ public class MouseTracker implements Runnable  {
     private Rectangle selection;
     private boolean selectionTraking;
     private ColorTracker colorTracker;
-    public boolean startTrack = false;
     private Thread thread;
+    public boolean startTrack = false;
 
     MouseTracker(TrackerFrame it, ColorTracker t) {
         this.frame = it;

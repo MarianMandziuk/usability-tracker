@@ -87,6 +87,9 @@ public class TrackerPanel extends JPanel {
             @Override
             public void mouseDragged(MouseEvent e) {
                 p2 = e.getPoint();
+                if (p2 == null) {
+                    logger.warn("Second point can't be null");
+                }
                 if(!SelectionUtil.isPointInWindowBoundary(p1,
                         windowSize.width,
                         windowSize.height)) {
@@ -216,12 +219,12 @@ public class TrackerPanel extends JPanel {
                 im.getScaledInstance(windowSize.width,
                         windowSize.height,
                         Image.SCALE_SMOOTH),
-                        0, 
-                        0, 
-                        windowSize.width, 
+                        0,
+                        0,
+                        windowSize.width,
                         windowSize.height,
                         null);
-        
+
         g2.dispose();
         return tmpImage;
     }
@@ -249,8 +252,8 @@ public class TrackerPanel extends JPanel {
         dbg.setColor(getBackground());
         dbg.fillRect(0, 0, dim.width, dim.height);
         dbg.setColor(getForeground());
-        
-        
+
+
         dbg.drawImage(takeSnapShot(), 0, 0, null);
 
         g.drawImage(image, 0, 0, null);
@@ -258,7 +261,7 @@ public class TrackerPanel extends JPanel {
         dbg.dispose();
     }
     
-    public double boundariesCorrectionX(double x, int width) {
+    private double boundariesCorrectionX(double x, int width) {
         if (x < 1.0) {
             x = 1.0;
         } else if (x > width) {
@@ -267,8 +270,8 @@ public class TrackerPanel extends JPanel {
 
         return x;
     }
-    
-    public double boundariesCorrectionY(double y, int height) {
+
+    private double boundariesCorrectionY(double y, int height) {
         if (y < 1.0) {
             y = 1.0;
         } else if (y > height) {
@@ -276,8 +279,8 @@ public class TrackerPanel extends JPanel {
         }
         return y;
     }
-    
-    public double boundariesCorrectionW(double w, double x) {
+
+    private double boundariesCorrectionW(double w, double x) {
         if (w < 1.0) {
             w = 1.0;
         } else if ((x + w) > windowSize.width) {
@@ -285,8 +288,8 @@ public class TrackerPanel extends JPanel {
         }
         return w;
     }
-    
-    public double boundariesCorrectionH(double h, double y) {
+
+    private double boundariesCorrectionH(double h, double y) {
         if (h < 1.0) {
             h = 1.0;
         } else if ((y + h) > windowSize.height) {

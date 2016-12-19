@@ -31,9 +31,6 @@ public class SnapShotListener implements ActionListener {
     protected ControlPanel cp;
     protected final Logger logger = LoggerFactory.getLogger(SnapShotListener.class);
 
-    public SnapShotListener() {
-
-    }
 
     public SnapShotListener(ControlPanel cp) {
         this.cp = cp;
@@ -99,7 +96,7 @@ public class SnapShotListener implements ActionListener {
 
     protected void saveScreen(BufferedImage image)  {
 
-        int returnVal = cp.fc.showSaveDialog(cp);
+        int returnVal = cp.fc.showSaveDialog(this.frame);
         if (returnVal == JFileChooser.APPROVE_OPTION) {
 
             if(cp.fc.getFileFilter().getDescription().equals("image png")) {
@@ -109,7 +106,7 @@ public class SnapShotListener implements ActionListener {
             } else {
                 savePNG(image);
             }
-            JOptionPane.showMessageDialog(cp,
+            JOptionPane.showMessageDialog(this.frame,
             "Image saved");
         }
     }
@@ -156,16 +153,17 @@ public class SnapShotListener implements ActionListener {
     protected List createBufferTrackImages() {
         List<BufferedImage> bufferedTracks = new ArrayList<>();
         List<Position> positionList = this.tracker.getPosition();
-        int framePointRate = positionList.size() / 50;
-        if (framePointRate == 0) {
-            framePointRate = positionList.size() - 2;
+        final int frameRate = 50;
+        int pointPerFrame = positionList.size() / frameRate;
+        if (pointPerFrame == 0) {
+            pointPerFrame = positionList.size() - 2;
         }
         Rectangle screenRect = new Rectangle(Toolkit.getDefaultToolkit().getScreenSize());
         BufferedImage bufferedImage = null;
         Graphics g = null;
         for(int i = 0; i < positionList.size() - 1; i++) {
 
-            if (i % framePointRate == 0) {
+            if (i % pointPerFrame == 0) {
                  bufferedImage = new BufferedImage(screenRect.width, screenRect.height,
                         BufferedImage.TYPE_INT_ARGB);
                 g = bufferedImage.createGraphics();
@@ -191,7 +189,7 @@ public class SnapShotListener implements ActionListener {
                 }
             }
 
-            if (i % framePointRate == 0 && i != 0) {
+            if (i % pointPerFrame == 0 && i != 0) {
                 bufferedTracks.add(bufferedImage);
             }
 

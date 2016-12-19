@@ -28,10 +28,12 @@ public class SensitiveAreas {
                 parentSelection.y - CENTERED_AREA,
                 SIZE_AREA,
                 SIZE_AREA));
-        rects.add(new Rectangle((parentSelection.x + parentSelection.width / 2) - CENTERED_AREA,
+        rects.add(new Rectangle((parentSelection.x + parentSelection.width / 2)
+                - CENTERED_AREA,
                 parentSelection.y - CENTERED_AREA,
                 SIZE_AREA, SIZE_AREA));
-        rects.add(new Rectangle((parentSelection.x + parentSelection.width) - CENTERED_AREA,
+        rects.add(new Rectangle((parentSelection.x + parentSelection.width)
+                - CENTERED_AREA,
                 parentSelection.y - CENTERED_AREA,
                 SIZE_AREA, SIZE_AREA));
         rects.add(new Rectangle(parentSelection.x - CENTERED_AREA,
@@ -40,13 +42,16 @@ public class SensitiveAreas {
         rects.add(new Rectangle(parentSelection.x - CENTERED_AREA,
                 (parentSelection.y + parentSelection.height) - CENTERED_AREA,
                 SIZE_AREA, SIZE_AREA));
-        rects.add(new Rectangle((parentSelection.x + parentSelection.width) - CENTERED_AREA,
+        rects.add(new Rectangle((parentSelection.x + parentSelection.width)
+                - CENTERED_AREA,
                 (parentSelection.y + parentSelection.height / 2) - CENTERED_AREA,
                 SIZE_AREA, SIZE_AREA));
-        rects.add(new Rectangle((parentSelection.x + parentSelection.width / 2)- CENTERED_AREA,
+        rects.add(new Rectangle((parentSelection.x + parentSelection.width / 2)
+                - CENTERED_AREA,
                 (parentSelection.y + parentSelection.height) - CENTERED_AREA,
                 SIZE_AREA, SIZE_AREA));
-        rects.add(new Rectangle((parentSelection.x + parentSelection.width)- CENTERED_AREA,
+        rects.add(new Rectangle((parentSelection.x + parentSelection.width)
+                - CENTERED_AREA,
                 (parentSelection.y + parentSelection.height) - CENTERED_AREA,
                 SIZE_AREA, SIZE_AREA));
 
@@ -121,39 +126,62 @@ public class SensitiveAreas {
                     if (p2.x < selectedAreaPoint.x && p2.y  > selectedAreaPoint.y) {
                         width = selectedAreaPoint.x - p2.x;
                         height = p2.y - selectedAreaPoint.y;
-                        this.parentSelection.setRect(p2.x, selectedAreaPoint.y, width, height);
+                        this.parentSelection.setRect(p2.x,
+                                selectedAreaPoint.y,
+                                width,
+                                height);
                     } else if (p2.x < selectedAreaPoint.x && p2.y < selectedAreaPoint.y) {
                         width = selectedAreaPoint.x - p2.x;
                         height = selectedAreaPoint.y - p2.y;
-                        this.parentSelection.setRect(p2.x, p2.y, width, height);
+                        this.parentSelection.setRect(p2.x,
+                                p2.y,
+                                width,
+                                height);
                     } else if (p2.x > selectedAreaPoint.x && p2.y < selectedAreaPoint.y) {
                         width = p2.x - selectedAreaPoint.x;
                         height = selectedAreaPoint.y - p2.y;
-                        this.parentSelection.setRect(selectedAreaPoint.x, p2.y, width, height);
+                        this.parentSelection.setRect(selectedAreaPoint.x,
+                                p2.y,
+                                width,
+                                height);
                     }  else {
                         width = p2.x - selectedAreaPoint.x;
                         height = p2.y - selectedAreaPoint.y;
-                        this.parentSelection.setRect(selectedAreaPoint.x, selectedAreaPoint.y, width, height);
+                        this.parentSelection.setRect(selectedAreaPoint.x,
+                                selectedAreaPoint.y,
+                                width,
+                                height);
                     }
                 break;
             case 1:
             case 6:
                     if (p2.y < selectedAreaPoint.y) {
                         height = selectedAreaPoint.y - p2.y;
-                        this.parentSelection.setRect(selectedAreaPoint.x, p2.y, this.parentSelection.width, height);
+                        this.parentSelection.setRect(selectedAreaPoint.x,
+                                p2.y,
+                                this.parentSelection.width,
+                                height);
                     }  else {
                         height = p2.y - selectedAreaPoint.y;
-                        this.parentSelection.setRect(selectedAreaPoint.x, selectedAreaPoint.y, this.parentSelection.width, height);
+                        this.parentSelection.setRect(selectedAreaPoint.x,
+                                selectedAreaPoint.y,
+                                this.parentSelection.width,
+                                height);
                     }
                 break;
             case 3:
             case 5:
                     if (p2.x < selectedAreaPoint.x ) {
                         width = selectedAreaPoint.x - p2.x;
-                        this.parentSelection.setRect(p2.x, selectedAreaPoint.y, width, this.parentSelection.height);
+                        this.parentSelection.setRect(p2.x,
+                                selectedAreaPoint.y, width,
+                                this.parentSelection.height);
                     } else  {
                         width = p2.x - selectedAreaPoint.x;
-                        this.parentSelection.setRect(selectedAreaPoint.x, selectedAreaPoint.y, width, this.parentSelection.height);
+                        this.parentSelection.setRect(selectedAreaPoint.x,
+                                selectedAreaPoint.y,
+                                width,
+                                this.parentSelection.height);
                     }
                 break;
         }

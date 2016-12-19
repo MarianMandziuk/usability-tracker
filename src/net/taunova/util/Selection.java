@@ -1,5 +1,9 @@
 package net.taunova.util;
 
+import net.taunova.trackers.TrackerPanel;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 import java.awt.Rectangle;
 import java.awt.Point;
 import java.awt.Graphics;
@@ -11,7 +15,7 @@ public class Selection {
     private Rectangle area;
     private boolean selected = false;
     private SensitiveAreas sensitiveAreas;
-
+    private final Logger logger = LoggerFactory.getLogger(TrackerPanel.class);
 
     public Selection(int x, int y, int width, int height) {
         this.area = new Rectangle(x, y, width, height);
@@ -41,7 +45,8 @@ public class Selection {
         }
     }
 
-    public void setSelectedSelection(Point p1, Point p2, int windowWidth, int windowHeight) {
+    public void setSelectedSelection(Point p1, Point p2,
+                                     int windowWidth, int windowHeight) {
         if(this.area.x +p2.x - p1.x + this.area.width > windowWidth) {
             this.area.x = (windowWidth - this.area.width) - 1;
         } else if (this.area.x + p2.x - p1.x < 0) {
@@ -74,7 +79,12 @@ public class Selection {
     }
 
     public void resizeSelection(Point p2) {
-        this.sensitiveAreas.changeParentSelection(p2);
+        try {
+            this.sensitiveAreas.changeParentSelection(p2);
+        } catch (NullPointerException ex) {
+            logger.error("Error: " + ex);
+            logger.warn("Mark area again");
+        }
     }
 
     public boolean isSelectedSensitiveArea(Point p) {
