@@ -33,8 +33,8 @@ public class TrackerPanel extends JPanel {
     private Dimension windowSize;
     private final Logger logger = LoggerFactory.getLogger(TrackerPanel.class);
     private Rectangle screenRect;
-    private Graphics dbg;
     private Image image;
+    private Graphics dbg;
     private Robot robot;
     private Point p1;
     private Point p2;
@@ -43,6 +43,7 @@ public class TrackerPanel extends JPanel {
     private int privHeight;
     private Selection selectionNew;
     private Timer timer;
+    public boolean start = false;
 
     public static final int DELAY = 10;
 
@@ -72,64 +73,69 @@ public class TrackerPanel extends JPanel {
         MouseAdapter handler = new MouseAdapter() {
             @Override
             public void mousePressed(MouseEvent e) {
-                p1 = e.getPoint();
-                if (selectionNew == null) {
-                    selectionNew = new Selection(e.getX(), e.getY(), 0, 0);
-                } else {
-                    selectedRects = selectionNew.isSelectedSensitiveArea(p1);
-                }
+                if (start) {
+                    p1 = e.getPoint();
 
-                if (!selectedRects) {
-                    selectionNew.checkOnSelected(p1);
+                    if (selectionNew == null) {
+                        selectionNew = new Selection(e.getX(), e.getY(), 0, 0);
+                    } else {
+                        selectedRects = selectionNew.isSelectedSensitiveArea(p1);
+                    }
+
+                    if (!selectedRects) {
+                        selectionNew.checkOnSelected(p1);
+                    }
                 }
             }
 
             @Override
             public void mouseDragged(MouseEvent e) {
-                p2 = e.getPoint();
-                if (p2 == null) {
-                    logger.warn("Second point can't be null");
-                }
-                if(!SelectionUtil.isPointInWindowBoundary(p1,
-                        windowSize.width,
-                        windowSize.height)) {
-                    SelectionUtil.setCorrectPointBoundary(p1,
+                if (start) {
+                    p2 = e.getPoint();
+                    if (p2 == null) {
+                        logger.warn("Second point can't be null");
+                    }
+                    if (!SelectionUtil.isPointInWindowBoundary(p1,
                             windowSize.width,
-                            windowSize.height);
-                }
-                if(!SelectionUtil.isPointInWindowBoundary(p2,
-                        windowSize.width,
-                        windowSize.height)) {
-                    SelectionUtil.setCorrectPointBoundary(p2,
+                            windowSize.height)) {
+                        SelectionUtil.setCorrectPointBoundary(p1,
+                                windowSize.width,
+                                windowSize.height);
+                    }
+                    if (!SelectionUtil.isPointInWindowBoundary(p2,
                             windowSize.width,
-                            windowSize.height);
-                }
+                            windowSize.height)) {
+                        SelectionUtil.setCorrectPointBoundary(p2,
+                                windowSize.width,
+                                windowSize.height);
+                    }
 
-                if (selectedRects) {
-                    selectionNew.resizeSelection(p2);
-                } else if (!selectionNew.isSelected()) {
-                    selectionNew.setSidesSelection(p1, p2);
-                } else {
-                    selectionNew.setSelectedSelection(
-                            p1,
-                            p2,
-                            windowSize.width,
-                            windowSize.height
-                    );
+                    if (selectedRects) {
+                        selectionNew.resizeSelection(p2);
+                    } else if (!selectionNew.isSelected()) {
+                        selectionNew.setSidesSelection(p1, p2);
+                    } else {
+                        selectionNew.setSelectedSelection(
+                                p1,
+                                p2,
+                                windowSize.width,
+                                windowSize.height
+                        );
+                    }
+                    tracker.setSelection(
+                            new Rectangle(
+                                    (int) ((screenRect.width * selectionNew.getX())
+                                            / (double) windowSize.width),
+                                    (int) ((screenRect.height * selectionNew.getY())
+                                            / (double) windowSize.height),
+                                    (int) ((screenRect.width * selectionNew.getWidth())
+                                            / (double) windowSize.width),
+                                    (int) ((screenRect.height * selectionNew.getHeight())
+                                            / (double) windowSize.height)),
+                            true);
+                    privWidth = windowSize.width;
+                    privHeight = windowSize.height;
                 }
-            tracker.setSelection(
-                    new Rectangle(
-                            (int)((screenRect.width * selectionNew.getX())
-                                    / (double) windowSize.width),
-                            (int)((screenRect.height * selectionNew.getY())
-                                    / (double) windowSize.height),
-                            (int)((screenRect.width * selectionNew.getWidth())
-                                    / (double) windowSize.width),
-                            (int)((screenRect.height * selectionNew.getHeight())
-                                    / (double) windowSize.height)),
-                    true);
-            privWidth = windowSize.width;
-            privHeight = windowSize.height;
             }
         };
 
@@ -168,7 +174,6 @@ public class TrackerPanel extends JPanel {
         this.windowSize = getSize();
         drawScreenShot(g);
 
-        hideTunnel(g);
 
         if (selectionNew != null) {
             selectionNew.drawSelection(g);
@@ -206,7 +211,7 @@ public class TrackerPanel extends JPanel {
 
     }
     
-    private BufferedImage takeSnapShot() {
+    public void takeSnapShot() {
        
         BufferedImage im;
         im = robot.createScreenCapture(screenRect);
@@ -226,39 +231,40 @@ public class TrackerPanel extends JPanel {
                         null);
 
         g2.dispose();
-        return tmpImage;
+        this.image = tmpImage;
     }
 
     
-    private void hideTunnel(Graphics g) {
-        g.setColor(Color.GRAY);
-        g.fillRect((int)((this.getLocationOnScreen().x * this.getSize().width)
-                        / (double) this.screenRect.width),
-                   (int)((this.getLocationOnScreen().y * this.getSize().height)
-                        / (double) this.screenRect.height), 
-                   (int)(this.getSize().width / (this.screenRect.width
-                           / (double) this.getSize().width)),
-                   (int)(this.getSize().height / ( this.screenRect.height 
-                           / (double) this.getSize().height)));
-    }
+//    private void hideTunnel(Graphics g) {
+//        g.setColor(Color.GRAY);
+//        g.fillRect((int)((this.getLocationOnScreen().x * this.getSize().width)
+//                        / (double) this.screenRect.width),
+//                   (int)((this.getLocationOnScreen().y * this.getSize().height)
+//                        / (double) this.screenRect.height),
+//                   (int)(this.getSize().width / (this.screenRect.width
+//                           / (double) this.getSize().width)),
+//                   (int)(this.getSize().height / ( this.screenRect.height
+//                           / (double) this.getSize().height)));
+//    }
     
     
     private void drawScreenShot(Graphics g) {
-        Dimension dim = getSize();
+        if (image != null) {
+//            Dimension dim = getSize();
+//            image = takeSnapShot();
+//            dbg = image.getGraphics();
+//
+//            dbg.setColor(getBackground());
+//            dbg.fillRect(0, 0, dim.width, dim.height);
+//            dbg.setColor(getForeground());
+//
+//
+//            dbg.drawImage(takeSnapShot(), 0, 0, null);
+            g.drawImage(image, 0, 0, null);
 
-        image = takeSnapShot();
-        dbg = image.getGraphics();
-
-        dbg.setColor(getBackground());
-        dbg.fillRect(0, 0, dim.width, dim.height);
-        dbg.setColor(getForeground());
-
-
-        dbg.drawImage(takeSnapShot(), 0, 0, null);
-
-        g.drawImage(image, 0, 0, null);
-
-        dbg.dispose();
+//            dbg.dispose();
+//            hideTunnel(g);
+        }
     }
     
     private double boundariesCorrectionX(double x, int width) {
@@ -300,6 +306,7 @@ public class TrackerPanel extends JPanel {
 
     public void stopExcution() {
         this.timer.stop();
+        this.start = false;
     }
 
     public void setSelectionNull() {

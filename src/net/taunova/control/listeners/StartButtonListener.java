@@ -2,9 +2,12 @@ package net.taunova.control.listeners;
 
 import net.taunova.trackers.MouseTracker;
 import net.taunova.trackers.TrackerFrame;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.util.concurrent.TimeUnit;
 import javax.swing.JButton;
 import javax.swing.JFrame;
 
@@ -15,6 +18,7 @@ import javax.swing.JFrame;
 public class StartButtonListener implements ActionListener {
     private TrackerFrame frame;
     private MouseTracker tracker;
+    private final Logger logger = LoggerFactory.getLogger(SnapShotListener.class);
     public StartButtonListener(TrackerFrame frame, MouseTracker tracker) {
         this.frame = frame;
         this.tracker = tracker;
@@ -28,12 +32,31 @@ public class StartButtonListener implements ActionListener {
            
             if (frame.isActive() && ((JButton) source).getText() == "Start" &&
                     !this.frame.tracker.startTrack) {
+                this.frame.trackerPanel.start = true;
                 this.frame.setState(JFrame.ICONIFIED);
+//                this.frame.setVisible(false);
+                try {
+                    TimeUnit.SECONDS.sleep(1);
+                } catch (InterruptedException ex) {
+                    logger.error("Error: " + ex);
+                }
+                this.frame.trackerPanel.takeSnapShot();
+//                this.frame.setVisible(true);
                 this.frame.tracker.setTrack(true);
                 this.tracker.createThread(new Thread(this.frame.tracker));
-            } else if(frame.isActive() && ((JButton) source).getText() == "Start")  {
-                this.frame.setState(JFrame.ICONIFIED);
+
+
             }
+//            else if(frame.isActive() && ((JButton) source).getText() == "Start")  {
+//                this.frame.setVisible(false);
+//                try {
+//                    TimeUnit.SECONDS.sleep(1);
+//                } catch (InterruptedException ex) {
+//                    logger.error("Error: " + ex);
+//                }
+//                this.frame.trackerPanel.takeSnapShot();
+//                this.frame.setVisible(true);
+//            }
         }
     }
 }

@@ -18,6 +18,22 @@ public class SensitiveAreas {
     private static final int CENTERED_AREA = SIZE_AREA / 2;
 
 
+    /*
+       0 1 2
+        ***
+       3* *5
+        ***
+       4 6 7
+     */
+    private static final int TOP_LEFT_AREA = 0;
+    private static final int TOP_MIDDLE_AREA = 1;
+    private static final int TOP_RIGHT_AREA = 2;
+    private static final int MIDDLE_LEFT_AREA = 3;
+    private static final int BOTTOM_LEFT_AREA = 4;
+    private static final int MIDDLE_RIGHT_AREA = 5;
+    private static final int BOTTOM_MIDDLE_AREA = 6;
+    private static final int BOTTOM_RIGHT_AREA = 7;
+
     public SensitiveAreas(Rectangle parentSelection) {
         this.parentSelection = parentSelection;
     }
@@ -81,24 +97,24 @@ public class SensitiveAreas {
                     selectedArea = true;
                     this.setAreaIndex(i);
                     switch (i) {
-                        case 0:
+                        case TOP_LEFT_AREA:
                             x = this.parentSelection.x + this.parentSelection.width;
                             y = this.parentSelection.y + this.parentSelection.height;
                             break;
-                        case 2:
-                        case 1:
+                        case TOP_MIDDLE_AREA:
+                        case TOP_RIGHT_AREA:
 
                             x = this.parentSelection.x;
                             y = this.parentSelection.y + this.parentSelection.height;
                             break;
-                        case 7:
-                        case 6:
-                        case 5:
+                        case MIDDLE_RIGHT_AREA:
+                        case BOTTOM_MIDDLE_AREA:
+                        case BOTTOM_RIGHT_AREA:
                             x = this.parentSelection.x;
                             y = this.parentSelection.y;
                             break;
-                        case 4:
-                        case 3:
+                        case MIDDLE_LEFT_AREA:
+                        case BOTTOM_LEFT_AREA:
                             x = this.parentSelection.x + this.parentSelection.width;
                             y = this.parentSelection.y;
                             break;
@@ -119,10 +135,10 @@ public class SensitiveAreas {
         int width;
         int height;
         switch(this.selectedAreaIndex) {
-            case 0:
-            case 2:
-            case 4:
-            case 7:
+            case TOP_LEFT_AREA:
+            case TOP_RIGHT_AREA:
+            case BOTTOM_LEFT_AREA:
+            case BOTTOM_RIGHT_AREA:
                     if (p2.x < selectedAreaPoint.x && p2.y  > selectedAreaPoint.y) {
                         width = selectedAreaPoint.x - p2.x;
                         height = p2.y - selectedAreaPoint.y;
@@ -153,8 +169,8 @@ public class SensitiveAreas {
                                 height);
                     }
                 break;
-            case 1:
-            case 6:
+            case TOP_MIDDLE_AREA:
+            case BOTTOM_MIDDLE_AREA:
                     if (p2.y < selectedAreaPoint.y) {
                         height = selectedAreaPoint.y - p2.y;
                         this.parentSelection.setRect(selectedAreaPoint.x,
@@ -169,8 +185,8 @@ public class SensitiveAreas {
                                 height);
                     }
                 break;
-            case 3:
-            case 5:
+            case MIDDLE_LEFT_AREA:
+            case MIDDLE_RIGHT_AREA:
                     if (p2.x < selectedAreaPoint.x ) {
                         width = selectedAreaPoint.x - p2.x;
                         this.parentSelection.setRect(p2.x,

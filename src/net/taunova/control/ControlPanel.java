@@ -21,7 +21,7 @@ import net.taunova.trackers.TrackerFrame;
 public class ControlPanel extends JPanel {
     private MouseTracker tracker;
     private TrackerFrame frame;
-    public JButton button5;
+    public JButton startButton;
     public JFileChooser fc;
     
     public ControlPanel(MouseTracker tracker, TrackerFrame frame) {
@@ -30,26 +30,26 @@ public class ControlPanel extends JPanel {
         this.tracker = tracker;
         this.frame = frame;
         fc = new JFileChooser();
-        JButton button1 = new JButton("Clear");
-        JButton button2 = new JButton("Mark area");
-        JButton button3 = new JButton("New slide");
-        JButton button4 = new JButton("Take snapshot");
-        JButton button6 = new JButton("Stop");
-        button5 = new JButton("Start");
+        JButton cleanButton = new JButton("Clear");
+        JButton markAreaButton = new JButton("Mark area");
+        JButton newSlideButton = new JButton("New slide");
+        JButton takeSnapShotButton = new JButton("Take snapshot");
+        JButton stopButton = new JButton("Stop");
+        startButton = new JButton("Start");
         fc.addChoosableFileFilter(new FileNameExtensionFilter("image png","png"));
         fc.addChoosableFileFilter(new FileNameExtensionFilter("animation gif","gif"));
-        add(button5);
-        add(button1);
-        add(button2);
-        add(button3);
-        add(button4);
-        add(button6);
-        button1.addActionListener(new CleanTrackerListener(tracker));
-        button2.addActionListener(new MarkAreaListener(frame));
-        button3.addActionListener(new SnapShotCleanListener(this));
-        button4.addActionListener(new SnapShotListener(this));
-        button5.addActionListener(new StartButtonListener(frame, tracker));
-        button6.addActionListener(new StopListener(tracker, frame));
+        add(startButton);
+        add(cleanButton);
+        add(markAreaButton);
+        add(newSlideButton);
+        add(takeSnapShotButton);
+        add(stopButton);
+        cleanButton.addActionListener(new CleanTrackerListener(tracker));
+        markAreaButton.addActionListener(new MarkAreaListener(frame));
+        newSlideButton.addActionListener(new SnapShotCleanListener(this));
+        takeSnapShotButton.addActionListener(new SnapShotListener(this));
+        startButton.addActionListener(new StartButtonListener(frame, tracker));
+        stopButton.addActionListener(new StopListener(tracker, frame));
     }     
     
     public MouseTracker getMouseTracker() {

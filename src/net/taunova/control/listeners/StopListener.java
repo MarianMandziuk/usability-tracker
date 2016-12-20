@@ -22,5 +22,6 @@ public class StopListener implements ActionListener{
 
         this.frame.trackerPanel.stopExcution();
         this.tracker.stopExcution();
+        this.tracker.getPosition().clear();
     }
 }

@@ -61,12 +61,12 @@ public class TrackerFrame extends JFrame implements WindowFocusListener {
 
     @Override
     public void windowGainedFocus(WindowEvent we) {
-       this.buttonPanel.button5.setText("Start");
+       this.buttonPanel.startButton.setText("Start");
     }
 
     @Override
     public void windowLostFocus(WindowEvent we) {
-        this.buttonPanel.button5.setText("Pause");
+        this.buttonPanel.startButton.setText("Pause");
     }
 
 }

@@ -4,10 +4,8 @@ import net.taunova.trackers.TrackerPanel;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import java.awt.Rectangle;
-import java.awt.Point;
-import java.awt.Graphics;
-import java.awt.Color;
+import java.awt.*;
+
 /**
  * Created by maryan on 05.12.16.
  */
