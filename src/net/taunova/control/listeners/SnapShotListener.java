@@ -41,35 +41,24 @@ public class SnapShotListener implements ActionListener {
     @Override
     public void actionPerformed(ActionEvent ae) {
         tracker.setTrack(false);
-        this.frame.setVisible(false);
+//        this.frame.setVisible(false);
         try {
             TimeUnit.SECONDS.sleep(1);
         } catch (InterruptedException ex) {
             logger.error("Error: " + ex);
         }
 
-        BufferedImage image = takeSnapShot();
-        this.frame.setVisible(true);
+        BufferedImage image = frame.trackerPanel.getFullscreenImage();
+//        this.frame.setVisible(true);
 
         saveScreen(image);
         tracker.setTrack(true);
     }
-    
-    protected BufferedImage takeSnapShot() {
-        Rectangle screenRect = new Rectangle(Toolkit.getDefaultToolkit().getScreenSize());
-        BufferedImage im = null;
-        try {
-            im = new Robot().createScreenCapture(screenRect);
-        } catch (AWTException ex) {
-            logger.error("Error: " + ex);
-        }
 
-        return im;
-    }
 
     protected void drawTrack(BufferedImage image) {
         List<Position> positionList = this.tracker.getPosition();
-        Graphics2D g2 = image.createGraphics();;
+        Graphics2D g2 = image.createGraphics();
         for(int i = 0; i < positionList.size() - 1; i++) {
             g2.setColor(positionList.get(i).getColor());
             g2.drawLine((int)(positionList.get(i).position.x), 

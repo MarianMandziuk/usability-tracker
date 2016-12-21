@@ -34,6 +34,7 @@ public class TrackerPanel extends JPanel {
     private final Logger logger = LoggerFactory.getLogger(TrackerPanel.class);
     private Rectangle screenRect;
     private Image image;
+    private BufferedImage fullscreenImage;
     private Graphics dbg;
     private Robot robot;
     private Point p1;
@@ -212,16 +213,14 @@ public class TrackerPanel extends JPanel {
     }
     
     public void takeSnapShot() {
-       
-        BufferedImage im;
-        im = robot.createScreenCapture(screenRect);
+        fullscreenImage = robot.createScreenCapture(screenRect);
 
         BufferedImage tmpImage = new BufferedImage(windowSize.width,
                 windowSize.height,
                 BufferedImage.TYPE_INT_ARGB);
         Graphics g2 = tmpImage.createGraphics();
         g2.drawImage(
-                im.getScaledInstance(windowSize.width,
+                fullscreenImage.getScaledInstance(windowSize.width,
                         windowSize.height,
                         Image.SCALE_SMOOTH),
                         0,
@@ -235,35 +234,10 @@ public class TrackerPanel extends JPanel {
     }
 
     
-//    private void hideTunnel(Graphics g) {
-//        g.setColor(Color.GRAY);
-//        g.fillRect((int)((this.getLocationOnScreen().x * this.getSize().width)
-//                        / (double) this.screenRect.width),
-//                   (int)((this.getLocationOnScreen().y * this.getSize().height)
-//                        / (double) this.screenRect.height),
-//                   (int)(this.getSize().width / (this.screenRect.width
-//                           / (double) this.getSize().width)),
-//                   (int)(this.getSize().height / ( this.screenRect.height
-//                           / (double) this.getSize().height)));
-//    }
-    
     
     private void drawScreenShot(Graphics g) {
         if (image != null) {
-//            Dimension dim = getSize();
-//            image = takeSnapShot();
-//            dbg = image.getGraphics();
-//
-//            dbg.setColor(getBackground());
-//            dbg.fillRect(0, 0, dim.width, dim.height);
-//            dbg.setColor(getForeground());
-//
-//
-//            dbg.drawImage(takeSnapShot(), 0, 0, null);
             g.drawImage(image, 0, 0, null);
-
-//            dbg.dispose();
-//            hideTunnel(g);
         }
     }
     
@@ -312,5 +286,9 @@ public class TrackerPanel extends JPanel {
     public void setSelectionNull() {
         this.selectionNew = null;
         this.tracker.setSelection(null, false);
+    }
+
+    public BufferedImage getFullscreenImage() {
+        return this.fullscreenImage;
     }
 }

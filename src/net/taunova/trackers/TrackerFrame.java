@@ -5,17 +5,16 @@ import java.awt.Dimension;
 import java.awt.GraphicsEnvironment;
 import java.awt.Rectangle;
 import java.awt.event.WindowEvent;
-import java.awt.event.WindowFocusListener;
 import javax.swing.JFrame;
 import net.taunova.control.ControlPanel;
+
 import java.awt.event.WindowAdapter;
-import java.awt.Color;
 
 /**
  *
  * @author maryan
  */
-public class TrackerFrame extends JFrame implements WindowFocusListener {
+public class TrackerFrame extends JFrame {
     ControlPanel buttonPanel;
     public TrackerPanel trackerPanel;
     public MouseTracker tracker;
@@ -41,11 +40,11 @@ public class TrackerFrame extends JFrame implements WindowFocusListener {
         setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 
         setSize(baseWidth + buttonPanelWidth, baseHeight);
-        setVisible(true); 
-        addWindowFocusListener(this);
+        setVisible(true);
 
         this.addWindowListener(new WindowAdapter() {
             public void windowActivated(WindowEvent arg0) {
+                buttonPanel.startButton.setText("Start");
                 if (colorTracker.isSwitchColor()) {
                     colorTracker.nextColor();
                     colorTracker.setSwitchColor(false);
@@ -53,20 +52,15 @@ public class TrackerFrame extends JFrame implements WindowFocusListener {
                     colorTracker.nextColor();
                     colorTracker.setSwitchColor(true);
                 }
+//                tracker.setTrack(false);
+            }
+
+            public void windowDeactivated(WindowEvent e) {
+                buttonPanel.startButton.setText("Pause");
+//                tracker.setTrack(true);
             }
 
         });
-    }
-
-
-    @Override
-    public void windowGainedFocus(WindowEvent we) {
-       this.buttonPanel.startButton.setText("Start");
-    }
-
-    @Override
-    public void windowLostFocus(WindowEvent we) {
-        this.buttonPanel.startButton.setText("Pause");
     }
 
 }

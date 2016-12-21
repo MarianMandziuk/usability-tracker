@@ -67,13 +67,14 @@ public class MouseTracker implements Runnable  {
         current.position = MouseInfo.getPointerInfo().getLocation();
         current.setColor(colorTracker.getColor());
         positionList.add(current);
-        while(true && this.startTrack) {
-            if(!this.frame.isActive()) {
+        while(true ) {
+            if(!this.frame.isActive() && this.startTrack) {
                 long time1 = System.currentTimeMillis();
                 PointerInfo info = MouseInfo.getPointerInfo();
                 Point p = info.getLocation();
                 if(this.selectionTraking) {
                     if(selection.contains(p)) {
+                        addPosition(p);
                         addPosition(p);
                     }
                 } else {

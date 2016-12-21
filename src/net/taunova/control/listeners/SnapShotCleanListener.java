@@ -25,7 +25,7 @@ public class SnapShotCleanListener extends SnapShotListener {
             logger.error("Error: " + ex);
         }
 
-        BufferedImage image = takeSnapShot();
+        BufferedImage image = frame.trackerPanel.getFullscreenImage();
         this.frame.setVisible(true);
 
         saveScreen(image);
