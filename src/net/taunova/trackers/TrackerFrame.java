@@ -20,6 +20,8 @@ public class TrackerFrame extends JFrame {
     public MouseTracker tracker;
     private static final int DIVIDER = 2;
     public ColorTracker colorTracker = new ColorTracker();
+    public  boolean startThread = false;
+    public Thread thread;
 
     public TrackerFrame() {
         super("Tracker frame");
@@ -45,6 +47,7 @@ public class TrackerFrame extends JFrame {
         this.addWindowListener(new WindowAdapter() {
             public void windowActivated(WindowEvent arg0) {
                 buttonPanel.startButton.setText("Start");
+                if(startThread)
                 if (colorTracker.isSwitchColor()) {
                     colorTracker.nextColor();
                     colorTracker.setSwitchColor(false);
@@ -52,12 +55,18 @@ public class TrackerFrame extends JFrame {
                     colorTracker.nextColor();
                     colorTracker.setSwitchColor(true);
                 }
-//                tracker.setTrack(false);
             }
 
             public void windowDeactivated(WindowEvent e) {
                 buttonPanel.startButton.setText("Pause");
-//                tracker.setTrack(true);
+
+                if(startThread && !thread.isAlive()) {
+                    tracker.setTrack(true);
+                    thread.start();
+                }
+               else {
+                    startThread = true;
+                }
             }
 
         });

@@ -33,31 +33,24 @@ public class StartButtonListener implements ActionListener {
             if (frame.isActive() && ((JButton) source).getText() == "Start" &&
                     !this.frame.tracker.startTrack) {
 
-                this.frame.trackerPanel.start = true;
-//                this.frame.setState(JFrame.ICONIFIED);
                 this.frame.setVisible(false);
+
                 try {
                     TimeUnit.SECONDS.sleep(1);
                 } catch (InterruptedException ex) {
                     logger.error("Error: " + ex);
+                    Thread.currentThread().interrupt();
                 }
                 this.frame.trackerPanel.takeSnapShot();
+
                 this.frame.setVisible(true);
 
-                this.tracker.createThread(new Thread(this.frame.tracker));
-                this.frame.tracker.setTrack(true);
+                this.frame.trackerPanel.start = true;
+                this.frame.thread = new Thread(this.frame.tracker);
+//                new Thread(this.frame.tracker).start();
+//                this.frame.tracker.setTrack(true);
 
             }
-//            else if(frame.isActive() && ((JButton) source).getText() == "Start")  {
-//                this.frame.setVisible(false);
-//                try {
-//                    TimeUnit.SECONDS.sleep(1);
-//                } catch (InterruptedException ex) {
-//                    logger.error("Error: " + ex);
-//                }
-//                this.frame.trackerPanel.takeSnapShot();
-//                this.frame.setVisible(true);
-//            }
         }
     }
 }

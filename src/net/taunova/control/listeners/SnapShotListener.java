@@ -85,12 +85,12 @@ public class SnapShotListener implements ActionListener {
 
     protected void saveScreen(BufferedImage image)  {
 
-        int returnVal = cp.fc.showSaveDialog(this.frame);
+        int returnVal = cp.saveSnapshotWindow.showSaveDialog(this.frame);
         if (returnVal == JFileChooser.APPROVE_OPTION) {
 
-            if(cp.fc.getFileFilter().getDescription().equals("image png")) {
+            if(cp.saveSnapshotWindow.getFileFilter().getDescription().equals("image png")) {
                 savePNG(image);
-            } else if(cp.fc.getFileFilter().getDescription().equals("animation gif")) {
+            } else if(cp.saveSnapshotWindow.getFileFilter().getDescription().equals("animation gif")) {
                 saveGIF(image);
             } else {
                 savePNG(image);
@@ -103,9 +103,9 @@ public class SnapShotListener implements ActionListener {
     protected void savePNG(BufferedImage image) {
         drawTrack(image);
         String format = "png";
-        File file = cp.fc.getSelectedFile();
+        File file = cp.saveSnapshotWindow.getSelectedFile();
         if (!file.getName().endsWith("." + format)) {
-            file = new File(cp.fc.getSelectedFile() + "." + format);
+            file = new File(cp.saveSnapshotWindow.getSelectedFile() + "." + format);
         }
         try {
             ImageIO.write(image, format, file);
@@ -124,8 +124,8 @@ public class SnapShotListener implements ActionListener {
         }
 
         String format = "gif";
-        File file = cp.fc.getSelectedFile();
-        String fileName = cp.fc.getSelectedFile().getPath();
+        File file = cp.saveSnapshotWindow.getSelectedFile();
+        String fileName = cp.saveSnapshotWindow.getSelectedFile().getPath();
         if (!file.getName().endsWith("." + format)) {
             fileName += ("." + format);
         }
