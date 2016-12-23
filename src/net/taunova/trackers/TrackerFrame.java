@@ -20,8 +20,11 @@ public class TrackerFrame extends JFrame {
     public MouseTracker tracker;
     private static final int DIVIDER = 2;
     public ColorTracker colorTracker = new ColorTracker();
-    public  boolean startThread = false;
+    public boolean startThread = false;
+    public boolean stopTrackWhileDeactivated = false;
     public Thread thread;
+    private static int deactivatedCount = 0;
+    public int saveAction = 0;
 
     public TrackerFrame() {
         super("Tracker frame");
@@ -47,24 +50,46 @@ public class TrackerFrame extends JFrame {
         this.addWindowListener(new WindowAdapter() {
             public void windowActivated(WindowEvent arg0) {
                 buttonPanel.startButton.setText("Start");
-                if(startThread)
-                if (colorTracker.isSwitchColor()) {
-                    colorTracker.nextColor();
-                    colorTracker.setSwitchColor(false);
-                } else {
-                    colorTracker.nextColor();
-                    colorTracker.setSwitchColor(true);
+                if(startThread) {
+                    if (colorTracker.isSwitchColor()) {
+                        colorTracker.nextColor();
+                        colorTracker.setSwitchColor(false);
+                    } else {
+                        colorTracker.nextColor();
+                        colorTracker.setSwitchColor(true);
+                    }
                 }
             }
 
             public void windowDeactivated(WindowEvent e) {
                 buttonPanel.startButton.setText("Pause");
+                int deactivatedTimes = 3;
+                if(stopTrackWhileDeactivated) {
+                    saveAction++;
+                    deactivatedCount++;
+                    System.out.println(saveAction + " "+deactivatedCount);
+                     if (saveAction == 1 && deactivatedCount==3) {
+//                        tracker.setTrack(true);
+                        stopTrackWhileDeactivated = false;
+
+                        deactivatedCount = 0;
+                    }else if (deactivatedCount >= deactivatedTimes) {
+                        tracker.setTrack(true);
+                        stopTrackWhileDeactivated = false;
+
+                        deactivatedCount = 0;
+
+                    }
+
+                } else {
+                    saveAction++;
+                }
 
                 if(startThread && !thread.isAlive()) {
                     tracker.setTrack(true);
                     thread.start();
                 }
-               else {
+                else {
                     startThread = true;
                 }
             }

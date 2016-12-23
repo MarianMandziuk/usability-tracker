@@ -47,8 +47,6 @@ public class StartButtonListener implements ActionListener {
 
                 this.frame.trackerPanel.start = true;
                 this.frame.thread = new Thread(this.frame.tracker);
-//                new Thread(this.frame.tracker).start();
-//                this.frame.tracker.setTrack(true);
 
             }
         }

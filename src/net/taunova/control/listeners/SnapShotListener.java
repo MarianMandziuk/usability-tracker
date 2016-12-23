@@ -41,18 +41,11 @@ public class SnapShotListener implements ActionListener {
     @Override
     public void actionPerformed(ActionEvent ae) {
         tracker.setTrack(false);
-//        this.frame.setVisible(false);
-        try {
-            TimeUnit.SECONDS.sleep(1);
-        } catch (InterruptedException ex) {
-            logger.error("Error: " + ex);
-        }
-
+        this.frame.stopTrackWhileDeactivated = true;
+        this.frame.saveAction = 0;
         BufferedImage image = frame.trackerPanel.getFullscreenImage();
-//        this.frame.setVisible(true);
-
         saveScreen(image);
-        tracker.setTrack(true);
+
     }
 
 
@@ -96,7 +89,7 @@ public class SnapShotListener implements ActionListener {
                 savePNG(image);
             }
             JOptionPane.showMessageDialog(this.frame,
-            "Image saved");
+                    "Image saved");
         }
     }
 

@@ -18,19 +18,9 @@ public class SnapShotCleanListener extends SnapShotListener {
     @Override
     public void actionPerformed(ActionEvent ae) {
         tracker.setTrack(false);
-        this.frame.setVisible(false);
-        try {
-            TimeUnit.SECONDS.sleep(1);
-        } catch (InterruptedException ex) {
-            logger.error("Error: " + ex);
-        }
-
+        this.frame.stopTrackWhileDeactivated = true;
         BufferedImage image = frame.trackerPanel.getFullscreenImage();
-        this.frame.setVisible(true);
-
         saveScreen(image);
-        tracker.setTrack(true);
-
         tracker.getPosition().clear();
     }
 }
