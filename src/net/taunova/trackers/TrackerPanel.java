@@ -69,7 +69,7 @@ public class TrackerPanel extends JPanel {
             }
         });
 
-        timer.start();
+//        timer.start();
 
         MouseAdapter handler = new MouseAdapter() {
             @Override
@@ -290,5 +290,9 @@ public class TrackerPanel extends JPanel {
 
     public BufferedImage getFullscreenImage() {
         return this.fullscreenImage;
+    }
+
+    public void startTimer() {
+        timer.start();
     }
 }

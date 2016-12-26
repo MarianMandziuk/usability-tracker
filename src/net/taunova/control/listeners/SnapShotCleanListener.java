@@ -19,6 +19,7 @@ public class SnapShotCleanListener extends SnapShotListener {
     public void actionPerformed(ActionEvent ae) {
         tracker.setTrack(false);
         this.frame.stopTrackWhileDeactivated = true;
+        this.frame.dropDeactivetedCount();
         BufferedImage image = frame.trackerPanel.getFullscreenImage();
         saveScreen(image);
         tracker.getPosition().clear();

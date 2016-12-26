@@ -42,7 +42,7 @@ public class SnapShotListener implements ActionListener {
     public void actionPerformed(ActionEvent ae) {
         tracker.setTrack(false);
         this.frame.stopTrackWhileDeactivated = true;
-        this.frame.saveAction = 0;
+        this.frame.dropDeactivetedCount();
         BufferedImage image = frame.trackerPanel.getFullscreenImage();
         saveScreen(image);
 
@@ -135,7 +135,7 @@ public class SnapShotListener implements ActionListener {
     protected List createBufferTrackImages() {
         List<BufferedImage> bufferedTracks = new ArrayList<>();
         List<Position> positionList = this.tracker.getPosition();
-        final int frameRate = 50;
+        final int frameRate = 30;
         int pointPerFrame = positionList.size() / frameRate;
         if (pointPerFrame == 0) {
             pointPerFrame = positionList.size() - 2;

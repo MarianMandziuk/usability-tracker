@@ -29,6 +29,8 @@ public class MouseTracker implements Runnable  {
     public Thread thread;
     public boolean startTrack = false;
 
+    public boolean frameActive;
+
     MouseTracker(TrackerFrame it, ColorTracker t) {
         this.frame = it;
         this.colorTracker = t;
@@ -68,6 +70,11 @@ public class MouseTracker implements Runnable  {
         current.setColor(colorTracker.getColor());
         positionList.add(current);
         while (true) {
+            if(Thread.currentThread().isInterrupted()) {
+                break;
+            }
+
+//            boolean b = frameActive;
             if (!this.frame.isActive() && this.startTrack) {
                 long time1 = System.currentTimeMillis();
                 PointerInfo info = MouseInfo.getPointerInfo();

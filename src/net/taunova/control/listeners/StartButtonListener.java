@@ -1,5 +1,6 @@
 package net.taunova.control.listeners;
 
+import net.taunova.control.ControlPanel;
 import net.taunova.trackers.MouseTracker;
 import net.taunova.trackers.TrackerFrame;
 import org.slf4j.Logger;
@@ -19,9 +20,9 @@ public class StartButtonListener implements ActionListener {
     private TrackerFrame frame;
     private MouseTracker tracker;
     private final Logger logger = LoggerFactory.getLogger(SnapShotListener.class);
-    public StartButtonListener(TrackerFrame frame, MouseTracker tracker) {
-        this.frame = frame;
-        this.tracker = tracker;
+    public StartButtonListener(ControlPanel cp) {
+        this.frame = cp.getTrackerFrame();
+        this.tracker = cp.getMouseTracker();
     }
 
     @Override
@@ -45,6 +46,7 @@ public class StartButtonListener implements ActionListener {
 
                 this.frame.setVisible(true);
 
+                this.frame.trackerPanel.startTimer();
                 this.frame.trackerPanel.start = true;
                 this.frame.thread = new Thread(this.frame.tracker);
 

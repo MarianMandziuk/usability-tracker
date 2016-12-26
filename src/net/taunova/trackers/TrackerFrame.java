@@ -18,13 +18,14 @@ public class TrackerFrame extends JFrame {
     ControlPanel buttonPanel;
     public TrackerPanel trackerPanel;
     public MouseTracker tracker;
+
     private static final int DIVIDER = 2;
+
     public ColorTracker colorTracker = new ColorTracker();
     public boolean startThread = false;
     public boolean stopTrackWhileDeactivated = false;
     public Thread thread;
-    private static int deactivatedCount = 0;
-    public int saveAction = 0;
+    private int deactivatedCount = 0;
 
     public TrackerFrame() {
         super("Tracker frame");
@@ -59,30 +60,20 @@ public class TrackerFrame extends JFrame {
                         colorTracker.setSwitchColor(true);
                     }
                 }
+                tracker.frameActive = true;
             }
 
             public void windowDeactivated(WindowEvent e) {
+                tracker.frameActive = false;
                 buttonPanel.startButton.setText("Pause");
                 int deactivatedTimes = 3;
                 if(stopTrackWhileDeactivated) {
-                    saveAction++;
                     deactivatedCount++;
-                    System.out.println(saveAction + " "+deactivatedCount);
-                     if (saveAction == 1 && deactivatedCount==3) {
-//                        tracker.setTrack(true);
-                        stopTrackWhileDeactivated = false;
-
-                        deactivatedCount = 0;
-                    }else if (deactivatedCount >= deactivatedTimes) {
+                        if (deactivatedCount == deactivatedTimes) {
                         tracker.setTrack(true);
                         stopTrackWhileDeactivated = false;
-
-                        deactivatedCount = 0;
-
                     }
 
-                } else {
-                    saveAction++;
                 }
 
                 if(startThread && !thread.isAlive()) {
@@ -97,5 +88,8 @@ public class TrackerFrame extends JFrame {
         });
     }
 
+    public void dropDeactivetedCount() {
+        this.deactivatedCount = 0;
+    }
 }
 

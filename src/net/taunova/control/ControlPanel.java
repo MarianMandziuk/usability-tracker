@@ -52,7 +52,7 @@ public class ControlPanel extends JPanel {
         markAreaButton.addActionListener(new MarkAreaListener(frame));
         newSlideButton.addActionListener(new SnapShotCleanListener(this));
         takeSnapShotButton.addActionListener(new SnapShotListener(this));
-        startButton.addActionListener(new StartButtonListener(frame, tracker));
+        startButton.addActionListener(new StartButtonListener(this));
         stopButton.addActionListener(new StopListener(tracker, frame));
     }     
     
