@@ -19,10 +19,12 @@ import javax.swing.JFrame;
 public class StartButtonListener implements ActionListener {
     private TrackerFrame frame;
     private MouseTracker tracker;
+    private ControlPanel controlPanel;
     private final Logger logger = LoggerFactory.getLogger(SnapShotListener.class);
     public StartButtonListener(ControlPanel cp) {
         this.frame = cp.getTrackerFrame();
         this.tracker = cp.getMouseTracker();
+        this.controlPanel = cp;
     }
 
     @Override
@@ -49,6 +51,13 @@ public class StartButtonListener implements ActionListener {
                 this.frame.trackerPanel.startTimer();
                 this.frame.trackerPanel.start = true;
                 this.frame.thread = new Thread(this.frame.tracker);
+
+
+                this.controlPanel.startButton.setEnabled(false);
+                this.controlPanel.stopButton.setEnabled(true);
+                this.controlPanel.markAreaButton.setEnabled(true);
+                this.controlPanel.newSlideButton.setEnabled(true);
+                this.controlPanel.takeSnapShotButton.setEnabled(true);
 
             }
         }

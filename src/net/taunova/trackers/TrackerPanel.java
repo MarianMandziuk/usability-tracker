@@ -143,11 +143,13 @@ public class TrackerPanel extends JPanel {
         ComponentAdapter resizeComponent = new ComponentAdapter() {
             public void componentResized(ComponentEvent e) {
                 try {
+                    resizeScreenShot();
 
                     double w = (windowSize.width /(double) privWidth) * selectionNew.getWidth();
                     double h = (windowSize.height /(double) privHeight) * selectionNew.getHeight();
                     double x1 = (windowSize.width /(double) privWidth) * selectionNew.getX();
                     double y1 = (windowSize.height /(double) privHeight) * selectionNew.getY();
+
                     x1 = boundariesCorrectionX(x1, screenRect.width);
                     y1 = boundariesCorrectionY(y1, screenRect.height);
                     w = boundariesCorrectionW(w, x1);
@@ -233,7 +235,24 @@ public class TrackerPanel extends JPanel {
         this.image = tmpImage;
     }
 
-    
+    private void resizeScreenShot() {
+        BufferedImage tmpImage = new BufferedImage(windowSize.width,
+                windowSize.height,
+                BufferedImage.TYPE_INT_ARGB);
+        Graphics g2 = tmpImage.createGraphics();
+        g2.drawImage(
+                fullscreenImage.getScaledInstance(windowSize.width,
+                        windowSize.height,
+                        Image.SCALE_SMOOTH),
+                0,
+                0,
+                windowSize.width,
+                windowSize.height,
+                null);
+
+        g2.dispose();
+        this.image = tmpImage;
+    }
     
     private void drawScreenShot(Graphics g) {
         if (image != null) {

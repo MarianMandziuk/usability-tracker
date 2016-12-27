@@ -50,6 +50,7 @@ public class TrackerFrame extends JFrame {
 
         this.addWindowListener(new WindowAdapter() {
             public void windowActivated(WindowEvent arg0) {
+                clearButtonActivate();
                 buttonPanel.startButton.setText("Start");
                 if(startThread) {
                     if (colorTracker.isSwitchColor()) {
@@ -64,6 +65,7 @@ public class TrackerFrame extends JFrame {
             }
 
             public void windowDeactivated(WindowEvent e) {
+                clearButtonActivate();
                 tracker.frameActive = false;
                 buttonPanel.startButton.setText("Pause");
                 int deactivatedTimes = 3;
@@ -90,6 +92,15 @@ public class TrackerFrame extends JFrame {
 
     public void dropDeactivetedCount() {
         this.deactivatedCount = 0;
+    }
+
+    private void clearButtonActivate() {
+        System.out.println("Here");
+        if (tracker.getPosition().isEmpty()) {
+            buttonPanel.cleanButton.setEnabled(false);
+        } else {
+            buttonPanel.cleanButton.setEnabled(true);
+        }
     }
 }
 
