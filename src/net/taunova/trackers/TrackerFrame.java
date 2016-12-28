@@ -95,7 +95,6 @@ public class TrackerFrame extends JFrame {
     }
 
     private void clearButtonActivate() {
-        System.out.println("Here");
         if (tracker.getPosition().isEmpty()) {
             buttonPanel.cleanButton.setEnabled(false);
         } else {

@@ -28,7 +28,8 @@ public class MouseTracker implements Runnable  {
     private ColorTracker colorTracker;
     public Thread thread;
     public boolean startTrack = false;
-
+    public List<Double> points = new ArrayList<>(100*1024);
+//    private static final int STEP = 1;
     public boolean frameActive;
 
     MouseTracker(TrackerFrame it, ColorTracker t) {
@@ -48,17 +49,20 @@ public class MouseTracker implements Runnable  {
     public void processPath(TrackerCallback callback) {
 
         int ovalCount = 0;
-        if(positionList.size() > 2) {
-            Position current = positionList.get(0);
-            for(int i=1; i< positionList.size(); i++) {
-                if(current.isDelay()) {
-                    ovalCount++;
-                    current.setNumber(ovalCount);
-                }
+        if(positionList.size() > 4) {
+            Position start = positionList.get(0);
+            for(int i=3; i< positionList.size(); i+=3) {
+                Position end = positionList.get(i);
+                Position control1 = positionList.get(i - 2);
+                Position control2 = positionList.get(i - 1);
 
-                Position next = positionList.get(i);
-                callback.process(current, next);
-                current = next;                
+                ovalCount = ovalCountIncrement(start, ovalCount);
+                ovalCount = ovalCountIncrement(control1, ovalCount);
+                ovalCount = ovalCountIncrement(control2, ovalCount);
+//                ovalCount = ovalCountIncrement(end, ovalCount);
+
+                callback.process(start, control1, control2, end);
+                start = end;
             }
         }        
     }
@@ -122,5 +126,13 @@ public class MouseTracker implements Runnable  {
     public void createThread(Thread t) {
         this.thread = t;
         this.thread.start();
+    }
+
+    private int ovalCountIncrement(Position p, int ovalCount) {
+        if(p.isDelay()) {
+            ovalCount++;
+            p.setNumber(ovalCount);
+        }
+        return ovalCount;
     }
 }

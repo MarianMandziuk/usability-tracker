@@ -3,6 +3,7 @@ package net.taunova.control.listeners;
 import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.awt.geom.CubicCurve2D;
 import java.awt.image.BufferedImage;
 import java.io.File;
 import java.io.IOException;
@@ -20,6 +21,9 @@ import giffer.Giffer;
 
 import javax.imageio.ImageIO;
 import javax.swing.*;
+
+import static java.awt.BasicStroke.CAP_BUTT;
+import static java.awt.BasicStroke.JOIN_MITER;
 
 /**
  *
@@ -52,26 +56,59 @@ public class SnapShotListener implements ActionListener {
     protected void drawTrack(BufferedImage image) {
         List<Position> positionList = this.tracker.getPosition();
         Graphics2D g2 = image.createGraphics();
-        for(int i = 0; i < positionList.size() - 1; i++) {
+        for(int i = 3; i < positionList.size() - 1; i+= 3) {
             g2.setColor(positionList.get(i).getColor());
-            g2.drawLine((int)(positionList.get(i).position.x), 
-                           (int)(positionList.get(i).position.y), 
-                           (int)(positionList.get(i + 1).position.x), 
-                           (int)(positionList.get(i + 1).position.y));
-            if(positionList.get(i).getDelay() > 10) {
-                int radius = positionList.get(i).getDelay();                    
-                if(radius > 50) {
-                    radius = 50;
-                }
+            CubicCurve2D c = new CubicCurve2D.Double();
+            c.setCurve(positionList.get(i-3).position.x,
+                    positionList.get(i-3).position.y,
+                    positionList.get(i-2).position.x,
+                    positionList.get(i-2).position.y,
+                    positionList.get(i-1).position.x,
+                    positionList.get(i-1).position.y,
+                    positionList.get(i).position.x,
+                    positionList.get(i).position.y);
 
-                g2.drawOval((int)(positionList.get(i).position.x)-radius/2, 
-                       (int)(positionList.get(i).position.y)-radius/2, radius, radius);
-                int x = (int)(positionList.get(i).position.x)-radius/2;
-                int y = (int)(positionList.get(i).position.y)-radius/2;
-                if(positionList.get(i).getNumber() != 0) {
-                    g2.drawString(Integer.toString(positionList.get(i).getNumber()), x, y);
+            g2.draw(c);
+
+            Position[] arr = {positionList.get(i-3),
+                    positionList.get(i-2),
+                    positionList.get(i-1)};
+            for(int j = 0; j < arr.length; j++) {
+                if (arr[j].getDelay() > 10) {
+                    int radius = arr[j].getDelay();
+                    if (radius > 50) {
+                        radius = 50;
+                    }
+
+                    g2.drawOval((int) (arr[j].position.x) - radius / 2,
+                            (int) ( arr[j].position.y) - radius / 2, radius, radius);
+                    int x = (int) (arr[j].position.x) - radius / 2;
+                    int y = (int) (arr[j].position.y) - radius / 2;
+                    if (arr[j].getNumber() != 0) {
+                        g2.drawString(Integer.toString(arr[j].getNumber()), x, y);
+                    }
                 }
             }
+//            g2.drawLine((int)(positionList.get(i).position.x),
+//                           (int)(positionList.get(i).position.y),
+//                           (int)(positionList.get(i + 1).position.x),
+//                           (int)(positionList.get(i + 1).position.y));
+
+
+//            if(positionList.get(i).getDelay() > 10) {
+//                int radius = positionList.get(i).getDelay();
+//                if(radius > 50) {
+//                    radius = 50;
+//                }
+//
+//                g2.drawOval((int)(positionList.get(i).position.x)-radius/2,
+//                       (int)(positionList.get(i).position.y)-radius/2, radius, radius);
+//                int x = (int)(positionList.get(i).position.x)-radius/2;
+//                int y = (int)(positionList.get(i).position.y)-radius/2;
+//                if(positionList.get(i).getNumber() != 0) {
+//                    g2.drawString(Integer.toString(positionList.get(i).getNumber()), x, y);
+//                }
+//            }
         }
         g2.dispose();
     }

@@ -11,10 +11,17 @@ import java.util.List;
 public class ColorTracker {
     private Color color;
     private boolean switchColor = true;
+    private static final int TRANSPARENCY = 80;
     private List<Color> colorList = new ArrayList<>(
-            Arrays.asList(Color.RED, Color.BLUE, Color.GRAY,
-                    Color.CYAN, Color.GREEN, Color.YELLOW,
-                    Color.MAGENTA, Color.PINK, Color.ORANGE));
+            Arrays.asList(new Color(255,0,0, TRANSPARENCY),
+                    new Color(0,0,255, TRANSPARENCY),
+                    new Color(128, 128, 128, TRANSPARENCY),
+                    new Color(0, 255, 255, TRANSPARENCY),
+                    new Color(0, 255, 0, TRANSPARENCY),
+                    new Color(255, 255, 0, TRANSPARENCY),
+                    new Color(255, 0, 255, TRANSPARENCY),
+                    new Color(255, 175, 175, TRANSPARENCY),
+                    new Color(255, 200, 0, TRANSPARENCY)));
     private int i = 0;
 
     public void setColor(Color c) {

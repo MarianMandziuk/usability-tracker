@@ -1,20 +1,14 @@
 package net.taunova.trackers;
 
-import java.awt.AWTException;
-import java.awt.Color;
-import java.awt.Dimension;
-import java.awt.Graphics;
-import java.awt.Image;
-import java.awt.Point;
-import java.awt.Rectangle;
-import java.awt.Robot;
-import java.awt.Toolkit;
+import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.ComponentAdapter;
 import java.awt.event.ComponentEvent;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
+import java.awt.geom.CubicCurve2D;
+import java.awt.image.BufferStrategy;
 import java.awt.image.BufferedImage;
 import javax.swing.*;
 
@@ -24,6 +18,8 @@ import org.slf4j.LoggerFactory;
 
 import net.taunova.util.Selection;
 import net.taunova.util.SelectionUtil;
+
+
 /**
  *
  * @author maryan
@@ -34,6 +30,7 @@ public class TrackerPanel extends JPanel {
     private final Logger logger = LoggerFactory.getLogger(TrackerPanel.class);
     private Rectangle screenRect;
     private Image image;
+    private Image dbImage;
     private BufferedImage fullscreenImage;
     private Graphics dbg;
     private Robot robot;
@@ -53,7 +50,7 @@ public class TrackerPanel extends JPanel {
         this.tracker = tracker;  
         tracker.setParent(this);
         this.screenRect = new Rectangle(Toolkit.getDefaultToolkit().getScreenSize());
-        
+
         try {
             this.robot = new Robot();
         } catch (AWTException ex) {
@@ -177,7 +174,6 @@ public class TrackerPanel extends JPanel {
         this.windowSize = getSize();
         drawScreenShot(g);
 
-
         if (selectionNew != null) {
             selectionNew.drawSelection(g);
         }
@@ -189,24 +185,36 @@ public class TrackerPanel extends JPanel {
         tracker.processPath(new TrackerCallback() {
 
             @Override
-            public void process(Position begin, Position end) {
-                g.setColor(begin.getColor());
-                g.drawLine((int)(kX * begin.position.x),
-                           (int)(kY * begin.position.y),
-                           (int)(kX * end.position.x),
-                           (int)(kY * end.position.y));
-                if(begin.getDelay() > DELAY) {
-                    int radius = begin.getDelay();
-                    if(radius > 20) {
-                        radius = 20;
-                    }
+            public void process(Position start, Position control1,
+                                Position control2, Position end) {
+                Graphics2D g2 = (Graphics2D) g;
+                g2.setColor(start.getColor());
+                CubicCurve2D c = new CubicCurve2D.Double();
+                c.setCurve(kX * start.position.x,
+                            kY * start.position.y,
+                            kX * control1.position.x,
+                            kY * control1.position.y,
+                            kX * control2.position.x,
+                            kY * control2.position.y,
+                            kX * end.position.x,
+                            kY * end.position.y);
 
-                    g.drawOval((int)(kX*begin.position.x)-radius/2,
-                           (int)(kY*begin.position.y)-radius/2, radius, radius);
-                    int x = (int)(kX*begin.position.x)-radius/2;
-                    int y = (int)(kY*begin.position.y)-radius/2;
-                    if(begin.getNumber() != 0) {
-                        g.drawString(Integer.toString(begin.getNumber()), x, y);
+                g2.draw(c);
+                Position[] arr = {start, control1, control2};
+                for(int i = 0; i < arr.length; i++) {
+                    if (arr[i].getDelay() > DELAY) {
+                        int radius = arr[i].getDelay();
+                        if (radius > 20) {
+                            radius = 20;
+                        }
+
+                        g2.drawOval((int) (kX * arr[i].position.x) - radius / 2,
+                                (int) (kY * arr[i].position.y) - radius / 2, radius, radius);
+                        int x = (int) (kX * arr[i].position.x) - radius / 2;
+                        int y = (int) (kY * arr[i].position.y) - radius / 2;
+                        if (arr[i].getNumber() != 0) {
+                            g2.drawString(Integer.toString(arr[i].getNumber()), x, y);
+                        }
                     }
                 }
             }
