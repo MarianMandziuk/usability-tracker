@@ -9,7 +9,6 @@ import java.io.File;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.concurrent.TimeUnit;
 import net.taunova.control.ControlPanel;
 import net.taunova.trackers.MouseTracker;
 import net.taunova.trackers.TrackerFrame;
@@ -22,8 +21,6 @@ import giffer.Giffer;
 import javax.imageio.ImageIO;
 import javax.swing.*;
 
-import static java.awt.BasicStroke.CAP_BUTT;
-import static java.awt.BasicStroke.JOIN_MITER;
 
 /**
  *
@@ -34,7 +31,7 @@ public class SnapShotListener implements ActionListener {
     protected MouseTracker tracker;
     protected ControlPanel cp;
     protected final Logger logger = LoggerFactory.getLogger(SnapShotListener.class);
-
+    private static float LINE_WIDTH = 1.602F;
 
     public SnapShotListener(ControlPanel cp) {
         this.cp = cp;
@@ -57,6 +54,7 @@ public class SnapShotListener implements ActionListener {
         List<Position> positionList = this.tracker.getPosition();
         Graphics2D g2 = image.createGraphics();
         for(int i = 3; i < positionList.size() - 1; i+= 3) {
+            g2.setStroke(new BasicStroke(LINE_WIDTH));
             g2.setColor(positionList.get(i).getColor());
             CubicCurve2D c = new CubicCurve2D.Double();
             c.setCurve(positionList.get(i-3).position.x,
@@ -89,26 +87,6 @@ public class SnapShotListener implements ActionListener {
                     }
                 }
             }
-//            g2.drawLine((int)(positionList.get(i).position.x),
-//                           (int)(positionList.get(i).position.y),
-//                           (int)(positionList.get(i + 1).position.x),
-//                           (int)(positionList.get(i + 1).position.y));
-
-
-//            if(positionList.get(i).getDelay() > 10) {
-//                int radius = positionList.get(i).getDelay();
-//                if(radius > 50) {
-//                    radius = 50;
-//                }
-//
-//                g2.drawOval((int)(positionList.get(i).position.x)-radius/2,
-//                       (int)(positionList.get(i).position.y)-radius/2, radius, radius);
-//                int x = (int)(positionList.get(i).position.x)-radius/2;
-//                int y = (int)(positionList.get(i).position.y)-radius/2;
-//                if(positionList.get(i).getNumber() != 0) {
-//                    g2.drawString(Integer.toString(positionList.get(i).getNumber()), x, y);
-//                }
-//            }
         }
         g2.dispose();
     }
@@ -173,42 +151,62 @@ public class SnapShotListener implements ActionListener {
         List<BufferedImage> bufferedTracks = new ArrayList<>();
         List<Position> positionList = this.tracker.getPosition();
         final int frameRate = 30;
-        int pointPerFrame = positionList.size() / frameRate;
+        int pointPerFrame = positionList.size() / 3 / frameRate;
         if (pointPerFrame == 0) {
-            pointPerFrame = positionList.size() - 2;
+            pointPerFrame = (positionList.size() - 2) / 3;
         }
+
+        int stepCounter = 0;
         Rectangle screenRect = new Rectangle(Toolkit.getDefaultToolkit().getScreenSize());
         BufferedImage bufferedImage = null;
-        Graphics g = null;
-        for(int i = 0; i < positionList.size() - 1; i++) {
+        Graphics2D g2 = null;
+        for(int i = 3; i < positionList.size() - 1; i+=3) {
 
-            if (i % pointPerFrame == 0) {
-                 bufferedImage = new BufferedImage(screenRect.width, screenRect.height,
+            if (stepCounter == pointPerFrame || i==3) {
+                bufferedImage = new BufferedImage(screenRect.width, screenRect.height,
                         BufferedImage.TYPE_INT_ARGB);
-                g = bufferedImage.createGraphics();
+                g2 = bufferedImage.createGraphics();
+                stepCounter = 0;
 
             }
-            g.setColor(positionList.get(i).getColor());
-            g.drawLine((int)(positionList.get(i).position.x),
-                    (int)(positionList.get(i).position.y),
-                    (int)(positionList.get(i + 1).position.x),
-                    (int)(positionList.get(i + 1).position.y));
-            if(positionList.get(i).getDelay() > 10) {
-                int radius = positionList.get(i).getDelay();
-                if(radius > 50) {
-                    radius = 50;
-                }
 
-                g.drawOval((int)(positionList.get(i).position.x)-radius/2,
-                        (int)(positionList.get(i).position.y)-radius/2, radius, radius);
-                int x = (int)(positionList.get(i).position.x)-radius/2;
-                int y = (int)(positionList.get(i).position.y)-radius/2;
-                if(positionList.get(i).getNumber() != 0) {
-                    g.drawString(Integer.toString(positionList.get(i).getNumber()), x, y);
+            g2.setStroke(new BasicStroke(LINE_WIDTH));
+            g2.setColor(new Color(positionList.get(i).getColor().getRGB()));
+            CubicCurve2D c = new CubicCurve2D.Double();
+            c.setCurve(positionList.get(i-3).position.x,
+                    positionList.get(i-3).position.y,
+                    positionList.get(i-2).position.x,
+                    positionList.get(i-2).position.y,
+                    positionList.get(i-1).position.x,
+                    positionList.get(i-1).position.y,
+                    positionList.get(i).position.x,
+                    positionList.get(i).position.y);
+
+            g2.draw(c);
+
+            Position[] arr = {positionList.get(i-3),
+                    positionList.get(i-2),
+                    positionList.get(i-1)};
+
+            for(int j = 0; j < arr.length; j++) {
+                if (arr[j].getDelay() > 10) {
+                    int radius = arr[j].getDelay();
+                    if (radius > 50) {
+                        radius = 50;
+                    }
+
+                    g2.drawOval((int) (arr[j].position.x) - radius / 2,
+                            (int) ( arr[j].position.y) - radius / 2, radius, radius);
+                    int x = (int) (arr[j].position.x) - radius / 2;
+                    int y = (int) (arr[j].position.y) - radius / 2;
+                    if (arr[j].getNumber() != 0) {
+                        g2.drawString(Integer.toString(arr[j].getNumber()), x, y);
+                    }
                 }
             }
 
-            if (i % pointPerFrame == 0 && i != 0) {
+            stepCounter++;
+            if (stepCounter == pointPerFrame) {
                 bufferedTracks.add(bufferedImage);
             }
 

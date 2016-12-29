@@ -8,7 +8,6 @@ import java.awt.event.ComponentEvent;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
 import java.awt.geom.CubicCurve2D;
-import java.awt.image.BufferStrategy;
 import java.awt.image.BufferedImage;
 import javax.swing.*;
 
@@ -30,7 +29,6 @@ public class TrackerPanel extends JPanel {
     private final Logger logger = LoggerFactory.getLogger(TrackerPanel.class);
     private Rectangle screenRect;
     private Image image;
-    private Image dbImage;
     private BufferedImage fullscreenImage;
     private Graphics dbg;
     private Robot robot;
@@ -66,7 +64,6 @@ public class TrackerPanel extends JPanel {
             }
         });
 
-//        timer.start();
 
         MouseAdapter handler = new MouseAdapter() {
             @Override
@@ -140,7 +137,7 @@ public class TrackerPanel extends JPanel {
         ComponentAdapter resizeComponent = new ComponentAdapter() {
             public void componentResized(ComponentEvent e) {
                 try {
-                    resizeScreenShot();
+                   image = resizeScreenShot();
 
                     double w = (windowSize.width /(double) privWidth) * selectionNew.getWidth();
                     double h = (windowSize.height /(double) privHeight) * selectionNew.getHeight();
@@ -188,6 +185,7 @@ public class TrackerPanel extends JPanel {
             public void process(Position start, Position control1,
                                 Position control2, Position end) {
                 Graphics2D g2 = (Graphics2D) g;
+                g2.setStroke(new BasicStroke(1.602F));
                 g2.setColor(start.getColor());
                 CubicCurve2D c = new CubicCurve2D.Double();
                 c.setCurve(kX * start.position.x,
@@ -243,7 +241,7 @@ public class TrackerPanel extends JPanel {
         this.image = tmpImage;
     }
 
-    private void resizeScreenShot() {
+    private BufferedImage resizeScreenShot() {
         BufferedImage tmpImage = new BufferedImage(windowSize.width,
                 windowSize.height,
                 BufferedImage.TYPE_INT_ARGB);
@@ -259,12 +257,26 @@ public class TrackerPanel extends JPanel {
                 null);
 
         g2.dispose();
-        this.image = tmpImage;
+        return tmpImage;
     }
     
     private void drawScreenShot(Graphics g) {
         if (image != null) {
+
+            Dimension dim = getSize();
+
+            dbg = image.getGraphics();
+
+            dbg.setColor(getBackground());
+            dbg.fillRect(0, 0, dim.width, dim.height);
+            dbg.setColor(getForeground());
+
+            dbg.drawImage(resizeScreenShot(), 0, 0, null);
+
             g.drawImage(image, 0, 0, null);
+
+            dbg.dispose();
+
         }
     }
     
