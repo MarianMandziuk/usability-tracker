@@ -46,14 +46,13 @@ public class SnapShotListener implements ActionListener {
         this.frame.dropDeactivetedCount();
         BufferedImage image = frame.trackerPanel.getFullscreenImage();
         saveScreen(image);
-
     }
 
 
     protected void drawTrack(BufferedImage image) {
         List<Position> positionList = this.tracker.getPosition();
         Graphics2D g2 = image.createGraphics();
-        for(int i = 3; i < positionList.size() - 1; i+= 3) {
+        for(int i = 3; i < positionList.size() - 1; i+=3) {
             g2.setStroke(new BasicStroke(LINE_WIDTH));
             g2.setColor(positionList.get(i).getColor());
             CubicCurve2D c = new CubicCurve2D.Double();
@@ -100,7 +99,8 @@ public class SnapShotListener implements ActionListener {
                 savePNG(image);
             } else if(cp.saveSnapshotWindow.getFileFilter().getDescription().equals("animation gif")) {
                 saveGIF(image);
-            } else {
+            }
+            else {
                 savePNG(image);
             }
             JOptionPane.showMessageDialog(this.frame,
@@ -211,6 +211,7 @@ public class SnapShotListener implements ActionListener {
             }
 
         }
+        g2.dispose();
         return bufferedTracks;
     }
 }

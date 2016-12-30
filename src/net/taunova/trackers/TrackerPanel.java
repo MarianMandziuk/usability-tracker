@@ -45,7 +45,7 @@ public class TrackerPanel extends JPanel {
 
     public TrackerPanel(MouseTracker tracker) {
         super(true);
-        this.tracker = tracker;  
+        this.tracker = tracker;
         tracker.setParent(this);
         this.screenRect = new Rectangle(Toolkit.getDefaultToolkit().getScreenSize());
 
@@ -137,8 +137,7 @@ public class TrackerPanel extends JPanel {
         ComponentAdapter resizeComponent = new ComponentAdapter() {
             public void componentResized(ComponentEvent e) {
                 try {
-                   image = resizeScreenShot();
-
+                    image = resizeScreenShot();
                     double w = (windowSize.width /(double) privWidth) * selectionNew.getWidth();
                     double h = (windowSize.height /(double) privHeight) * selectionNew.getHeight();
                     double x1 = (windowSize.width /(double) privWidth) * selectionNew.getX();
@@ -262,7 +261,7 @@ public class TrackerPanel extends JPanel {
     
     private void drawScreenShot(Graphics g) {
         if (image != null) {
-
+//            g.drawImage(image, 0, 0, null);
             Dimension dim = getSize();
 
             dbg = image.getGraphics();
@@ -276,7 +275,6 @@ public class TrackerPanel extends JPanel {
             g.drawImage(image, 0, 0, null);
 
             dbg.dispose();
-
         }
     }
     
@@ -328,7 +326,13 @@ public class TrackerPanel extends JPanel {
     }
 
     public BufferedImage getFullscreenImage() {
-        return this.fullscreenImage;
+        BufferedImage tmp = new BufferedImage(fullscreenImage.getWidth(),
+                fullscreenImage.getHeight(),
+                fullscreenImage.getType());
+        Graphics g = tmp.getGraphics();
+        g.drawImage(fullscreenImage, 0, 0, null);
+        g.dispose();
+        return tmp;
     }
 
     public void startTimer() {
