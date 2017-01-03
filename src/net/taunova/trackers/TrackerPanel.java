@@ -248,7 +248,7 @@ public class TrackerPanel extends JPanel {
         g2.drawImage(
                 fullscreenImage.getScaledInstance(windowSize.width,
                         windowSize.height,
-                        Image.SCALE_SMOOTH),
+                        Image.SCALE_FAST),
                 0,
                 0,
                 windowSize.width,
