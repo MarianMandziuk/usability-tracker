@@ -184,7 +184,7 @@ public class TrackerPanel extends JPanel {
             public void process(Position start, Position control1,
                                 Position control2, Position end) {
                 Graphics2D g2 = (Graphics2D) g;
-                g2.setStroke(new BasicStroke(1.602F));
+                g2.setStroke(new BasicStroke(start.getWidht()));
                 g2.setColor(start.getColor());
                 CubicCurve2D c = new CubicCurve2D.Double();
                 c.setCurve(kX * start.position.x,

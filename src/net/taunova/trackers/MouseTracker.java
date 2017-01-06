@@ -11,6 +11,7 @@ import javax.swing.JFrame;
 import net.taunova.util.Position;
 import net.taunova.util.ThreadUtil;
 
+import static net.taunova.util.LengthUtil.getLength;
 
 /**
  *
@@ -29,7 +30,6 @@ public class MouseTracker implements Runnable  {
     public Thread thread;
     public boolean startTrack = false;
     public List<Double> points = new ArrayList<>(100*1024);
-//    private static final int STEP = 1;
     public boolean frameActive;
 
     MouseTracker(TrackerFrame it, ColorTracker t) {
@@ -49,13 +49,23 @@ public class MouseTracker implements Runnable  {
     public void processPath(TrackerCallback callback) {
 
         int ovalCount = 0;
+        float length;
+        float privLen = 0;
         if(positionList.size() > 4) {
             Position start = positionList.get(0);
+            start.setWidth(0);
             for(int i=3; i< positionList.size(); i+=3) {
                 Position end = positionList.get(i);
                 Position control1 = positionList.get(i - 2);
                 Position control2 = positionList.get(i - 1);
 
+                length = getLength(start.position, end.position);
+                end.setWidth(start.getWidht());
+                if (length > privLen) {
+                    end.decreaseLineWidth();
+                } else if (length < privLen){
+                    end.increaseLineWidth();
+                }
                 ovalCount = ovalCountIncrement(start, ovalCount);
                 ovalCount = ovalCountIncrement(control1, ovalCount);
                 ovalCount = ovalCountIncrement(control2, ovalCount);
@@ -63,6 +73,7 @@ public class MouseTracker implements Runnable  {
 
                 callback.process(start, control1, control2, end);
                 start = end;
+                privLen = length;
             }
         }        
     }
@@ -78,7 +89,6 @@ public class MouseTracker implements Runnable  {
                 break;
             }
 
-//            boolean b = frameActive;
             if (!this.frame.isActive() && this.startTrack) {
                 long time1 = System.currentTimeMillis();
                 PointerInfo info = MouseInfo.getPointerInfo();
@@ -86,13 +96,12 @@ public class MouseTracker implements Runnable  {
                 if (this.selectionTraking) {
                     if (selection.contains(p)) {
                         addPosition(p);
-                        addPosition(p);
                     }
                 } else {
                     addPosition(p);
                 }
                 long time2 = System.currentTimeMillis();
-                //            System.out.println("it took: " + (time2 - time1));
+//                            System.out.println("it took: " + (time2 - time1));
             }
         }
 

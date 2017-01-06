@@ -53,7 +53,7 @@ public class SnapShotListener implements ActionListener {
         List<Position> positionList = this.tracker.getPosition();
         Graphics2D g2 = image.createGraphics();
         for(int i = 3; i < positionList.size() - 1; i+=3) {
-            g2.setStroke(new BasicStroke(LINE_WIDTH));
+            g2.setStroke(new BasicStroke(positionList.get(i).getWidht()));
             g2.setColor(positionList.get(i).getColor());
             CubicCurve2D c = new CubicCurve2D.Double();
             c.setCurve(positionList.get(i-3).position.x,
@@ -66,7 +66,6 @@ public class SnapShotListener implements ActionListener {
                     positionList.get(i).position.y);
 
             g2.draw(c);
-
             Position[] arr = {positionList.get(i-3),
                     positionList.get(i-2),
                     positionList.get(i-1)};
@@ -170,7 +169,7 @@ public class SnapShotListener implements ActionListener {
 
             }
 
-            g2.setStroke(new BasicStroke(LINE_WIDTH));
+            g2.setStroke(new BasicStroke(positionList.get(i).getWidht()));
             g2.setColor(new Color(positionList.get(i).getColor().getRGB()));
             CubicCurve2D c = new CubicCurve2D.Double();
             c.setCurve(positionList.get(i-3).position.x,
