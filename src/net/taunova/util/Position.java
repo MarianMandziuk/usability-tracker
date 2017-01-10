@@ -16,8 +16,8 @@ public class Position {
     
     public static final int DELAY = 10;
     private static final float LOW_WIDTH = 1.0F;
-    private static final float HIGH_WIDTH = 5.0F;
-    private static final float STEP = 0.3F;
+    private static final float HIGH_WIDTH = 7.0F;
+    private static final float STEP = 0.5F;
     private static final float ROUND_CONSTANT = 10f;
 
     public Position() {
@@ -70,7 +70,7 @@ public class Position {
 
     public void setWidth(float width) {
         if (width == 0) {
-            lineWidth = HIGH_WIDTH;
+            lineWidth = HIGH_WIDTH / 2.0f;
         } else {
             lineWidth = width;
         }

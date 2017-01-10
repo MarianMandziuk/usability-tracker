@@ -7,6 +7,17 @@ import java.awt.*;
  */
 public class LengthUtil {
 
+    public static float getCubicCurveLength(Point start, Point control1,
+                                     Point control2, Point end) {
+
+        float result = 0;
+        result += getLength(start, control1);
+        result += getLength(control1, control2);
+        result += getLength(control2, end);
+        return result;
+    }
+
+
     public static float getLength(Point p1, Point p2) {
         float result;
         if (p1.x == p2.x) {

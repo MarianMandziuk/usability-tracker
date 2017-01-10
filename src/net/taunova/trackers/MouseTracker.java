@@ -11,7 +11,7 @@ import javax.swing.JFrame;
 import net.taunova.util.Position;
 import net.taunova.util.ThreadUtil;
 
-import static net.taunova.util.LengthUtil.getLength;
+import static net.taunova.util.LengthUtil.getCubicCurveLength;
 
 /**
  *
@@ -59,13 +59,19 @@ public class MouseTracker implements Runnable  {
                 Position control1 = positionList.get(i - 2);
                 Position control2 = positionList.get(i - 1);
 
-                length = getLength(start.position, end.position);
+                length = getCubicCurveLength(start.position,
+                        control1.position,
+                        control2.position,
+                        end.position);
                 end.setWidth(start.getWidht());
                 if (length > privLen) {
                     end.decreaseLineWidth();
                 } else if (length < privLen){
                     end.increaseLineWidth();
                 }
+//                if (start.isDelay() || control1.isDelay() || control2.isDelay()) {
+//                    end.increaseLineWidth();
+//                }
                 ovalCount = ovalCountIncrement(start, ovalCount);
                 ovalCount = ovalCountIncrement(control1, ovalCount);
                 ovalCount = ovalCountIncrement(control2, ovalCount);
