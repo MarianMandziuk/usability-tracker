@@ -8,15 +8,14 @@ import java.awt.event.ComponentEvent;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
 import java.awt.geom.CubicCurve2D;
+import java.awt.geom.GeneralPath;
+import java.awt.geom.Point2D;
 import java.awt.image.BufferedImage;
 import javax.swing.*;
 
-import net.taunova.util.Position;
+import net.taunova.util.*;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-
-import net.taunova.util.Selection;
-import net.taunova.util.SelectionUtil;
 
 
 /**
@@ -170,6 +169,7 @@ public class TrackerPanel extends JPanel {
         this.windowSize = getSize();
         drawScreenShot(g);
 
+//        new Hexagon(new Point(50,50), 10).drawHexagon(g);
         if (selectionNew != null) {
             selectionNew.drawSelection(g);
         }
@@ -177,6 +177,8 @@ public class TrackerPanel extends JPanel {
         final double kX = (double)this.windowSize.width/this.screenRect.width;
         final double kY = (double)this.windowSize.height/this.screenRect.height;
 
+        Grid grid = new Grid(this.screenRect.width, this.screenRect.height, 20);
+        grid.drawGrid(g,this.windowSize.width, this.windowSize.height);
 
         tracker.processPath(new TrackerCallback() {
 
