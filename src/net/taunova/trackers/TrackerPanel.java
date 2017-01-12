@@ -39,15 +39,15 @@ public class TrackerPanel extends JPanel {
     private Selection selectionNew;
     private Timer timer;
     public boolean start = false;
-
+    private Grid grid;
     public static final int DELAY = 10;
 
-    public TrackerPanel(MouseTracker tracker) {
+    public TrackerPanel(MouseTracker tracker, Grid grid) {
         super(true);
         this.tracker = tracker;
         tracker.setParent(this);
         this.screenRect = new Rectangle(Toolkit.getDefaultToolkit().getScreenSize());
-
+        this.grid = grid;
         try {
             this.robot = new Robot();
         } catch (AWTException ex) {
@@ -176,10 +176,9 @@ public class TrackerPanel extends JPanel {
 
         final double kX = (double)this.windowSize.width/this.screenRect.width;
         final double kY = (double)this.windowSize.height/this.screenRect.height;
-
-        Grid grid = new Grid(this.screenRect.width, this.screenRect.height, 20);
-        grid.drawGrid(g,this.windowSize.width, this.windowSize.height);
-
+//        Grid grid = new Grid(this.screenRect.width, this.screenRect.height, 5);
+//        grid.drawGrid(g, kX, kY);
+        this.grid.drawGrid(g, kX, kY);
         tracker.processPath(new TrackerCallback() {
 
             @Override

@@ -2,9 +2,14 @@ package net.taunova.util;
 
 import sun.reflect.generics.reflectiveObjects.NotImplementedException;
 
-import java.awt.*;
+import java.awt.Color;
+import java.awt.Shape;
+import java.awt.Graphics;
+import java.awt.Graphics2D;
 import java.awt.geom.GeneralPath;
 import java.awt.geom.Point2D;
+import java.util.ArrayList;
+import java.util.List;
 
 /**
  * Created by maryan on 10.01.17.
@@ -13,8 +18,9 @@ public class Hexagon {
 
     private Point2D center;
     private double radius;
-    private Color color = Color.BLUE;
-    private Shape hexagon;
+    private Color color = new Color(0,0,255, 40);
+    public Shape hexagon;
+    private List<Point2D> hexagonPoints = new ArrayList();
 
     public Hexagon(Point2D center, double radius) {
         this.center = center;
@@ -34,11 +40,18 @@ public class Hexagon {
         return this.center.getY() + this.radius * Math.sin(angleRad);
     }
 
+    private void calculatePoints() {
+        for(int i = 0; i < 6; i++) {
+            hexagonPoints.add(new Point2D.Double(getCoordinateX(i), getCoordinateY(i)));
+        }
+    }
+
     private Shape createHexagon() {
+        this.calculatePoints();
         GeneralPath hexagon = new GeneralPath(GeneralPath.WIND_EVEN_ODD, 6);
-        hexagon.moveTo(getCoordinateX(0), getCoordinateY(0));
-        for (int i = 1; i < 6; i++) {
-            hexagon.lineTo(getCoordinateX(i), getCoordinateY(i));
+        hexagon.moveTo(hexagonPoints.get(0).getX(), hexagonPoints.get(0).getY());
+        for (int i = 1; i < hexagonPoints.size(); i++) {
+            hexagon.lineTo(hexagonPoints.get(i).getX(), hexagonPoints.get(i).getY());
         }
         hexagon.closePath();
         return hexagon;
@@ -48,9 +61,17 @@ public class Hexagon {
         this.color = color;
     }
 
-    public void drawHexagon(Graphics g) {
+    public void drawHexagon(Graphics g, double scaleX, double scaleY) {
         Graphics2D g2 = (Graphics2D) g;
+        GeneralPath hexagonDraw = new GeneralPath(GeneralPath.WIND_EVEN_ODD, 6);
+        hexagonDraw.moveTo(hexagonPoints.get(0).getX() * scaleX,
+                hexagonPoints.get(0).getY() * scaleY);
+        for (int i = 1; i < hexagonPoints.size(); i++) {
+            hexagonDraw.lineTo(hexagonPoints.get(i).getX() * scaleX,
+                    hexagonPoints.get(i).getY() * scaleY);
+        }
+        hexagonDraw.closePath();
         g2.setColor(this.color);
-        g2.fill(this.hexagon);
+        g2.fill(hexagonDraw);
     }
 }

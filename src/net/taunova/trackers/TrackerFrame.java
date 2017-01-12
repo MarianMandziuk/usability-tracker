@@ -1,12 +1,10 @@
 package net.taunova.trackers;
 
-import java.awt.BorderLayout;
-import java.awt.Dimension;
-import java.awt.GraphicsEnvironment;
-import java.awt.Rectangle;
+import java.awt.*;
 import java.awt.event.WindowEvent;
 import javax.swing.JFrame;
 import net.taunova.control.ControlPanel;
+import net.taunova.util.Grid;
 
 import java.awt.event.WindowAdapter;
 
@@ -34,13 +32,15 @@ public class TrackerFrame extends JFrame {
         int baseWidth = dim.width/DIVIDER;
         int baseHeight = dim.height/DIVIDER;
         int buttonPanelWidth = 150;
-        tracker = new MouseTracker(this, colorTracker);
+        Grid grid = new Grid(Toolkit.getDefaultToolkit().getScreenSize().width,
+                Toolkit.getDefaultToolkit().getScreenSize().height, 20);
+        tracker = new MouseTracker(this, colorTracker, grid);
         buttonPanel = new ControlPanel(tracker, this);
-        trackerPanel = new TrackerPanel(tracker);
+        trackerPanel = new TrackerPanel(tracker, grid);
         buttonPanel.setPreferredSize(new Dimension(120,
                                        baseHeight));
         trackerPanel.setPreferredSize(new Dimension(baseWidth, baseHeight));
-
+        System.out.println(dim);
         getContentPane().add(BorderLayout.EAST, buttonPanel);
         getContentPane().add(BorderLayout.CENTER, trackerPanel);
         setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);

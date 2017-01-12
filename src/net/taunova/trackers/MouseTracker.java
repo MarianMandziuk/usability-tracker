@@ -1,13 +1,12 @@
 package net.taunova.trackers;
 
-import java.awt.Component;
-import java.awt.MouseInfo;
-import java.awt.Point;
-import java.awt.PointerInfo;
-import java.awt.Rectangle;
+import java.awt.*;
 import java.util.ArrayList;
 import java.util.List;
 import javax.swing.JFrame;
+
+import net.taunova.util.Grid;
+import net.taunova.util.Hexagon;
 import net.taunova.util.Position;
 import net.taunova.util.ThreadUtil;
 
@@ -31,10 +30,12 @@ public class MouseTracker implements Runnable  {
     public boolean startTrack = false;
     public List<Double> points = new ArrayList<>(100*1024);
     public boolean frameActive;
+    private Grid grid;
 
-    MouseTracker(TrackerFrame it, ColorTracker t) {
+    MouseTracker(TrackerFrame it, ColorTracker t, Grid grid) {
         this.frame = it;
         this.colorTracker = t;
+        this.grid = grid;
     }
     
     public void setSelection(Rectangle r, boolean sT) {
@@ -51,6 +52,7 @@ public class MouseTracker implements Runnable  {
         int ovalCount = 0;
         float length;
         float privLen = 0;
+
         if(positionList.size() > 4) {
             Position start = positionList.get(0);
             start.setWidth(0);
@@ -72,6 +74,14 @@ public class MouseTracker implements Runnable  {
 //                if (start.isDelay() || control1.isDelay() || control2.isDelay()) {
 //                    end.increaseLineWidth();
 //                }
+                for(Hexagon h : grid.hexagons) {
+                    if(h.hexagon.contains(start.position.x, start.position.y)) {
+                        if(start.isDelay()) {
+                            h.setColor(new Color(255,0,0, 40));
+                        }
+                    }
+                }
+
                 ovalCount = ovalCountIncrement(start, ovalCount);
                 ovalCount = ovalCountIncrement(control1, ovalCount);
                 ovalCount = ovalCountIncrement(control2, ovalCount);
