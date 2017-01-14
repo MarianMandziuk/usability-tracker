@@ -13,6 +13,7 @@ public class Grid {
     private int width;
     private int height;
     private int rows;
+//    private double diameter;
 //    private double interspace;
     public List<Hexagon> hexagons = new ArrayList<>();
 
@@ -20,6 +21,7 @@ public class Grid {
         this.width = width;
         this.height = height;
         this.rows = rows;
+//        this.diameter = diameter;
         generate();
     }
 
@@ -32,10 +34,10 @@ public class Grid {
         double diameter = (heightHexagon - interspace)/(3/4.0);
         double x = ((Math.sqrt(3) / 2.0 * diameter)+ interspace) / 2.0;
         double y = diameter / 2.0 + 0;
-//        System.out.println("h: "+height + " w:"+width);
-//        System.out.println("heightHexagon: "+heightHexagon);
-//        System.out.println("number in rows: "+numberInRows);
-//        System.out.println("diameter: "+diameter);
+        System.out.println("h: "+height + " w:"+width);
+        System.out.println("heightHexagon: "+heightHexagon);
+        System.out.println("number in rows: "+numberInRows);
+        System.out.println("diameter: "+diameter);
         for(int i = 0; i < this.rows; i++) {
             if (i % 2 != 0) {
                 x = Math.sqrt(3) / 2.0 * diameter + interspace;

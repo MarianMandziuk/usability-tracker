@@ -18,7 +18,7 @@ public class Hexagon {
 
     private Point2D center;
     private double radius;
-    private Color color = new Color(0,0,255, 40);
+    private Color color = new Color(0,0,255);
     public Shape hexagon;
     private List<Point2D> hexagonPoints = new ArrayList();
 
@@ -72,6 +72,6 @@ public class Hexagon {
         }
         hexagonDraw.closePath();
         g2.setColor(this.color);
-        g2.fill(hexagonDraw);
+        g2.fill(hexagon);
     }
 }
