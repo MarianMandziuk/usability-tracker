@@ -1,10 +1,7 @@
 package net.taunova.control;
 
 
-import javax.swing.BoxLayout;
-import javax.swing.JButton;
-import javax.swing.JFileChooser;
-import javax.swing.JPanel;
+import javax.swing.*;
 import javax.swing.filechooser.FileNameExtensionFilter;
 
 import net.taunova.control.listeners.*;
@@ -28,6 +25,7 @@ public class ControlPanel extends JPanel {
     public JButton takeSnapShotButton;
     public JButton stopButton;
     public JFileChooser saveSnapshotWindow;
+    public JCheckBox heatmapEnableBox;
     
     public ControlPanel(MouseTracker tracker, TrackerFrame frame) {
         super(true);
@@ -41,6 +39,7 @@ public class ControlPanel extends JPanel {
         takeSnapShotButton = new JButton("Save snapshot");
         stopButton = new JButton("Stop");
         startButton = new JButton("Start");
+        heatmapEnableBox = new JCheckBox("HeatMap");
 
         saveSnapshotWindow.addChoosableFileFilter(new FileNameExtensionFilter("image png","png"));
         saveSnapshotWindow.addChoosableFileFilter(new FileNameExtensionFilter("animation gif","gif"));
@@ -51,6 +50,7 @@ public class ControlPanel extends JPanel {
         add(markAreaButton);
         add(newSlideButton);
         add(takeSnapShotButton);
+        add(heatmapEnableBox);
 
         stopButton.setEnabled(false);
         saveSnapshotWindow.setEnabled(false);
@@ -58,6 +58,7 @@ public class ControlPanel extends JPanel {
         markAreaButton.setEnabled(false);
         newSlideButton.setEnabled(false);
         takeSnapShotButton.setEnabled(false);
+        heatmapEnableBox.setEnabled(false);
 
         cleanButton.addActionListener(new CleanTrackerListener(this));
         markAreaButton.addActionListener(new MarkAreaListener(frame));
@@ -65,6 +66,7 @@ public class ControlPanel extends JPanel {
         takeSnapShotButton.addActionListener(new SnapShotListener(this));
         startButton.addActionListener(new StartButtonListener(this));
         stopButton.addActionListener(new StopListener(this));
+        heatmapEnableBox.addItemListener(new HeatMapEanbleListener(this.frame));
     }     
     
     public MouseTracker getMouseTracker() {

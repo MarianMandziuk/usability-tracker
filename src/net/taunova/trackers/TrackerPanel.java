@@ -40,6 +40,7 @@ public class TrackerPanel extends JPanel {
     private Timer timer;
     public boolean start = false;
     private Grid grid;
+    public boolean heatmapEnable = false;
     public static final int DELAY = 10;
 
     public TrackerPanel(MouseTracker tracker, Grid grid) {
@@ -169,26 +170,29 @@ public class TrackerPanel extends JPanel {
         this.windowSize = getSize();
         drawScreenShot(g);
 
-//        new Hexagon(new Point(50,50), 10).drawHexagon(g);
         if (selectionNew != null) {
             selectionNew.drawSelection(g);
         }
 
         final double kX = (double)this.windowSize.width/this.screenRect.width;
         final double kY = (double)this.windowSize.height/this.screenRect.height;
-//        Grid grid = new Grid(this.screenRect.width, this.screenRect.height, 5);
-//        grid.drawGrid(g, kX, kY);
-        this.grid.drawGrid(g, kX, kY);
-        tracker.processPath(new TrackerCallback() {
 
-            @Override
-            public void process(Position start, Position control1,
-                                Position control2, Position end) {
-                Graphics2D g2 = (Graphics2D) g;
-                g2.setStroke(new BasicStroke(start.getWidht()));
-                g2.setColor(start.getColor());
-                CubicCurve2D c = new CubicCurve2D.Double();
-                c.setCurve(kX * start.position.x,
+        if(this.heatmapEnable) {
+
+            tracker.trackHeatMap();
+
+            this.grid.drawGrid(g, kX, kY);
+        } else {
+            tracker.processPath(new TrackerCallback() {
+
+                @Override
+                public void process(Position start, Position control1,
+                                    Position control2, Position end) {
+                    Graphics2D g2 = (Graphics2D) g;
+                    g2.setStroke(new BasicStroke(start.getWidht()));
+                    g2.setColor(start.getColor());
+                    CubicCurve2D c = new CubicCurve2D.Double();
+                    c.setCurve(kX * start.position.x,
                             kY * start.position.y,
                             kX * control1.position.x,
                             kY * control1.position.y,
@@ -197,26 +201,27 @@ public class TrackerPanel extends JPanel {
                             kX * end.position.x,
                             kY * end.position.y);
 
-                g2.draw(c);
-                Position[] arr = {start, control1, control2};
-                for(int i = 0; i < arr.length; i++) {
-                    if (arr[i].getDelay() > DELAY) {
-                        int radius = arr[i].getDelay();
-                        if (radius > 20) {
-                            radius = 20;
-                        }
+                    g2.draw(c);
+                    Position[] arr = {start, control1, control2};
+                    for (int i = 0; i < arr.length; i++) {
+                        if (arr[i].getDelay() > DELAY) {
+                            int radius = arr[i].getDelay();
+                            if (radius > 20) {
+                                radius = 20;
+                            }
 
-                        g2.drawOval((int) (kX * arr[i].position.x) - radius / 2,
-                                (int) (kY * arr[i].position.y) - radius / 2, radius, radius);
-                        int x = (int) (kX * arr[i].position.x) - radius / 2;
-                        int y = (int) (kY * arr[i].position.y) - radius / 2;
-                        if (arr[i].getNumber() != 0) {
-                            g2.drawString(Integer.toString(arr[i].getNumber()), x, y);
+                            g2.drawOval((int) (kX * arr[i].position.x) - radius / 2,
+                                    (int) (kY * arr[i].position.y) - radius / 2, radius, radius);
+                            int x = (int) (kX * arr[i].position.x) - radius / 2;
+                            int y = (int) (kY * arr[i].position.y) - radius / 2;
+                            if (arr[i].getNumber() != 0) {
+                                g2.drawString(Integer.toString(arr[i].getNumber()), x, y);
+                            }
                         }
                     }
                 }
-            }
-        });
+            });
+        }
 
     }
     

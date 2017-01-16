@@ -74,13 +74,6 @@ public class MouseTracker implements Runnable  {
 //                if (start.isDelay() || control1.isDelay() || control2.isDelay()) {
 //                    end.increaseLineWidth();
 //                }
-                for(Hexagon h : grid.hexagons) {
-                    if(h.hexagon.contains(start.position.x, start.position.y)) {
-                        if(start.isDelay()) {
-                            h.setColor(new Color(255,0,0, 40));
-                        }
-                    }
-                }
 
                 ovalCount = ovalCountIncrement(start, ovalCount);
                 ovalCount = ovalCountIncrement(control1, ovalCount);
@@ -159,5 +152,17 @@ public class MouseTracker implements Runnable  {
             p.setNumber(ovalCount);
         }
         return ovalCount;
+    }
+
+    public void trackHeatMap() {
+        for(int i = 0; i < this.positionList.size(); i++) {
+            for (Hexagon h : grid.hexagons) {
+                if (h.hexagon.contains(positionList.get(i).position.x, positionList.get(i).position.y)) {
+                    if (positionList.get(i).isDelay()) {
+                        h.setColor(new Color(255, 0, 0, 40));
+                    }
+                }
+            }
+        }
     }
 }

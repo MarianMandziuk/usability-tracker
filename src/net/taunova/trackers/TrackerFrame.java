@@ -40,7 +40,7 @@ public class TrackerFrame extends JFrame {
         buttonPanel.setPreferredSize(new Dimension(120,
                                        baseHeight));
         trackerPanel.setPreferredSize(new Dimension(baseWidth, baseHeight));
-        System.out.println(dim);
+//        System.out.println(dim);
         getContentPane().add(BorderLayout.EAST, buttonPanel);
         getContentPane().add(BorderLayout.CENTER, trackerPanel);
         setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
