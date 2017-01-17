@@ -108,7 +108,12 @@ public class SnapShotListener implements ActionListener {
     }
 
     protected void savePNG(BufferedImage image) {
-        drawTrack(image);
+        if (this.cp.heatmapEnableBox.isSelected()) {
+            drawHeatMap(image);
+        } else {
+            drawTrack(image);
+        }
+
         String format = "png";
         File file = cp.saveSnapshotWindow.getSelectedFile();
         if (!file.getName().endsWith("." + format)) {
@@ -212,5 +217,11 @@ public class SnapShotListener implements ActionListener {
         }
         g2.dispose();
         return bufferedTracks;
+    }
+
+    private void drawHeatMap(BufferedImage image) {
+        Graphics2D g2 = image.createGraphics();
+        tracker.grid.drawGrid(g2, 1, 1);
+        g2.dispose();
     }
 }

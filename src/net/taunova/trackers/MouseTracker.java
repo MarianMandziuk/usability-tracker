@@ -11,6 +11,7 @@ import net.taunova.util.Position;
 import net.taunova.util.ThreadUtil;
 
 import static net.taunova.util.LengthUtil.getCubicCurveLength;
+import static net.taunova.util.LengthUtil.getLength;
 
 /**
  *
@@ -30,7 +31,7 @@ public class MouseTracker implements Runnable  {
     public boolean startTrack = false;
     public List<Double> points = new ArrayList<>(100*1024);
     public boolean frameActive;
-    private Grid grid;
+    public Grid grid;
 
     MouseTracker(TrackerFrame it, ColorTracker t, Grid grid) {
         this.frame = it;
@@ -155,14 +156,38 @@ public class MouseTracker implements Runnable  {
     }
 
     public void trackHeatMap() {
+        Position priv = null;
+        float length = 0;
+        float privLen = 0;
+        Position red = null;
         for(int i = 0; i < this.positionList.size(); i++) {
+            if(priv != null)
+            length = getLength(priv.position, this.positionList.get(i).position);
+
             for (Hexagon h : grid.hexagons) {
                 if (h.hexagon.contains(positionList.get(i).position.x, positionList.get(i).position.y)) {
                     if (positionList.get(i).isDelay()) {
                         h.setColor(new Color(255, 0, 0, 40));
+                        red = positionList.get(i);
+                    }
+
+                    if (length > privLen) {
+                        if (red == null) {
+                            h.setColor(new Color(255, 255, 0, 40));
+                        } else if (!h.hexagon.contains(red.position.x, red.position.y)) {
+                            h.setColor(new Color(255, 255, 0, 40));
+                        }
+                    }  else if (length < privLen){
+                        if (red == null) {
+                            h.setColor(new Color(0, 255, 0, 40));
+                        } else if(!h.hexagon.contains(red.position.x, red.position.y)) {
+                            h.setColor(new Color(0, 255, 0, 40));
+                        }
                     }
                 }
             }
+            priv = this.positionList.get(i);
+            privLen = length;
         }
     }
 }
