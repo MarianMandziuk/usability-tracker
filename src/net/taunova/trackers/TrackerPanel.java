@@ -42,6 +42,7 @@ public class TrackerPanel extends JPanel {
     private Grid grid;
     public boolean heatmapEnable = false;
     public static final int DELAY = 10;
+    private int i;
 
     public TrackerPanel(MouseTracker tracker, Grid grid) {
         super(true);
@@ -178,10 +179,8 @@ public class TrackerPanel extends JPanel {
         final double kY = (double)this.windowSize.height/this.screenRect.height;
 
         if(this.heatmapEnable) {
-
-            tracker.trackHeatMap();
-
-            this.grid.drawGrid(g, kX, kY);
+           i = tracker.trackHeatMap(i);
+           this.grid.drawGrid(g, kX, kY);
         } else {
             tracker.processPath(new TrackerCallback() {
 

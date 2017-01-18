@@ -69,10 +69,9 @@ public class Hexagon {
         for (int i = 1; i < hexagonPoints.size(); i++) {
             hexagonDraw.lineTo(hexagonPoints.get(i).getX() * scaleX,
                     hexagonPoints.get(i).getY() * scaleY);
-//            System.out.println(hexagonPoints.get(i).getY());
         }
         hexagonDraw.closePath();
         g2.setColor(this.color);
-        g2.fill(hexagonDraw);
+        g2.fill(hexagon);
     }
 }

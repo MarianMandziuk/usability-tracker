@@ -53,7 +53,6 @@ public class MouseTracker implements Runnable  {
         int ovalCount = 0;
         float length;
         float privLen = 0;
-
         if(positionList.size() > 4) {
             Position start = positionList.get(0);
             start.setWidth(0);
@@ -80,7 +79,6 @@ public class MouseTracker implements Runnable  {
                 ovalCount = ovalCountIncrement(control1, ovalCount);
                 ovalCount = ovalCountIncrement(control2, ovalCount);
 //                ovalCount = ovalCountIncrement(end, ovalCount);
-
                 callback.process(start, control1, control2, end);
                 start = end;
                 privLen = length;
@@ -155,12 +153,13 @@ public class MouseTracker implements Runnable  {
         return ovalCount;
     }
 
-    public void trackHeatMap() {
+    public int trackHeatMap(int initStart) {
         Position priv = null;
         float length = 0;
         float privLen = 0;
         Position red = null;
-        for(int i = 0; i < this.positionList.size(); i++) {
+        int i = initStart;
+        for(;i < this.positionList.size(); i++) {
             if(priv != null)
             length = getLength(priv.position, this.positionList.get(i).position);
 
@@ -189,5 +188,7 @@ public class MouseTracker implements Runnable  {
             priv = this.positionList.get(i);
             privLen = length;
         }
+        return i;
     }
+
 }
