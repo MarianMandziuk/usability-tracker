@@ -26,6 +26,7 @@ public class ControlPanel extends JPanel {
     public JButton stopButton;
     public JFileChooser saveSnapshotWindow;
     public JCheckBox heatmapEnableBox;
+    public JCheckBox dualTrackingEnableBox;
     
     public ControlPanel(MouseTracker tracker, TrackerFrame frame) {
         super(true);
@@ -40,6 +41,7 @@ public class ControlPanel extends JPanel {
         stopButton = new JButton("Stop");
         startButton = new JButton("Start");
         heatmapEnableBox = new JCheckBox("HeatMap");
+        dualTrackingEnableBox = new JCheckBox("DualTracking");
 
         saveSnapshotWindow.addChoosableFileFilter(new FileNameExtensionFilter("image png","png"));
         saveSnapshotWindow.addChoosableFileFilter(new FileNameExtensionFilter("animation gif","gif"));
@@ -51,6 +53,7 @@ public class ControlPanel extends JPanel {
         add(newSlideButton);
         add(takeSnapShotButton);
         add(heatmapEnableBox);
+        add(dualTrackingEnableBox);
 
         stopButton.setEnabled(false);
         saveSnapshotWindow.setEnabled(false);
@@ -59,6 +62,7 @@ public class ControlPanel extends JPanel {
         newSlideButton.setEnabled(false);
         takeSnapShotButton.setEnabled(false);
         heatmapEnableBox.setEnabled(false);
+        dualTrackingEnableBox.setEnabled(false);
 
         cleanButton.addActionListener(new CleanTrackerListener(this));
         markAreaButton.addActionListener(new MarkAreaListener(frame));
@@ -67,6 +71,7 @@ public class ControlPanel extends JPanel {
         startButton.addActionListener(new StartButtonListener(this));
         stopButton.addActionListener(new StopListener(this));
         heatmapEnableBox.addItemListener(new HeatMapEanbleListener(this.frame));
+        dualTrackingEnableBox.addItemListener(new DualTrackingEnableListener(this.frame));
     }     
     
     public MouseTracker getMouseTracker() {

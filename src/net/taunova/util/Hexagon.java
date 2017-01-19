@@ -61,8 +61,13 @@ public class Hexagon {
         this.color = color;
     }
 
+    public Color getColor() {
+        return this.color;
+    }
+
     public void drawHexagon(Graphics g, double scaleX, double scaleY) {
         Graphics2D g2 = (Graphics2D) g;
+        g2.setColor(this.color);
         GeneralPath hexagonDraw = new GeneralPath(GeneralPath.WIND_EVEN_ODD, 6);
         hexagonDraw.moveTo(hexagonPoints.get(0).getX() * scaleX,
                 hexagonPoints.get(0).getY() * scaleY);
@@ -71,7 +76,6 @@ public class Hexagon {
                     hexagonPoints.get(i).getY() * scaleY);
         }
         hexagonDraw.closePath();
-        g2.setColor(this.color);
-        g2.fill(hexagon);
+        g2.fill(hexagonDraw);
     }
 }

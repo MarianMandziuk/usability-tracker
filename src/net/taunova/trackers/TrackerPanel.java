@@ -41,6 +41,7 @@ public class TrackerPanel extends JPanel {
     public boolean start = false;
     private Grid grid;
     public boolean heatmapEnable = false;
+    public boolean dualTrackingEnable = false;
     public static final int DELAY = 10;
     private int i;
 
@@ -177,53 +178,61 @@ public class TrackerPanel extends JPanel {
 
         final double kX = (double)this.windowSize.width/this.screenRect.width;
         final double kY = (double)this.windowSize.height/this.screenRect.height;
-
-        if(this.heatmapEnable) {
-           i = tracker.trackHeatMap(i);
-           this.grid.drawGrid(g, kX, kY);
+        if (this.dualTrackingEnable) {
+            i = tracker.trackHeatMap(i);
+            this.grid.drawGrid(g, kX, kY);
+            drawTracks(g, kX, kY);
         } else {
-            tracker.processPath(new TrackerCallback() {
-
-                @Override
-                public void process(Position start, Position control1,
-                                    Position control2, Position end) {
-                    Graphics2D g2 = (Graphics2D) g;
-                    g2.setStroke(new BasicStroke(start.getWidht()));
-                    g2.setColor(start.getColor());
-                    CubicCurve2D c = new CubicCurve2D.Double();
-                    c.setCurve(kX * start.position.x,
-                            kY * start.position.y,
-                            kX * control1.position.x,
-                            kY * control1.position.y,
-                            kX * control2.position.x,
-                            kY * control2.position.y,
-                            kX * end.position.x,
-                            kY * end.position.y);
-
-                    g2.draw(c);
-                    Position[] arr = {start, control1, control2};
-                    for (int i = 0; i < arr.length; i++) {
-                        if (arr[i].getDelay() > DELAY) {
-                            int radius = arr[i].getDelay();
-                            if (radius > 20) {
-                                radius = 20;
-                            }
-
-                            g2.drawOval((int) (kX * arr[i].position.x) - radius / 2,
-                                    (int) (kY * arr[i].position.y) - radius / 2, radius, radius);
-                            int x = (int) (kX * arr[i].position.x) - radius / 2;
-                            int y = (int) (kY * arr[i].position.y) - radius / 2;
-                            if (arr[i].getNumber() != 0) {
-                                g2.drawString(Integer.toString(arr[i].getNumber()), x, y);
-                            }
-                        }
-                    }
-                }
-            });
+            if (this.heatmapEnable) {
+                i = tracker.trackHeatMap(i);
+                this.grid.drawGrid(g, kX, kY);
+            } else {
+                drawTracks(g, kX, kY);
+            }
         }
 
     }
-    
+
+    private void drawTracks(Graphics g, double kX, double kY) {
+        tracker.processPath(new TrackerCallback() {
+
+            @Override
+            public void process(Position start, Position control1,
+                                Position control2, Position end) {
+                Graphics2D g2 = (Graphics2D) g;
+                g2.setStroke(new BasicStroke(start.getWidht()));
+                g2.setColor(start.getColor());
+                CubicCurve2D c = new CubicCurve2D.Double();
+                c.setCurve(kX * start.position.x,
+                        kY * start.position.y,
+                        kX * control1.position.x,
+                        kY * control1.position.y,
+                        kX * control2.position.x,
+                        kY * control2.position.y,
+                        kX * end.position.x,
+                        kY * end.position.y);
+
+                g2.draw(c);
+                Position[] arr = {start, control1, control2};
+                for (int i = 0; i < arr.length; i++) {
+                    if (arr[i].getDelay() > DELAY) {
+                        int radius = arr[i].getDelay();
+                        if (radius > 20) {
+                            radius = 20;
+
+
+                        g2.drawOval((int) (kX * arr[i].position.x) - radius / 2,
+                                (int) (kY * arr[i].position.y) - radius / 2, radius, radius);
+                        int x = (int) (kX * arr[i].position.x) - radius / 2;
+                        int y = (int) (kY * arr[i].position.y) - radius / 2;
+                        if (arr[i].getNumber() != 0) {
+                            g2.drawString(Integer.toString(arr[i].getNumber()), x, y);
+                        }
+                    }}
+                }
+            }
+        });
+    }
     public void takeSnapShot() {
         fullscreenImage = robot.createScreenCapture(screenRect);
 

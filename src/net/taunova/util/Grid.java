@@ -67,6 +67,6 @@ public class Grid {
         for(Hexagon h : this.hexagons) {
             h.drawHexagon(g, scaleX, scaleY);
         }
-        g.dispose();
+//        g.dispose();
     }
 }

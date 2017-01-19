@@ -59,6 +59,7 @@ public class StartButtonListener implements ActionListener {
                 this.controlPanel.newSlideButton.setEnabled(true);
                 this.controlPanel.takeSnapShotButton.setEnabled(true);
                 this.controlPanel.heatmapEnableBox.setEnabled(true);
+                this.controlPanel.dualTrackingEnableBox.setEnabled(true);
             }
         }
     }

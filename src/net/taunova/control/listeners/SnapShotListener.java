@@ -110,6 +110,9 @@ public class SnapShotListener implements ActionListener {
     protected void savePNG(BufferedImage image) {
         if (this.cp.heatmapEnableBox.isSelected()) {
             drawHeatMap(image);
+        } else if (this.cp.dualTrackingEnableBox.isSelected()) {
+            drawHeatMap(image);
+            drawTrack(image);
         } else {
             drawTrack(image);
         }

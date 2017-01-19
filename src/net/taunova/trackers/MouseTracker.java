@@ -32,6 +32,7 @@ public class MouseTracker implements Runnable  {
     public List<Double> points = new ArrayList<>(100*1024);
     public boolean frameActive;
     public Grid grid;
+    private Hexagon trackRedHexagon;
 
     MouseTracker(TrackerFrame it, ColorTracker t, Grid grid) {
         this.frame = it;
@@ -157,7 +158,6 @@ public class MouseTracker implements Runnable  {
         Position priv = null;
         float length = 0;
         float privLen = 0;
-        Position red = null;
         int i = initStart;
         for(;i < this.positionList.size(); i++) {
             if(priv != null)
@@ -165,26 +165,23 @@ public class MouseTracker implements Runnable  {
 
             for (Hexagon h : grid.hexagons) {
                 if (h.hexagon.contains(positionList.get(i).position.x, positionList.get(i).position.y)) {
-                    if (positionList.get(i).isDelay()) {
+                    if (positionList.get(i).getDelay() > 10) {
                         h.setColor(new Color(255, 0, 0, 40));
-                        red = positionList.get(i);
+                        trackRedHexagon = h;
                     }
 
-                    if (length > privLen) {
-                        if (red == null) {
+                    if((trackRedHexagon == null
+                            || !trackRedHexagon.hexagon.contains(positionList.get(i).position.x, positionList.get(i).position.y))) {
+                        if (length > privLen) {
                             h.setColor(new Color(255, 255, 0, 40));
-                        } else if (!h.hexagon.contains(red.position.x, red.position.y)) {
-                            h.setColor(new Color(255, 255, 0, 40));
-                        }
-                    }  else if (length < privLen){
-                        if (red == null) {
-                            h.setColor(new Color(0, 255, 0, 40));
-                        } else if(!h.hexagon.contains(red.position.x, red.position.y)) {
+                        } else if (length < privLen) {
                             h.setColor(new Color(0, 255, 0, 40));
                         }
                     }
                 }
             }
+
+
             priv = this.positionList.get(i);
             privLen = length;
         }
