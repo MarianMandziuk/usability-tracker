@@ -1,12 +1,10 @@
 package net.taunova.trackers;
 
 import java.awt.*;
-import java.awt.event.WindowEvent;
+import java.awt.event.*;
 import javax.swing.JFrame;
 import net.taunova.control.ControlPanel;
 import net.taunova.util.Grid;
-
-import java.awt.event.WindowAdapter;
 
 /**
  *
@@ -24,13 +22,15 @@ public class TrackerFrame extends JFrame {
     public boolean stopTrackWhileDeactivated = false;
     public Thread thread;
     private int deactivatedCount = 0;
-
+    public int widthBased = getSize().width;
+    public int heightBased = getSize().height;
     public TrackerFrame() {
         super("Tracker frame");
         getContentPane().setLayout(new BorderLayout());
         Rectangle dim = GraphicsEnvironment.getLocalGraphicsEnvironment().getMaximumWindowBounds();
-        int baseWidth = dim.width/DIVIDER;
-        int baseHeight = dim.height/DIVIDER;
+
+        int baseWidth = dim.width / DIVIDER;
+        int baseHeight = dim.height / DIVIDER;
         int buttonPanelWidth = 150;
         Grid grid = new Grid(Toolkit.getDefaultToolkit().getScreenSize().width,
                 Toolkit.getDefaultToolkit().getScreenSize().height, 20);
@@ -40,7 +40,6 @@ public class TrackerFrame extends JFrame {
         buttonPanel.setPreferredSize(new Dimension(120,
                                        baseHeight));
         trackerPanel.setPreferredSize(new Dimension(baseWidth, baseHeight));
-//        System.out.println(dim);
         getContentPane().add(BorderLayout.EAST, buttonPanel);
         getContentPane().add(BorderLayout.CENTER, trackerPanel);
         setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
@@ -87,6 +86,24 @@ public class TrackerFrame extends JFrame {
                 }
             }
 
+        });
+         widthBased = getSize().width;
+        heightBased = getSize().height;
+        this.addComponentListener(new ComponentAdapter() {
+            public void componentResized(ComponentEvent e) {
+
+                if (getSize().width != widthBased || getSize().height != heightBased) {
+                    int h = (int) (getSize().width / (widthBased / 100.0));
+                    int w = (int) (getSize().height / (heightBased / 100.0));
+                    int width = (int) (w * (widthBased / 100.0));
+                    int height = (int) (h * (heightBased / 100.0));
+
+                    setSize(new Dimension(width, height));
+
+                    super.componentResized(e);
+                }
+
+            }
         });
     }
 

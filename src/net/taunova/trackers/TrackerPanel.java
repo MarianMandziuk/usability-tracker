@@ -136,6 +136,7 @@ public class TrackerPanel extends JPanel {
             }
         };
 
+
         ComponentAdapter resizeComponent = new ComponentAdapter() {
             public void componentResized(ComponentEvent e) {
                 try {
@@ -165,13 +166,18 @@ public class TrackerPanel extends JPanel {
         this.addMouseMotionListener(handler);
         this.addComponentListener(resizeComponent);
 
+//        this.addComponentListener(new ComponentAdapter() {
+//            public void componentResized(ComponentEvent e) {
+//                r.
+//            }
+//        });
+
     }
 
     @Override
     public void paintComponent(Graphics g) {
         this.windowSize = getSize();
         drawScreenShot(g);
-
         if (selectionNew != null) {
             selectionNew.drawSelection(g);
         }
