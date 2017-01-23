@@ -1,8 +1,9 @@
 package net.taunova.usability;
 
 
-import javax.swing.JFrame;
 import net.taunova.trackers.TrackerFrame;
+
+import javax.swing.*;
 
 
 public class UsabilityTracker {

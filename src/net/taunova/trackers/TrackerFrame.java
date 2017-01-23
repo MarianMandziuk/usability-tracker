@@ -22,8 +22,10 @@ public class TrackerFrame extends JFrame {
     public boolean stopTrackWhileDeactivated = false;
     public Thread thread;
     private int deactivatedCount = 0;
-    public int widthBased = getSize().width;
-    public int heightBased = getSize().height;
+    public int widthBased;
+    public int heightBased;
+    public int widthPrevious;
+    public int heightPrevious;
     public TrackerFrame() {
         super("Tracker frame");
         getContentPane().setLayout(new BorderLayout());
@@ -87,22 +89,42 @@ public class TrackerFrame extends JFrame {
             }
 
         });
-         widthBased = getSize().width;
+        widthBased = getSize().width;
         heightBased = getSize().height;
+        widthPrevious = getSize().width;
+        heightPrevious = getSize().height;
         this.addComponentListener(new ComponentAdapter() {
             public void componentResized(ComponentEvent e) {
+                    int currentWidth = e.getComponent().getWidth();
+                    int currentHeight = e.getComponent().getHeight();
+                    e.getComponent();
+                    if (currentWidth != widthPrevious && currentHeight != heightPrevious) {
+                        int h = (int) (currentWidth / (widthBased / 100.0));
+                        int height = (int) (h * (heightBased / 100.0));
+                        setSize(currentWidth, height);
+                    } else if (currentWidth != widthPrevious) {
+                        int h = (int) (currentWidth / (widthBased / 100.0));
+                        int height = (int) (h * (heightBased / 100.0));
+                        setSize(currentWidth, height);
+                    } else if (currentHeight != heightPrevious) {
+                        int w = (int) (currentHeight / (heightBased / 100.0));
+                        int width = (int) (w * (widthBased / 100.0));
+                        setSize(width, currentHeight);
+                    }
 
-                if (getSize().width != widthBased || getSize().height != heightBased) {
-                    int h = (int) (getSize().width / (widthBased / 100.0));
-                    int w = (int) (getSize().height / (heightBased / 100.0));
-                    int width = (int) (w * (widthBased / 100.0));
-                    int height = (int) (h * (heightBased / 100.0));
 
-                    setSize(new Dimension(width, height));
 
-                    super.componentResized(e);
+                widthPrevious = e.getComponent().getWidth();
+                heightPrevious = e.getComponent().getHeight();
+            }
+        });
+
+
+        this.addWindowStateListener(new WindowStateListener() {
+            public void windowStateChanged(WindowEvent arg0) {
+                 if ((arg0.getNewState() & Frame.MAXIMIZED_BOTH) == Frame.MAXIMIZED_BOTH){
+                    System.out.println("maximized");
                 }
-
             }
         });
     }
