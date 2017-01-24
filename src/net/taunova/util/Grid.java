@@ -69,4 +69,10 @@ public class Grid {
         }
 //        g.dispose();
     }
+
+    public void clearGridTrack() {
+        for(Hexagon h : this.hexagons) {
+            h.setColor(new Color(0,0,255, 30));
+        }
+    }
 }

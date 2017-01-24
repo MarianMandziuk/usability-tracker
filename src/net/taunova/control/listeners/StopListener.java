@@ -30,6 +30,7 @@ public class StopListener implements ActionListener{
         this.frame.trackerPanel.setSelectionNull();
         this.frame.startThread = false;
         this.frame.thread.interrupt();
+        this.tracker.grid.clearGridTrack();
 
         this.controlPanel.startButton.setEnabled(true);
         this.controlPanel.stopButton.setEnabled(false);

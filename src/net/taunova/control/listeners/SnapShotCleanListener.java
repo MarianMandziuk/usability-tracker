@@ -23,5 +23,7 @@ public class SnapShotCleanListener extends SnapShotListener {
         BufferedImage image = frame.trackerPanel.getFullscreenImage();
         saveScreen(image);
         tracker.getPosition().clear();
+        tracker.grid.clearGridTrack();
+        cp.getTrackerFrame().trackerPanel.setCounterI(this.tracker.getPosition().size());
     }
 }

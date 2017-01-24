@@ -23,6 +23,8 @@ public class CleanTrackerListener implements ActionListener {
     public void actionPerformed(ActionEvent ae) {
        tracker.getPosition().clear();
        controlPanel.cleanButton.setEnabled(false);
+       tracker.grid.clearGridTrack();
+       controlPanel.getTrackerFrame().trackerPanel.setCounterI(this.tracker.getPosition().size());
     }
     
 }

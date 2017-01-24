@@ -50,7 +50,10 @@ public class StartButtonListener implements ActionListener {
 
                 this.frame.trackerPanel.startTimer();
                 this.frame.trackerPanel.start = true;
+                this.frame.start = true;
                 this.frame.thread = new Thread(this.frame.tracker);
+
+                this.frame.trackerPanel.setCounterI(this.tracker.getPosition().size());
 
 
                 this.controlPanel.startButton.setEnabled(false);

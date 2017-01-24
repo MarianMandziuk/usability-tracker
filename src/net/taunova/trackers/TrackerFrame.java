@@ -2,7 +2,8 @@ package net.taunova.trackers;
 
 import java.awt.*;
 import java.awt.event.*;
-import javax.swing.JFrame;
+import javax.swing.*;
+
 import net.taunova.control.ControlPanel;
 import net.taunova.util.Grid;
 
@@ -20,6 +21,7 @@ public class TrackerFrame extends JFrame {
     public ColorTracker colorTracker = new ColorTracker();
     public boolean startThread = false;
     public boolean stopTrackWhileDeactivated = false;
+    public boolean start;
     public Thread thread;
     private int deactivatedCount = 0;
     public int widthBased;
@@ -78,21 +80,24 @@ public class TrackerFrame extends JFrame {
                     }
 
                 }
-
-                if(startThread && !thread.isAlive()) {
-                    tracker.setTrack(true);
-                    thread.start();
-                }
-                else {
-                    startThread = true;
+                if (start) {
+                    if (startThread && !thread.isAlive()) {
+                        System.out.println("we are here");
+                        tracker.setTrack(true);
+                        thread.start();
+                    } else {
+                        startThread = true;
+                    }
                 }
             }
 
         });
+
         widthBased = getSize().width;
         heightBased = getSize().height;
         widthPrevious = getSize().width;
         heightPrevious = getSize().height;
+
         this.addComponentListener(new ComponentAdapter() {
             public void componentResized(ComponentEvent e) {
                     int currentWidth = e.getComponent().getWidth();
@@ -122,8 +127,8 @@ public class TrackerFrame extends JFrame {
 
         this.addWindowStateListener(new WindowStateListener() {
             public void windowStateChanged(WindowEvent arg0) {
-                 if ((arg0.getNewState() & Frame.MAXIMIZED_BOTH) == Frame.MAXIMIZED_BOTH){
-                    System.out.println("maximized");
+                 if ((arg0.getNewState() & JFrame.MAXIMIZED_BOTH) == JFrame.MAXIMIZED_BOTH){
+                    setExtendedState(JFrame.NORMAL);
                 }
             }
         });

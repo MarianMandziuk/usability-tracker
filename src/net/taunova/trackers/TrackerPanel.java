@@ -358,4 +358,8 @@ public class TrackerPanel extends JPanel {
     public void startTimer() {
         timer.start();
     }
+
+    public void setCounterI(int i) {
+        this.i = i;
+    }
 }
