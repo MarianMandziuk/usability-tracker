@@ -166,12 +166,6 @@ public class TrackerPanel extends JPanel {
         this.addMouseMotionListener(handler);
         this.addComponentListener(resizeComponent);
 
-//        this.addComponentListener(new ComponentAdapter() {
-//            public void componentResized(ComponentEvent e) {
-//                r.
-//            }
-//        });
-
     }
 
     @Override

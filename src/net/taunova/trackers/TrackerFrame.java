@@ -37,7 +37,7 @@ public class TrackerFrame extends JFrame {
         int baseHeight = dim.height / DIVIDER;
         int buttonPanelWidth = 150;
         Grid grid = new Grid(Toolkit.getDefaultToolkit().getScreenSize().width,
-                Toolkit.getDefaultToolkit().getScreenSize().height, 20);
+                Toolkit.getDefaultToolkit().getScreenSize().height, 30, 3);
         tracker = new MouseTracker(this, colorTracker, grid);
         buttonPanel = new ControlPanel(tracker, this);
         trackerPanel = new TrackerPanel(tracker, grid);
@@ -82,7 +82,6 @@ public class TrackerFrame extends JFrame {
                 }
                 if (start) {
                     if (startThread && !thread.isAlive()) {
-                        System.out.println("we are here");
                         tracker.setTrack(true);
                         thread.start();
                     } else {
