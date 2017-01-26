@@ -28,6 +28,8 @@ public class TrackerFrame extends JFrame {
     public int heightBased;
     public int widthPrevious;
     public int heightPrevious;
+
+
     public TrackerFrame() {
         super("Tracker frame");
         getContentPane().setLayout(new BorderLayout());
@@ -40,7 +42,7 @@ public class TrackerFrame extends JFrame {
                 Toolkit.getDefaultToolkit().getScreenSize().height, 30, 3);
         tracker = new MouseTracker(this, colorTracker, grid);
         buttonPanel = new ControlPanel(tracker, this);
-        trackerPanel = new TrackerPanel(tracker, grid);
+        trackerPanel = new TrackerPanel(tracker);
         buttonPanel.setPreferredSize(new Dimension(120,
                                        baseHeight));
         trackerPanel.setPreferredSize(new Dimension(baseWidth, baseHeight));
@@ -101,7 +103,6 @@ public class TrackerFrame extends JFrame {
             public void componentResized(ComponentEvent e) {
                     int currentWidth = e.getComponent().getWidth();
                     int currentHeight = e.getComponent().getHeight();
-                    e.getComponent();
                     if (currentWidth != widthPrevious && currentHeight != heightPrevious) {
                         int h = (int) (currentWidth / (widthBased / 100.0));
                         int height = (int) (h * (heightBased / 100.0));
@@ -140,8 +141,12 @@ public class TrackerFrame extends JFrame {
     private void clearButtonActivate() {
         if (tracker.getPosition().isEmpty()) {
             buttonPanel.cleanButton.setEnabled(false);
+            buttonPanel.takeSnapShotButton.setEnabled(false);
+            buttonPanel.newSlideButton.setEnabled(false);
         } else {
             buttonPanel.cleanButton.setEnabled(true);
+            buttonPanel.takeSnapShotButton.setEnabled(true);
+            buttonPanel.newSlideButton.setEnabled(true);
         }
     }
 }

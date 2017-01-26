@@ -27,6 +27,8 @@ public class ControlPanel extends JPanel {
     public JFileChooser saveSnapshotWindow;
     public JCheckBox heatmapEnableBox;
     public JCheckBox dualTrackingEnableBox;
+    public JLabel hexagolSliderLabel;
+    public JSlider hexagonSizeSlider;
     
     public ControlPanel(MouseTracker tracker, TrackerFrame frame) {
         super(true);
@@ -42,6 +44,8 @@ public class ControlPanel extends JPanel {
         startButton = new JButton("Start");
         heatmapEnableBox = new JCheckBox("HeatMap");
         dualTrackingEnableBox = new JCheckBox("DualTracking");
+        hexagolSliderLabel = new JLabel("Hexagon size");
+        hexagonSizeSlider = new JSlider(JSlider.CENTER, 10, 50, 25);
 
         saveSnapshotWindow.addChoosableFileFilter(new FileNameExtensionFilter("image png","png"));
         saveSnapshotWindow.addChoosableFileFilter(new FileNameExtensionFilter("animation gif","gif"));
@@ -54,6 +58,13 @@ public class ControlPanel extends JPanel {
         add(takeSnapShotButton);
         add(heatmapEnableBox);
         add(dualTrackingEnableBox);
+        add(hexagolSliderLabel);
+        add(hexagonSizeSlider);
+
+        hexagonSizeSlider.setMajorTickSpacing(10);
+        hexagonSizeSlider.setMinorTickSpacing(1);
+        hexagonSizeSlider.setPaintTicks(true);
+        hexagonSizeSlider.setPaintLabels(true);
 
         stopButton.setEnabled(false);
         saveSnapshotWindow.setEnabled(false);
@@ -63,6 +74,7 @@ public class ControlPanel extends JPanel {
         takeSnapShotButton.setEnabled(false);
         heatmapEnableBox.setEnabled(false);
         dualTrackingEnableBox.setEnabled(false);
+        hexagonSizeSlider.setEnabled(false);
 
         cleanButton.addActionListener(new CleanTrackerListener(this));
         markAreaButton.addActionListener(new MarkAreaListener(frame));
@@ -70,8 +82,9 @@ public class ControlPanel extends JPanel {
         takeSnapShotButton.addActionListener(new SnapShotListener(this));
         startButton.addActionListener(new StartButtonListener(this));
         stopButton.addActionListener(new StopListener(this));
-        heatmapEnableBox.addItemListener(new HeatMapEanbleListener(this.frame));
-        dualTrackingEnableBox.addItemListener(new DualTrackingEnableListener(this.frame));
+        heatmapEnableBox.addItemListener(new HeatMapEanbleListener(this));
+        dualTrackingEnableBox.addItemListener(new DualTrackingEnableListener(this));
+        hexagonSizeSlider.addChangeListener(new HexagonSizeListener(this.tracker));
     }     
     
     public MouseTracker getMouseTracker() {

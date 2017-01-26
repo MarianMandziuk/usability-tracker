@@ -39,18 +39,16 @@ public class TrackerPanel extends JPanel {
     private Selection selectionNew;
     private Timer timer;
     public boolean start = false;
-    private Grid grid;
     public boolean heatmapEnable = false;
     public boolean dualTrackingEnable = false;
     public static final int DELAY = 10;
     private int i;
 
-    public TrackerPanel(MouseTracker tracker, Grid grid) {
+    public TrackerPanel(MouseTracker tracker) {
         super(true);
         this.tracker = tracker;
         tracker.setParent(this);
         this.screenRect = new Rectangle(Toolkit.getDefaultToolkit().getScreenSize());
-        this.grid = grid;
         try {
             this.robot = new Robot();
         } catch (AWTException ex) {
@@ -180,12 +178,12 @@ public class TrackerPanel extends JPanel {
         final double kY = (double)this.windowSize.height/this.screenRect.height;
         if (this.dualTrackingEnable) {
             i = tracker.trackHeatMap(i);
-            this.grid.drawGrid(g, kX, kY);
+            this.tracker.grid.drawGrid(g, kX, kY);
             drawTracks(g, kX, kY);
         } else {
             if (this.heatmapEnable) {
                 i = tracker.trackHeatMap(i);
-                this.grid.drawGrid(g, kX, kY);
+                this.tracker.grid.drawGrid(g, kX, kY);
             } else {
                 drawTracks(g, kX, kY);
             }
