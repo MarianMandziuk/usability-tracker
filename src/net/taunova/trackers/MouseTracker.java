@@ -87,6 +87,35 @@ public class MouseTracker implements Runnable  {
         }        
     }
 
+    public void processPathStraightLine(TrackerCallbackStraightLine callback) {
+
+        if(positionList.size() > 2) {
+            Position current = null;
+            Position next = null;
+            boolean t = false;
+            int ovalCount = 0;
+            for(int i=0; i< positionList.size(); i++) {
+
+                if(current != null && positionList.get(i).isDelay()) {
+                    next = positionList.get(i);
+                    ovalCount++;
+                    next.setNumber(ovalCount);
+                    t = true;
+                } else if(current == null && positionList.get(i).isDelay()) {
+                    current = positionList.get(i);
+                    ovalCount++;
+                    current.setNumber(ovalCount);
+                }
+
+                if(t) {
+                    callback.process(current, next);
+                    current = next;
+                    t = false;
+                }
+            }
+        }
+    }
+
      
     @Override
     public void run() {

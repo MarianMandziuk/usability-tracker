@@ -112,9 +112,11 @@ public class SnapShotListener implements ActionListener {
             drawHeatMap(image);
         } else if (this.cp.dualTrackingEnableBox.isSelected()) {
             drawHeatMap(image);
-            drawTrack(image);
+//            drawTrack(image);
+            drawTrackStraightLine(image);
         } else {
-            drawTrack(image);
+//            drawTrack(image);
+            drawTrackStraightLine(image);
         }
 
         String format = "png";
@@ -225,6 +227,61 @@ public class SnapShotListener implements ActionListener {
     private void drawHeatMap(BufferedImage image) {
         Graphics2D g2 = image.createGraphics();
         tracker.grid.drawGrid(g2, 1, 1);
+        g2.dispose();
+    }
+
+    protected void drawTrackStraightLine(BufferedImage image) {
+        List<Position> positionList = this.tracker.getPosition();
+        Graphics2D g2 = image.createGraphics();
+        Position current = null;
+        Position next = null;
+        boolean t = false;
+        int ovalCount = 0;
+        for(int i = 0; i < positionList.size(); i++) {
+            if(current != null && positionList.get(i).isDelay()) {
+                next = positionList.get(i);
+                ovalCount++;
+                next.setNumber(ovalCount);
+                t = true;
+            } else if(current == null && positionList.get(i).isDelay()) {
+                current = positionList.get(i);
+                ovalCount++;
+                current.setNumber(ovalCount);
+            }
+            if(t) {
+                g2.setStroke(new BasicStroke(2));
+                g2.setColor(current.getColor());
+                g2.drawLine(current.position.x,
+                        current.position.y,
+                        next.position.x,
+                        next.position.y);
+
+
+                int radius = current.getDelay() * 3;
+                if (radius > 20 * 3) {
+                    radius = 20 * 3;
+                }
+
+                g2.setColor(new Color(201, 250, 231, 90));
+                g2.drawOval(current.position.x - radius / 2,
+                        current.position.y - radius / 2, radius, radius);
+                g2.setColor(current.getColor());
+                g2.fillOval(current.position.x - radius / 2,
+                        current.position.y - radius / 2, radius, radius);
+                if (current.getNumber() != 0) {
+                    g2.setColor(Color.BLACK);
+                    FontMetrics metrics = g2.getFontMetrics(g2.getFont());
+                    int x = (current.position.x
+                            - metrics.stringWidth(Integer.toString(current.getNumber())) / 2);
+                    int y = (current.position.y - (metrics.getHeight()) / 2) + metrics.getAscent();
+                    g2.drawString(Integer.toString(current.getNumber()), x, y);
+                }
+
+                current = next;
+                t = false;
+            }
+        }
+
         g2.dispose();
     }
 }

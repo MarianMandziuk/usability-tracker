@@ -11,7 +11,7 @@ import java.util.List;
 public class ColorTracker {
     private Color color;
     private boolean switchColor = true;
-    private static final int TRANSPARENCY = 30;
+    private static final int TRANSPARENCY = 90;
     private List<Color> colorList = new ArrayList<>(
             Arrays.asList(new Color(255,0,0, TRANSPARENCY),
                     new Color(0,0,255, TRANSPARENCY),

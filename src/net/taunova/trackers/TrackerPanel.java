@@ -179,17 +179,18 @@ public class TrackerPanel extends JPanel {
         if (this.dualTrackingEnable) {
             i = tracker.trackHeatMap(i);
             this.tracker.grid.drawGrid(g, kX, kY);
-            drawTracks(g, kX, kY);
+            drawTracksStraightLine(g, kX, kY);
         } else {
             if (this.heatmapEnable) {
                 i = tracker.trackHeatMap(i);
                 this.tracker.grid.drawGrid(g, kX, kY);
             } else {
-                drawTracks(g, kX, kY);
+                drawTracksStraightLine(g, kX, kY);
             }
         }
 
     }
+
 
     private void drawTracks(Graphics g, double kX, double kY) {
         tracker.processPath(new TrackerCallback() {
@@ -231,6 +232,45 @@ public class TrackerPanel extends JPanel {
             }
         });
     }
+
+    private void drawTracksStraightLine(Graphics g, double kX, double kY) {
+        tracker.processPathStraightLine(new TrackerCallbackStraightLine() {
+
+            @Override
+            public void process(Position begin, Position end) {
+                Graphics2D g2 = (Graphics2D) g;
+                g2.setStroke(new BasicStroke(2));
+
+                g.setColor(begin.getColor());
+                g.drawLine((int) (kX * begin.position.x),
+                        (int) (kY * begin.position.y),
+                        (int) (kX * end.position.x),
+                        (int) (kY * end.position.y));
+
+
+                int radius = begin.getDelay() * 3;
+                if (radius > 20 * 3) {
+                    radius = 20 * 3;
+                }
+
+                g.setColor(new Color(201, 250, 231, 90));
+                g.drawOval((int) (kX * begin.position.x) - radius / 2,
+                        (int) (kY * begin.position.y) - radius / 2, radius, radius);
+                g.setColor(begin.getColor());
+                g.fillOval((int) (kX * begin.position.x) - radius / 2,
+                        (int) (kY * begin.position.y) - radius / 2, radius, radius);
+                if (begin.getNumber() != 0) {
+                    g.setColor(Color.BLACK);
+                    FontMetrics metrics = g.getFontMetrics(g.getFont());
+                    int x = ((int)(kX * begin.position.x) - metrics.stringWidth(Integer.toString(begin.getNumber())) / 2);
+                    int y = ((int)(kY * begin.position.y) - (metrics.getHeight()) / 2) + metrics.getAscent();
+                    g.drawString(Integer.toString(begin.getNumber()), x, y);
+                }
+            }
+        });
+    }
+
+
     public void takeSnapShot() {
         fullscreenImage = robot.createScreenCapture(screenRect);
 
