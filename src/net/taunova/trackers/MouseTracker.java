@@ -183,11 +183,11 @@ public class MouseTracker implements Runnable  {
         return ovalCount;
     }
 
-    public int trackHeatMap(int initStart) {
+    public int trackHeatMap(int listPosition) {
         Position priv = null;
         float length = 0;
         float privLen = 0;
-        int i = initStart;
+        int i = listPosition;
         for(;i < this.positionList.size(); i++) {
             if(priv != null)
             length = getLength(priv.position, this.positionList.get(i).position);

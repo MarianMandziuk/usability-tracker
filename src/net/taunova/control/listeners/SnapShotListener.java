@@ -31,7 +31,7 @@ public class SnapShotListener implements ActionListener {
     protected MouseTracker tracker;
     protected ControlPanel cp;
     protected final Logger logger = LoggerFactory.getLogger(SnapShotListener.class);
-    private static float LINE_WIDTH = 1.602F;
+//    private static float LINE_WIDTH = 1.602F;
 
     public SnapShotListener(ControlPanel cp) {
         this.cp = cp;
@@ -132,7 +132,7 @@ public class SnapShotListener implements ActionListener {
     }
 
     protected void saveGIF(BufferedImage image) {
-        List<BufferedImage> bufferedTracks = createBufferTrackImages();
+        List<BufferedImage> bufferedTracks = bufferedImageStraightLine();
         bufferedTracks.add(0, image);
         BufferedImage ar[] = new BufferedImage[bufferedTracks.size()];
 
@@ -171,7 +171,7 @@ public class SnapShotListener implements ActionListener {
         Graphics2D g2 = null;
         for(int i = 3; i < positionList.size() - 1; i+=3) {
 
-            if (stepCounter == pointPerFrame || i==3) {
+            if (stepCounter == pointPerFrame || i == 3) {
                 bufferedImage = new BufferedImage(screenRect.width, screenRect.height,
                         BufferedImage.TYPE_INT_ARGB);
                 g2 = bufferedImage.createGraphics();
@@ -283,5 +283,89 @@ public class SnapShotListener implements ActionListener {
         }
 
         g2.dispose();
+    }
+
+    protected List bufferedImageStraightLine() {
+        List<BufferedImage> bufferedTracks = new ArrayList<>();
+        List<Position> positionList = this.tracker.getPosition();
+        final int frameRate = 30;
+        int pointPerFrame = positionList.size()  / frameRate;
+        if (pointPerFrame == 0) {
+            pointPerFrame = (positionList.size() - 2) ;
+        }
+
+        int stepCounter = 0;
+        Rectangle screenRect = new Rectangle(Toolkit.getDefaultToolkit().getScreenSize());
+        BufferedImage bufferedImage = null;
+        Graphics2D g2 = null;
+
+        Position current = null;
+        Position next = null;
+        boolean t = false;
+        int ovalCount = 0;
+
+        for(int i = 0; i < positionList.size() - 1; i++) {
+            if(current != null && positionList.get(i).isDelay()) {
+                next = positionList.get(i);
+                ovalCount++;
+                next.setNumber(ovalCount);
+                t = true;
+            } else if(current == null && positionList.get(i).isDelay()) {
+                current = positionList.get(i);
+                ovalCount++;
+                current.setNumber(ovalCount);
+            }
+
+            if (stepCounter == pointPerFrame || i == 0) {
+                bufferedImage = new BufferedImage(screenRect.width, screenRect.height,
+                        BufferedImage.TYPE_INT_ARGB);
+                g2 = bufferedImage.createGraphics();
+                stepCounter = 0;
+            }
+
+
+            if(t) {
+                g2.setStroke(new BasicStroke(2));
+                g2.setColor(new Color(current.getColor().getRGB()));
+                g2.drawLine(current.position.x,
+                        current.position.y,
+                        next.position.x,
+                        next.position.y);
+
+
+                int radius = current.getDelay() * 3;
+                if (radius > 20 * 3) {
+                    radius = 20 * 3;
+                }
+
+                g2.setColor(new Color(201, 250, 231 ));
+                g2.drawOval(current.position.x - radius / 2,
+                        current.position.y - radius / 2, radius, radius);
+                g2.setColor(new Color(current.getColor().getRGB()));
+                g2.fillOval(current.position.x - radius / 2,
+                        current.position.y - radius / 2, radius, radius);
+                if (current.getNumber() != 0) {
+                    g2.setColor(Color.BLACK);
+                    FontMetrics metrics = g2.getFontMetrics(g2.getFont());
+                    int x = (current.position.x
+                            - metrics.stringWidth(Integer.toString(current.getNumber())) / 2);
+                    int y = (current.position.y - (metrics.getHeight()) / 2) + metrics.getAscent();
+                    g2.drawString(Integer.toString(current.getNumber()), x, y);
+                }
+
+                current = next;
+                t = false;
+
+
+            }
+            stepCounter++;
+            if (stepCounter == pointPerFrame) {
+                bufferedTracks.add(bufferedImage);
+            }
+
+
+        }
+        g2.dispose();
+        return bufferedTracks;
     }
 }

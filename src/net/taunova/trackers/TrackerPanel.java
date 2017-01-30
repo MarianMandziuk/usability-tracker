@@ -42,7 +42,7 @@ public class TrackerPanel extends JPanel {
     public boolean heatmapEnable = false;
     public boolean dualTrackingEnable = false;
     public static final int DELAY = 10;
-    private int i;
+    private int listPosition;
 
     public TrackerPanel(MouseTracker tracker) {
         super(true);
@@ -177,12 +177,12 @@ public class TrackerPanel extends JPanel {
         final double kX = (double)this.windowSize.width/this.screenRect.width;
         final double kY = (double)this.windowSize.height/this.screenRect.height;
         if (this.dualTrackingEnable) {
-            i = tracker.trackHeatMap(i);
+            listPosition = tracker.trackHeatMap(listPosition);
             this.tracker.grid.drawGrid(g, kX, kY);
             drawTracksStraightLine(g, kX, kY);
         } else {
             if (this.heatmapEnable) {
-                i = tracker.trackHeatMap(i);
+                listPosition = tracker.trackHeatMap(listPosition);
                 this.tracker.grid.drawGrid(g, kX, kY);
             } else {
                 drawTracksStraightLine(g, kX, kY);
@@ -391,7 +391,7 @@ public class TrackerPanel extends JPanel {
         timer.start();
     }
 
-    public void setCounterI(int i) {
-        this.i = i;
+    public void setCounterI(int listPosition) {
+        this.listPosition = listPosition;
     }
 }
