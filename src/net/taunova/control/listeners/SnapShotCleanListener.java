@@ -3,7 +3,6 @@ package net.taunova.control.listeners;
 import net.taunova.control.ControlPanel;
 import java.awt.event.ActionEvent;
 import java.awt.image.BufferedImage;
-import java.util.concurrent.TimeUnit;
 
 /**
  * Created by maryan on 15.12.16.

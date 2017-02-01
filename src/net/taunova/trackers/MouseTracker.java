@@ -29,7 +29,7 @@ public class MouseTracker implements Runnable  {
     private ColorTracker colorTracker;
     public Thread thread;
     public boolean startTrack = false;
-    public List<Double> points = new ArrayList<>(100*1024);
+//    public List<Double> points = new ArrayList<>(100*1024);
     public boolean frameActive;
     public Grid grid;
     private Hexagon trackRedHexagon;
@@ -168,11 +168,6 @@ public class MouseTracker implements Runnable  {
     public void stopExcution() {
 
         this.startTrack = false;
-    }
-
-    public void createThread(Thread t) {
-        this.thread = t;
-        this.thread.start();
     }
 
     private int ovalCountIncrement(Position p, int ovalCount) {
